@@ -1,19 +1,59 @@
 import * as React from 'react';
-import { HashRouter, Route } from 'react-router-dom';
+import { 
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link 
+} from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
 import { UsersPage } from './pages/UsersPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
 
+const routes = [
+    {
+      path: "/",
+      exact: true,
+      page: () => <LandingPage />
+    },
+    {
+      path: "/users",
+      page: () => <UsersPage />
+    },
+    {
+      path: "/today",
+      page: () => <TodayPage />
+    },
+    {
+      path: "/calendar",
+      page: () => <CalendarPage />
+    }
+];
+  
 export const App = (props: any) => {
     return (
-        <HashRouter>
-            <div>
-                <Route path="/" exact component={ LandingPage } />
-                <Route path="/users" component={ UsersPage } />
-                <Route path="/today" component={ TodayPage } />
-                <Route path="/calendar" component={ CalendarPage } />
-            </div>
-        </HashRouter>
-    );
-};
+    <Router>
+      <div style={{ display: "flex" }}>
+        <div style={{ width: "20%", background: "#f0f0f0" }}>
+
+          <ul style={{ listStyleType: "none", padding: 0 }}>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/users">Users</Link></li>
+            <li><Link to="/today">Today</Link></li>
+            <li><Link to="/calendar">Calendar</Link></li>
+          </ul>
+
+          <Switch>
+            {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} /> ))}
+          </Switch>
+        </div>
+
+        <div style={{ flex: 1 }}>
+          <Switch>
+            {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page />} /> ))}
+          </Switch>
+        </div>
+      </div>
+    </Router>
+);
+}

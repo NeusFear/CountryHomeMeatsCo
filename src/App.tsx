@@ -11,7 +11,7 @@ import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
 import { NavPageButton } from './components/NavPageButton';
 
-import CalendarSvg from './assets/icons/calendar.svg'
+import { SvgCalendar } from './assets/Icons'
 
 import './styles/navbar.css'
 import './styles/tailwind.scss'
@@ -41,12 +41,11 @@ export const App = (props: any) => {
     <Router>
       <div style={{ display: "flex" }}>
         <div style={{ width: "20%", background: "#f0f0f0" }}>
-		  <CalendarSvg />
           <ul style={{ listStyleType: "none", padding: 0 }}>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">Users</Link></li>
             <li><Link to="/today">Today</Link></li>
-            <li><Link to="/calendar"><NavPageButton Page="Calendar" /></Link></li>
+            <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
           </ul>
 
           <Switch>

@@ -5,6 +5,7 @@
   "author": "Huy",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "@svgr/parcel-plugin-svgr": "^5.5.0",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.8.5",
     "autoprefixer": "^10.2.1",

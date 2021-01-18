@@ -43,7 +43,7 @@ export const App = (props: any) => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">Users</Link></li>
             <li><Link to="/today">Today</Link></li>
-            <li><Link to="/calendar"><NavPageButton page="Calendar" /></Link></li>
+            <li><Link to="/calendar"><NavPageButton page="Calendar" icon="calendar" /></Link></li>
           </ul>
 
           <Switch>

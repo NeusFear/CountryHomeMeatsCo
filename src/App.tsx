@@ -41,12 +41,12 @@ export const App = (props: any) => {
     <Router>
       <div style={{ display: "flex" }}>
         <div style={{ width: "20%", background: "#f0f0f0" }}>
-
+		  <CalendarSvg />
           <ul style={{ listStyleType: "none", padding: 0 }}>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">Users</Link></li>
             <li><Link to="/today">Today</Link></li>
-            <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={CalendarSvg} /></Link></li>
+            <li><Link to="/calendar"><NavPageButton Page="Calendar" /></Link></li>
           </ul>
 
           <Switch>

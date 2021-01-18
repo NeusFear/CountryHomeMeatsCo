@@ -9,6 +9,9 @@ import { LandingPage } from './pages/LandingPage';
 import { UsersPage } from './pages/UsersPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
+import { NavPageButton } from './components/NavPageButton';
+import '../styles/navbar.css'
+import 'tailwindcss';
 
 const routes = [
     {
@@ -40,7 +43,7 @@ export const App = (props: any) => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">Users</Link></li>
             <li><Link to="/today">Today</Link></li>
-            <li><Link to="/calendar">Calendar</Link></li>
+            <li><Link to="/calendar"><NavPageButton page="Calendar" /></Link></li>
           </ul>
 
           <Switch>

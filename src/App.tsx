@@ -10,7 +10,8 @@ import { UsersPage } from './pages/UsersPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
 import { NavPageButton } from './components/NavPageButton';
-import '../styles/navbar.css'
+import './styles/navbar.css'
+import './styles/tailwind.scss'
 import 'tailwindcss';
 
 const routes = [

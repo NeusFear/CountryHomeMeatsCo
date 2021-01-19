@@ -39,9 +39,9 @@ const routes = [
 export const App = (props: any) => {
     return (
     <Router>
-      <div style={{ display: "flex" }}>
-        <div style={{ width: "20%", background: "#f0f0f0" }}>
-          <ul style={{ listStyleType: "none", padding: 0 }}>
+      <div className="flex">
+        <div className="bg-gray-400 w-2/12 h-full">
+          <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">Users</Link></li>
             <li><Link to="/today">Today</Link></li>
@@ -53,7 +53,7 @@ export const App = (props: any) => {
           </Switch>
         </div>
 
-        <div style={{ flex: 1 }}>
+        <div className="flex-1">
           <Switch>
             {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page />} /> ))}
           </Switch>

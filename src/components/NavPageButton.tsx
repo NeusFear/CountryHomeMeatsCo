@@ -2,9 +2,9 @@ import * as React from 'react'
 
 export const NavPageButton = ({ Page, Icon }) => {
   return (
-    <div className="flex items-center space-x-3 text-gray-700 p-2 rounded-md font-medium hover:bg-gray-200 bg-gray-200 focus:shadow-outline">
-      <Icon className="text-gray-600 w-8 h-8 bg-gray-700 hover:bg-gray-800" />
-	  <span>{Page}</span>
+    <div className="group bg-gray-50 shadow-sm hover:shadow-lg hover:border-transparent p-1 ml-1 mr-2 my-2 rounded-lg">
+      <Icon className="text-gray-800 group-hover:text-gray-900 w-5 h-5 float-left mr-2 mt-0.5" />
+      <p className="text-gray-800 group-hover:text-gray-900">{Page}</p>
     </div>
   )
 }

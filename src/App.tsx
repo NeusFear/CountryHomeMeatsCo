@@ -36,9 +36,16 @@ const routes = [
     }
 ];
 
-const NavBar = () => {
+type NavProps = {
+  widthHandled: boolean;
+}
+const NavBar = (props: NavProps) => {
+  let style = { background: "#f0f0f0"}
+  if(!props.widthHandled) {
+    style['width'] = "20%";
+  }
   return (
-    <div style={{ width: "20%", background: "#f0f0f0" }}>
+    <div style={style}>
       <ul style={{ listStyleType: "none", padding: 0 }}>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
         <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>

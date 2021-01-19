@@ -38,16 +38,9 @@ const routes = [
     }
 ];
 
-type NavProps = {
-  widthHandled: boolean;
-}
-const NavBar = (props: NavProps) => {
-  let style = { background: "#f0f0f0"}
-  if(!props.widthHandled) {
-    style['width'] = "20%";
-  }
+const NavBar = ({ style } : { style: React.CSSProperties }) => {
   return (
-    <div style={style}>
+    <div style={{ width: "20%", background: "#f0f0f0", ...style}}>
       <ul style={{ listStyleType: "none", padding: 0 }}>
         <li><Link to="/"><div className="bg-tomato-800 w-12/12 h-14"><img src={logo} className="ml-8 h-14" ></img></div></Link></li>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>

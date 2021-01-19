@@ -20,44 +20,45 @@ const routes = [
     {
       path: "/",
       exact: true,
-      page: () => <LandingPage />
+      page: () => <LandingPage NavBar={NavBar} />
     },
     {
       path: "/users",
-      page: () => <UsersPage />
+      page: () => <UsersPage NavBar={NavBar} />
     },
     {
       path: "/today",
-      page: () => <TodayPage />
+      page: () => <TodayPage NavBar={NavBar} />
     },
     {
       path: "/calendar",
-      page: () => <CalendarPage />
+      page: () => <CalendarPage NavBar={NavBar} />
     }
 ];
+
+const NavBar = () => {
+  return (
+    <div style={{ width: "20%", background: "#f0f0f0" }}>
+      <ul style={{ listStyleType: "none", padding: 0 }}>
+        <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
+        <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
+        <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>
+        <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
+      </ul>
+      <Switch>
+        {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} /> ))}
+      </Switch>
+    </div>
+  )
+}
   
 export const App = (props: any) => {
     return (
     <Router>
-      <div className="flex">
-        <div className="bg-gray-400 w-2/12 h-full">
-          <ul>
-            <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
-            <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
-            <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>
-            <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
-          </ul>
-
-          <Switch>
-            {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} /> ))}
-          </Switch>
-        </div>
-
-        <div className="flex-1">
-          <Switch>
-            {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page />} /> ))}
-          </Switch>
-        </div>
+      <div>
+        <Switch>
+          {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page />} /> ))}
+        </Switch>
       </div>
     </Router>
 );

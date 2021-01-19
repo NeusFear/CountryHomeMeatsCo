@@ -1,9 +1,8 @@
 import * as React from "react"
 
-class LandingPage extends React.Component {
-    render() {
-        return <h1>Landing Page</h1>;
-    }
+export const LandingPage = ({ NavBar }) => {
+  return (<>
+    <NavBar />
+    <h1>Landing Page</h1>
+  </>)
 }
-
-export { LandingPage }

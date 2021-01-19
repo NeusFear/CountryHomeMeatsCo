@@ -13,6 +13,8 @@ import { NavPageButton } from './components/NavPageButton';
 
 import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons'
 
+const logo = require('./assets/logo.png');
+
 import './styles/navbar.css'
 import './styles/tailwind.scss'
 
@@ -47,6 +49,7 @@ const NavBar = (props: NavProps) => {
   return (
     <div style={style}>
       <ul style={{ listStyleType: "none", padding: 0 }}>
+        <li><Link to="/"><div className="bg-tomato-800 w-12/12 h-14"><img src={logo} className="ml-8 h-14" ></img></div></Link></li>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
         <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
         <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>

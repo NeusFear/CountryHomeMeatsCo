@@ -11,7 +11,7 @@ import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
 import { NavPageButton } from './components/NavPageButton';
 
-import { SvgCalendar } from './assets/Icons'
+import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons'
 
 import './styles/navbar.css'
 import './styles/tailwind.scss'
@@ -42,9 +42,9 @@ export const App = (props: any) => {
       <div className="flex">
         <div className="bg-gray-400 w-2/12 h-full">
           <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/users">Users</Link></li>
-            <li><Link to="/today">Today</Link></li>
+            <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
+            <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
+            <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>
             <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
           </ul>
 

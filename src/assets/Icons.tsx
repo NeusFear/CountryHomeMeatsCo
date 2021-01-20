@@ -136,12 +136,14 @@ export const SvgUsers = (props) => {
 
 export const SvgUser = (props) => {
   return (
-    <svg
-      aria-hidden="true"
-      data-prefix="far"
-      data-icon="user"
-      className="user_svg__svg-inline--fa user_svg__fa-user user_svg__fa-w-14"
-      xmlns="http://www.w3.org/2000/svg"
+    <svg 
+      aria-hidden="true" 
+      focusable="false" 
+      data-prefix="far" 
+      data-icon="user" 
+      className="users_svg__svg-inline--fa user_svg__fa-address-book user_svg__fa-w-14" 
+      role="img" 
+      xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 448 512"
       width="1em"
       height="1em"
@@ -150,6 +152,24 @@ export const SvgUser = (props) => {
       <path
         fill="currentColor"
         d="M313.6 304c-28.7 0-42.5 16-89.6 16-47.1 0-60.8-16-89.6-16C60.2 304 0364.2 0 438.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-25.6c0-74.2-60.2-134.4-134.4-134.4zM400 464H48v-25.6c0-47.6 38.8-86.4 86.4-86.4 14.6 0 38.3 1689.6 16 51.7 0 74.9-16 89.6-16 47.6 0 86.4 38.8 86.4 86.4V464zM224 288c79.5 0 144-64.5 144-144S303.5 0 224 0 80 64.5 80 144s64.5 144 144 144zm0-240c52.9 0 96 43.1 96 96s-43.1 96-96 96-96-43.1-96-96 43.1-96 96-96z"
+      />
+    </svg>
+  );
+}
+
+
+export const SvgCross = (props) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path 
+        fill="currentColor" 
+        d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm0-2C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6 16.094l-4.157-4.104 4.1-4.141L16.094 6l-4.105 4.159-4.156-4.102L6 7.891l4.161 4.12-4.104 4.157L7.891 18l4.118-4.159 4.143 4.102L18 16.094z"
       />
     </svg>
   );

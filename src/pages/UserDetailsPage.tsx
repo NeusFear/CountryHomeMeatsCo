@@ -10,10 +10,20 @@ export const UserDetailsPage = () => {
     return (<div>Error: User with id '{id}' was not found</div>)
   }
   return (
-    <div>
-      <div>ID: {user.id}</div>
-      <div>Name: {user.name}</div>
+    <div className="grid grid-cols-3 gap-4 w-full">
+      <div className="col-span-3 w-full h-14 bg-tomato-300">
+        <div>ID: {user.id}</div>
+        <div>Name: {user.name}</div>
+      </div>
+      <div className="flex flex-col">
+        <div className="bg-tomato-400">info</div>
+        <div className="bg-tomato-600 flex-grow mt-4">cut insttructions</div>
+      </div>
+      <div className="col-span-2 grid grid-cols-2 gap-4">
+        <div className="col-span-2 bg-green-400">queue history</div>
+        <div className="bg-blue-300">pickup</div>
+        <div className="bg-blue-600">invoices</div>
+      </div>
     </div>
   )
 }
-

@@ -6,10 +6,13 @@ import { UserDetailsPage } from './pages/UserDetailsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
 import { NavPageButton } from './components/NavPageButton';
+import { useHistoryListState } from "./AppHooks"
 
 import * as DummyDatabase from "./DummyDatabase"
 
 import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons'
+import { UserPinnedList } from './App';
+import { copyFile } from 'fs';
 
 const logo = require('./assets/logo.png');
 
@@ -23,7 +26,7 @@ export const routes = [
     },
     {
       path: "/users",
-      page: ({ updatePinned }: { updatePinned:(id:number, add: boolean )=> void }) => <UsersPage updatePinned={updatePinned}/>
+      page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UsersPage pinnedList={pinnedList}/>
     },
     {
       path: userDetailsPage,
@@ -39,50 +42,16 @@ export const routes = [
     }
 ];
 
-export const NavBar = ({ setUserPinCallback }) => {
-
-  const [pinnedList, setPinnedList]: [UserPinnedList, (list: UserPinnedList) => void] = React.useState<UserPinnedList>({ 
-    allPinned: [],
-    selected: null,
-  })
-
-  const updatePinned = React.useCallback((id: number, add: boolean) => {
-    let newArray = [...pinnedList.allPinned]
-
-    let existIndex = newArray.indexOf(id)
-    if(existIndex !== -1) {
-      newArray.splice(existIndex, 1)
-    }
-    if(add) {
-      newArray.unshift(id)
-    }
-
-    setPinnedList({
-      allPinned: newArray,
-      selected: pinnedList.selected
-    })
-  }, [pinnedList])
-
-  //Set the callback. This is a weird way to do it, but it works.
-  setUserPinCallback(updatePinned)
-
-  const setSelected = React.useCallback((id: number) => setPinnedList({
-    allPinned: pinnedList.allPinned,
-    selected: id
-  }), [pinnedList])
+export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
 
   const allPinned = pinnedList.allPinned
   const history = useHistory()
+  const selectedId = useHistoryListState()
   const onDetailsClicked = (id: number) => {
-    //Make sure the user details page is selected
+    //Select the user details page with the id as the state
     history.push(userDetailsPage, id)
-
-    setSelected(id !== pinnedList.selected ? id : undefined)
   }
 
-  //When at a new route, deselect the current user info
-  history.listen(() => setSelected(undefined))
-  
   return (
     <div className="bg-gray-400 w-2/12 h-full" style={{width: "20%", display: "flex", flexDirection: 'column', height: '100vh'}}>
       <ul>
@@ -102,8 +71,13 @@ export const NavBar = ({ setUserPinCallback }) => {
             key={id} 
             id={id} 
             onClick={() => onDetailsClicked(id)}
-            onRemove={() => updatePinned(id, false)}
-            selected={id === pinnedList.selected}
+            onRemove={() => {
+              pinnedList.updatePinned(id, false)
+              if(selectedId === id) {
+                history.goBack()
+              }
+            }}
+            selected={id === selectedId}
           />) 
         }
       </div>
@@ -119,9 +93,4 @@ const PinnedUserEntry = ({id, onClick, onRemove, selected} : {id: number, onClic
       <span onClick={e => { onRemove(); e.stopPropagation() }} className="float-right">X</span>
     </div>
   )
-}
-
-export type UserPinnedList = {
-  allPinned: number[];
-  selected: number | null;
 }

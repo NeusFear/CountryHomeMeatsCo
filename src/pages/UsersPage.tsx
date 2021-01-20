@@ -1,4 +1,5 @@
 import * as React from "react"
+import { UserPinnedList } from "../App"
 import * as DummyDatabase from "../DummyDatabase"
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: UserDetails, addPinnedUserDetails: (id: number) => void, deleteUserDetails: (id: number) => void}) => {
   return (
@@ -14,18 +15,18 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
     </div>
   )
 }
-export const UsersPage = ({ updatePinned }: { updatePinned:(id: number, add: boolean) => void }) => {
+export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   let users = DummyDatabase.useAllUsers()
 
   let deleteEntry = (id: number) => {
     DummyDatabase.removeUserFromDatabase(id)
-    updatePinned(id, false)
+    pinnedList.updatePinned(id, false)
   }
 
   return (<>
     <div className="bg-red-200" onClick={() => DummyDatabase.addUserToDatabase(createDebugUserDetails())}>New User</div>
     <div>
-      { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}
+      { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}
     </div>
   </>)
 }

@@ -10,22 +10,46 @@ import './styles/tailwind.scss'
 import { NavBar, routes } from './NavBar';
 
 export const App = () => {
+  
+  const [pinnedList, setPinnedList]: [UserPinnedList, (list: UserPinnedList) => void] = React.useState<UserPinnedList>({ 
+    allPinned: [],
+    updatePinned: () => {},
+  })
 
-  //This weird stuff is to allow the users page to call functions on the navbar. 
-  //There HAS to be a better way of doing this
-  let userPinCallback: (id: number, add: boolean) => void
-  const updatePinned = (id: number, add: boolean) => userPinCallback(id, add)
+  pinnedList.updatePinned = React.useCallback((id: number, add: boolean) => {
+    let newArray = [...pinnedList.allPinned]
+
+    let existIndex = newArray.indexOf(id)
+    if(existIndex !== -1) {
+      newArray.splice(existIndex, 1)
+    }
+    if(add) {
+      newArray.unshift(id)
+    }
+
+    setPinnedList({
+      allPinned: newArray,
+      //Do we even need this? it gets overritten anyway
+      updatePinned: pinnedList.updatePinned,
+    })
+  }, [pinnedList])
+
 
   return (
     <Router>
       <div className="flex">
-        <NavBar setUserPinCallback={callback => userPinCallback = callback}/>
+        <NavBar pinnedList={pinnedList} />
         <div>
           <Switch>
-            {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page updatePinned={updatePinned}/>} /> ))}
+            {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page pinnedList={pinnedList}/>} /> ))}
           </Switch>
         </div>
       </div>
     </Router>
 );
+}
+
+export type UserPinnedList = {
+  allPinned: number[];
+  updatePinned: (id: number, add: boolean) => void;
 }

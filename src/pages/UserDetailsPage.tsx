@@ -1,9 +1,10 @@
 import * as React from "react"
+import { useHistoryListState } from "../AppHooks"
+
 import * as DummyDatabase from "../DummyDatabase"
-import { useHistory } from 'react-router-dom';
 
 export const UserDetailsPage = () => {
-  const id = useHistory().location.state
+  const id = useHistoryListState()
   const user = DummyDatabase.getUserById(id)
   if(user === undefined) {
     return (<div>Error: User with id '{id}' was not found</div>)
@@ -15,3 +16,4 @@ export const UserDetailsPage = () => {
     </div>
   )
 }
+

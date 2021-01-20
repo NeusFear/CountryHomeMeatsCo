@@ -1,6 +1,7 @@
 import * as React from "react"
 import { UserPinnedList } from "../App"
 import * as DummyDatabase from "../DummyDatabase"
+
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: UserDetails, addPinnedUserDetails: (id: number) => void, deleteUserDetails: (id: number) => void}) => {
   return (
     <div>
@@ -15,6 +16,7 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
     </div>
   )
 }
+
 export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   let users = DummyDatabase.useAllUsers()
 

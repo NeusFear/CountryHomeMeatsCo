@@ -10,9 +10,10 @@ import { useHistoryListState } from "./AppHooks"
 
 import * as DummyDatabase from "./DummyDatabase"
 
-import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons'
+import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgUser } from './assets/Icons'
 import { UserPinnedList } from './App';
 import { copyFile } from 'fs';
+import { NavUserButton } from './components/NavUserButton';
 
 const logo = require('./assets/logo.png');
 
@@ -65,7 +66,7 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} /> ))}
       </Switch>
 
-      <div style={{backgroundColor: '#15fa66', flexGrow: 1, marginTop: '5px', overflow: 'auto'}}>
+      <div className="bg-gray-100 flex-grow mt-2 overflow-auto">
         { allPinned && allPinned.map(id => 
           <PinnedUserEntry 
             key={id} 
@@ -86,11 +87,7 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
 }
 
 const PinnedUserEntry = ({id, onClick, onRemove, selected} : {id: number, onClick: any, onRemove: any, selected: boolean}) => {
-  let details = DummyDatabase.getUserById(id)
   return (
-    <div className={"hover:bg-blue-400" + (selected?" bg-blue-800" : "")} onClick={onClick}>
-      <span>{details.name}</span>
-      <span onClick={e => { onRemove(); e.stopPropagation() }} className="float-right">X</span>
-    </div>
+    <NavUserButton id={id} selected={selected} onClick={onClick} onRemove={onRemove} Icon={SvgUser} />
   )
 }

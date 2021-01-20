@@ -8,12 +8,9 @@ import { TodayPage } from './pages/TodayPage';
 import { NavPageButton } from './components/NavPageButton';
 import { useHistoryListState } from "./AppHooks"
 
-import * as DummyDatabase from "./DummyDatabase"
-
 import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgUser } from './assets/Icons'
 import { UserPinnedList } from './App';
-import { copyFile } from 'fs';
-import { NavUserButton } from './components/NavUserButton';
+import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
 
 const logo = require('./assets/logo.png');
 
@@ -68,7 +65,7 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
 
       <div className="bg-gray-100 flex-grow mt-2 overflow-auto">
         { allPinned && allPinned.map(id => 
-          <PinnedUserEntry 
+          <NavPinnedUserEntry 
             key={id} 
             id={id} 
             onClick={() => onDetailsClicked(id)}
@@ -83,11 +80,5 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         }
       </div>
     </div>
-  )
-}
-
-const PinnedUserEntry = ({id, onClick, onRemove, selected} : {id: number, onClick: any, onRemove: any, selected: boolean}) => {
-  return (
-    <NavUserButton id={id} selected={selected} onClick={onClick} onRemove={onRemove} Icon={SvgUser} />
   )
 }

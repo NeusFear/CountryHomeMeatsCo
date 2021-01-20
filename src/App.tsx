@@ -17,7 +17,6 @@ import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons'
 const logo = require('./assets/logo.png');
 
 import './styles/navbar.css'
-import './styles/userpage.css'
 import './styles/tailwind.scss'
 
 const routes = [
@@ -44,7 +43,7 @@ const usersPage = "/users"
 
 const UserEntry = ({details, onClick, selected} : {details: UserDetails, onClick: any, selected: boolean}) => {
   return (
-    <div className={"user-entry" + (selected?" entry-selected" : "")} onClick={onClick}>{details.name}</div>
+    <div className={"hover:bg-blue-400" + (selected?" bg-blue-800" : "")} onClick={onClick}>{details.name}</div>
   )
 }
 

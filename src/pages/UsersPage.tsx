@@ -14,18 +14,18 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
     </div>
   )
 }
-export const UsersPage = ({ addPinnedUserDetails, removePinned }: { addPinnedUserDetails:(id:number)=>void, removePinned:(id:number)=>void }) => {
+export const UsersPage = ({ updatePinned }: { updatePinned:(id: number, add: boolean) => void }) => {
   let users = DummyDatabase.useAllUsers()
 
   let deleteEntry = (id: number) => {
     DummyDatabase.removeUserFromDatabase(id)
-    removePinned(id)
+    updatePinned(id, false)
   }
 
   return (<>
     <div className="bg-red-200" onClick={() => DummyDatabase.addUserToDatabase(createDebugUserDetails())}>New User</div>
     <div>
-      { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={addPinnedUserDetails} deleteUserDetails={deleteEntry} />)}
+      { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}
     </div>
   </>)
 }

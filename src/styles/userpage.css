@@ -1,0 +1,11 @@
+.user-entry.entry-selected {
+  background-color: #3251D2;
+}
+
+.user-entry:hover {
+  background-color: #71D6A2;
+}
+
+.user-entry.entry-selected:hover {
+  background-color: #62A1D2;
+}

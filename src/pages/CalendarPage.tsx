@@ -1,8 +1,7 @@
 import * as React from "react"
 
-export const CalendarPage = ({ NavBar }) => {
+export const CalendarPage = () => {
   return (<>
-    <NavBar />
     <h1>Calendar Page</h1>
   </>)
 }

@@ -1,8 +1,7 @@
 import * as React from "react"
 
-export const TodayPage = ({ NavBar }) => {
+export const TodayPage = () => {
   return (<>
-    <NavBar />
     <h1>Today Page</h1>
   </>)
 }

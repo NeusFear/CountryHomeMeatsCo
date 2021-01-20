@@ -12,12 +12,17 @@ import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
 import { NavPageButton } from './components/NavPageButton';
 
+import * as DummyDatabase from "./DummyDatabase"
+
 import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons'
 
 const logo = require('./assets/logo.png');
 
 import './styles/navbar.css'
 import './styles/tailwind.scss'
+import { UserDetailsPage } from './pages/UserDetailsPage';
+
+const userDetailsPage = "/userdetails"
 
 const routes = [
     {
@@ -27,7 +32,11 @@ const routes = [
     },
     {
       path: "/users",
-      page: ({ addUserDetails }) => <UsersPage addUserDetails={addUserDetails}/>
+      page: ({ pinUserDetails, removePinned }: { pinUserDetails:(id:number)=>void, removePinned:(id:number)=>void }) => <UsersPage addPinnedUserDetails={pinUserDetails} removePinned={removePinned}/>
+    },
+    {
+      path: userDetailsPage,
+      page: () => <UserDetailsPage />
     },
     {
       path: "/today",
@@ -39,24 +48,25 @@ const routes = [
     }
 ];
 
-const usersPage = "/users"
-
-const UserEntry = ({details, onClick, selected} : {details: UserDetails, onClick: any, selected: boolean}) => {
+const PinnedUserEntry = ({id, onClick, onRemove, selected} : {id: number, onClick: any, onRemove: any, selected: boolean}) => {
+  let details = DummyDatabase.getUserById(id)
   return (
-    <div className={"hover:bg-blue-400" + (selected?" bg-blue-800" : "")} onClick={onClick}>{details.name}</div>
+    <div className={"hover:bg-blue-400" + (selected?" bg-blue-800" : "")} onClick={onClick}>
+      <span>{details.name}</span>
+      <span onClick={e => { onRemove(); e.stopPropagation() }} className="float-right">X</span>
+    </div>
   )
 }
 
-const NavBar = ({ pinnedList, setSelected } : { pinnedList: UserPinnedList, setSelected: (details: UserDetails) => void}) => {
+const NavBar = ({ pinnedList, setSelected, removePinned } : { pinnedList: UserPinnedList, setSelected: (id: number) => void, removePinned: (id: number) => void}) => {
   const allPinned = pinnedList.allPinned
   const history = useHistory()
   
-  const onDetailsClicked = (details: UserDetails) => {
-    //Make sure the users page is selected
-    if(history.location.pathname !== usersPage) {
-      history.push(usersPage)
-    }
-    setSelected(details !== pinnedList.selected ? details : undefined)
+  const onDetailsClicked = (id: number) => {
+    //Make sure the user details page is selected
+    history.push(userDetailsPage, id)
+
+    setSelected(id !== pinnedList.selected ? id : undefined)
   }
   
   return (
@@ -64,7 +74,7 @@ const NavBar = ({ pinnedList, setSelected } : { pinnedList: UserPinnedList, setS
       <ul>
         <li><Link to="/"><div className="bg-tomato-800 w-12/12 h-14"><img src={logo} className="ml-8 h-14" ></img></div></Link></li>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
-        <li><Link to={usersPage}><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
+        <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
         <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>
         <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
       </ul>
@@ -73,12 +83,13 @@ const NavBar = ({ pinnedList, setSelected } : { pinnedList: UserPinnedList, setS
       </Switch>
 
       <div style={{backgroundColor: '#15fa66', flexGrow: 1, marginTop: '5px', overflow: 'auto'}}>
-        { allPinned && allPinned.map(d => 
-          <UserEntry 
-            key={d.id} 
-            details={d} 
-            onClick={() => onDetailsClicked(d)}
-            selected={d === pinnedList.selected}
+        { allPinned && allPinned.map(id => 
+          <PinnedUserEntry 
+            key={id} 
+            id={id} 
+            onClick={() => onDetailsClicked(id)}
+            onRemove={() => removePinned(id)}
+            selected={id === pinnedList.selected}
           />) 
         }
       </div>
@@ -87,19 +98,48 @@ const NavBar = ({ pinnedList, setSelected } : { pinnedList: UserPinnedList, setS
 }
 
 const App = (props: any) => {
+  //TODO: maybe move this to a navbar component. It seems a bit weird having it all here.
+  //The only thing we need to figure out is how to pin/unpin a user from the users page,
+  //As how would we reference the child state.
+
   const [pinnedList, setPinnedList]: [UserPinnedList, (list: UserPinnedList) => void] = React.useState<UserPinnedList>({ 
     allPinned: [],
     selected: null,
   })
   
-  const addUserDetails = React.useCallback((details: UserDetails) => setPinnedList({
-      allPinned: [].concat(details, ...pinnedList.allPinned),
-      selected: pinnedList.selected
-    }), [pinnedList])
+  const pinUserDetails = React.useCallback((id: number) => {
+    let newArray = [...pinnedList.allPinned]
 
-  const setSelected = React.useCallback((details: UserDetails) => setPinnedList({
+    //Remove the element if it alreadt exists, then add it at the start of the list
+    let existIndex = newArray.indexOf(id)
+    if(existIndex !== -1) {
+      newArray.splice(existIndex, 1)[0]
+    }
+    newArray.unshift(id)
+
+    setPinnedList({
+      allPinned: newArray,
+      selected: pinnedList.selected
+    })
+  }, [pinnedList])
+
+  const removePinned = React.useCallback((id: number) => {
+    let newArray = [...pinnedList.allPinned]
+
+    let existIndex = newArray.indexOf(id)
+    if(existIndex !== -1) {
+      newArray.splice(existIndex, 1)
+    }
+
+    setPinnedList({
+      allPinned: newArray,
+      selected: pinnedList.selected
+    })
+  }, [pinnedList])
+
+  const setSelected = React.useCallback((id: number) => setPinnedList({
     allPinned: pinnedList.allPinned,
-    selected: details
+    selected: id
   }), [pinnedList])
 
   //When at a new route, deselect the current user info
@@ -107,10 +147,10 @@ const App = (props: any) => {
   
   return (
     <div className="flex">
-      <NavBar pinnedList={pinnedList} setSelected={setSelected}/>
-      <div className="flex-1">
+      <NavBar pinnedList={pinnedList} setSelected={setSelected} removePinned={removePinned}/>
+      <div>
         <Switch>
-          {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page addUserDetails={addUserDetails}/>} /> ))}
+          {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page pinUserDetails={pinUserDetails} removePinned={removePinned}/>} /> ))}
         </Switch>
       </div>
     </div>
@@ -127,6 +167,6 @@ export const AppContainer = (props: any) => {
 }
 
 export type UserPinnedList = {
-  allPinned: UserDetails[];
-  selected: UserDetails | null;
+  allPinned: number[];
+  selected: number | null;
 }

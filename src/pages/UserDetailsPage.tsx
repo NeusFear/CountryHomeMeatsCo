@@ -8,7 +8,7 @@ import { editUserDetailsPage } from "../NavBar";
 export const UserDetailsPage = () => {
   const history = useHistory()
   const id = useHistoryListState()
-  const user = DummyDatabase.getUserById(id)
+  const user = DummyDatabase.useUserById(id)
   if(user === undefined) {
     return (<div>Error: User with id '{id}' was not found</div>)
   }

@@ -11,7 +11,7 @@ const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\
 
 export const EditUserDetailsPage = () => {
   const id = useHistoryListState()
-  const user = DummyDatabase.getUserById(id)
+  const user = DummyDatabase.useUserById(id)
   const history = useHistory()
 
   if(id !== undefined && user === undefined) {

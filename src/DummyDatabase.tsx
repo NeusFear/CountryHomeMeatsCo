@@ -8,7 +8,7 @@ const databaseUsers: UserDetails[] = []
 const listeners = []
 export const databaseChanged = () => listeners.forEach(l => l())
 
-export const getUserById = (id: number) => databaseUsers.find(d => d.id === id)
+export const useUserById = (id: number) => useAllUsers().find(d => d.id === id)
 export const addUserToDatabase = (details: UserDetails) => {
   databaseUsers.push(details)
   databaseChanged()

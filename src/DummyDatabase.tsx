@@ -1,3 +1,4 @@
+import { data } from "autoprefixer"
 import { useEffect, useState } from "react"
 import { UserDetails } from "./pages/UsersPage"
 
@@ -5,7 +6,7 @@ import { UserDetails } from "./pages/UsersPage"
 const databaseUsers: UserDetails[] = []
 
 const listeners = []
-const databaseChanged = () => listeners.forEach(l => l())
+export const databaseChanged = () => listeners.forEach(l => l())
 
 export const getUserById = (id: number) => databaseUsers.find(d => d.id === id)
 export const addUserToDatabase = (details: UserDetails) => {
@@ -15,6 +16,14 @@ export const addUserToDatabase = (details: UserDetails) => {
 export const removeUserFromDatabase = (id: number) => {
   databaseUsers.splice(databaseUsers.findIndex(d => d.id === id), 1)
   databaseChanged()
+}
+export const getNextID = () => {
+  for(let i = 0; i <= databaseUsers.length; i++) {
+    if(!databaseUsers.some(d => d.id === i)) {
+      return i
+    }
+  }
+  //Impossible to get to? would only occur when the database has 2 entries with the same id
 }
 
 //React hook to automatically update the state when the database changes

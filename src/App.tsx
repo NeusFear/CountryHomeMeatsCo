@@ -35,9 +35,9 @@ export const App = () => {
 
   return (
     <Router>
-      <div className="flex">
+      <div className="flex w-full h-full">
         <NavBar pinnedList={pinnedList} />
-        <div className="w-full">
+        <div className="w-full h-full">
           <Switch>
             {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page pinnedList={pinnedList}/>} /> ))}
           </Switch>

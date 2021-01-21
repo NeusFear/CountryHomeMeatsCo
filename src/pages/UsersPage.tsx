@@ -8,7 +8,7 @@ import { SvgNewUser, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: UserDetails, addPinnedUserDetails: (id: number) => void, deleteUserDetails: (id: number) => void}) => {
   const history = useHistory()
   return (
-    <div className="bg-gray-100 hover:shadow-md rounded-lg px-2 py-2 shadow-sm flex flex-row mb-2" onClick={() => history.push(userDetailsPage, details.id)}>
+    <div key={details.id} className="bg-gray-100 hover:shadow-md rounded-lg px-2 py-2 shadow-sm flex flex-row mb-2" onClick={() => history.push(userDetailsPage, details.id)}>
       <span className="pr-2 flex-1">{details.name}<span className="text-gray-500 ml-1">#{details.id}</span></span>
       <span className="pr-2 flex-1">{details.phoneNum}</span>
       <span className="pr-2 flex-1">{details.email}</span>
@@ -31,29 +31,31 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
     pinnedList.updatePinned(id, false)
   }
 
-  return (<>
-    <div className="bg-gray-800 py-2 px-2 flex flex-row justify-end">
-      <div className="relative rounded-md shadow-sm flex-grow">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <span className="text-gray-500 sm:text-sm">
-            <SvgSearch />
-          </span>
+  return (
+    <div className="flex flex-col h-full">
+      <div className="bg-gray-800 py-2 px-2 flex flex-row justify-end">
+        <div className="relative rounded-md shadow-sm flex-grow">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <span className="text-gray-500 sm:text-sm">
+              <SvgSearch />
+            </span>
+          </div>
+          <input type="text" name="search" id="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
         </div>
-        <input type="text" name="search" id="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
+        <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
+        <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white" onClick={() => history.push(editUserDetailsPage, /*In production, don't have this*/createDebugUserDetails())}><SvgNewUser /></div>
       </div>
-      <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
-      <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white" onClick={() => history.push(editUserDetailsPage, /*In production, don't have this*/createDebugUserDetails())}><SvgNewUser /></div>
+      <div className="bg-gray-400 px-1 py-0.5 shadow-sm flex flex-row mb-2">
+        <span className="ml-6 pr-2 flex-1 text-gray-700">Name<span className="text-gray-600 ml-1">#ID</span></span>
+        <span className="pr-2 flex-1 text-gray-700 ml-2">Phone Number</span>
+        <span className="pr-2 flex-1 text-gray-700 ml-4">Email</span>
+        <span className="w-24"></span>
+      </div>
+      <div className="px-4 mt-4 h-full overflow-auto">
+        { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}
+      </div>
     </div>
-    <div className="bg-gray-400 px-1 py-0.5 shadow-sm flex flex-row mb-2">
-      <span className="ml-6 pr-2 flex-1 text-gray-700">Name<span className="text-gray-600 ml-1">#ID</span></span>
-      <span className="pr-2 flex-1 text-gray-700 ml-2">Phone Number</span>
-      <span className="pr-2 flex-1 text-gray-700 ml-4">Email</span>
-      <span className="w-24"></span>
-    </div>
-    <div className="px-4 mt-4">
-      { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}
-    </div>
-  </>)
+  )
 }
 
 export type UserDetails = {

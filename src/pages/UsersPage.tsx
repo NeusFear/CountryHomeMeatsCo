@@ -51,7 +51,7 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <span className="pr-2 flex-1 text-gray-700 ml-4">Email</span>
         <span className="w-24"></span>
       </div>
-      <div className="px-4 mt-4 h-full overflow-auto">
+      <div className="px-4 mt-4 h-full overflow-y-scroll">
         { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}
       </div>
     </div>

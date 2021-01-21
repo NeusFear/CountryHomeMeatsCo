@@ -15,8 +15,8 @@ export const UserDetailsPage = () => {
   return (
     <div className="grid grid-cols-3 gap-4 w-full">
       <div className="col-span-3 w-full h-14 bg-gray-800">
-        <div>ID: {user.id}</div>
-        <div>Name: {user.name}</div>
+        <div className="text-white">ID: {user.id}</div>
+        <div className="text-white">Name: {user.name}</div>
       </div>
       <div className="flex flex-col">
         <div className="bg-tomato-400" onClick={() => history.push(editUserDetailsPage, id)}>edit</div>

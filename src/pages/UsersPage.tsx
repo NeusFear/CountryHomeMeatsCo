@@ -3,6 +3,7 @@ import { UserPinnedList } from "../App"
 import { useHistory } from 'react-router-dom';
 import * as DummyDatabase from "../DummyDatabase"
 import { editUserDetailsPage, userDetailsPage } from "../NavBar";
+import { SvgSearch } from "../assets/Icons";
 
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: UserDetails, addPinnedUserDetails: (id: number) => void, deleteUserDetails: (id: number) => void}) => {
   const history = useHistory()
@@ -30,6 +31,16 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   }
 
   return (<>
+    <div className="bg-gray-800 py-2 px-4">
+      <div className="relative rounded-md shadow-sm">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <span className="text-gray-500 sm:text-sm">
+            <SvgSearch />
+          </span>
+        </div>
+        <input type="text" name="price" id="price" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
+      </div>
+    </div>
     <div className="bg-red-200" onClick={() => history.push(editUserDetailsPage, /*In production, don't have this*/createDebugUserDetails())}>New User</div>
     <div>
       { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}

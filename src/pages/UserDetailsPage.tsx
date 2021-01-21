@@ -14,7 +14,7 @@ export const UserDetailsPage = () => {
   }
   return (
     <div className="grid grid-cols-3 gap-4 w-full">
-      <div className="col-span-3 w-full h-14 bg-tomato-300">
+      <div className="col-span-3 w-full h-14 bg-gray-800">
         <div>ID: {user.id}</div>
         <div>Name: {user.name}</div>
       </div>

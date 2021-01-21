@@ -3,7 +3,7 @@ import { UserPinnedList } from "../App"
 import { useHistory } from 'react-router-dom';
 import * as DummyDatabase from "../DummyDatabase"
 import { editUserDetailsPage, userDetailsPage } from "../NavBar";
-import { SvgSearch } from "../assets/Icons";
+import { SvgNewUser, SvgSearch } from "../assets/Icons";
 
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: UserDetails, addPinnedUserDetails: (id: number) => void, deleteUserDetails: (id: number) => void}) => {
   const history = useHistory()
@@ -31,17 +31,18 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   }
 
   return (<>
-    <div className="bg-gray-800 py-2 px-4">
-      <div className="relative rounded-md shadow-sm">
+    <div className="bg-gray-800 py-2 px-4 flex flex-row">
+      <div className="relative rounded-md shadow-sm w-11/12">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <span className="text-gray-500 sm:text-sm">
             <SvgSearch />
           </span>
         </div>
-        <input type="text" name="price" id="price" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
+        <input type="text" name="search" id="search" className="block w-5/6 pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
       </div>
+      <div className="transform -translate-x-64 cursor-pointer px-4 w-12 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
+      <div className="transform -translate-x-60 cursor-pointer px-4 w-12 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white" onClick={() => history.push(editUserDetailsPage, /*In production, don't have this*/createDebugUserDetails())}><SvgNewUser /></div>
     </div>
-    <div className="bg-red-200" onClick={() => history.push(editUserDetailsPage, /*In production, don't have this*/createDebugUserDetails())}>New User</div>
     <div>
       { users.map(d => <UserEntry key={d.name} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={deleteEntry} />)}
     </div>

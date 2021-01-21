@@ -5,7 +5,6 @@ import {
   Route
 } from 'react-router-dom';
 
-import './styles/navbar.css'
 import './styles/tailwind.scss'
 import { NavBar, routes } from './NavBar';
 

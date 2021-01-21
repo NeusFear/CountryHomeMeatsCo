@@ -1,9 +1,0 @@
-.icon-home {
-    mask: url(../assets/icons/home.svg);
-}
-
-.icon {
-    display: inline-block;
-    background: black;
-    mask-size: cover;
-}

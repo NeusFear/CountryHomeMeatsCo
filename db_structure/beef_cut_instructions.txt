@@ -1,0 +1,18 @@
+//This is not json format and not final really, need to confirm a few things
+
+	Round			(25% 50% 75%) (Tenderized Blank) (.5" .75" 1") (Hanburger ChickenFry)
+???	Sirloin Tip 	(.75" 1.0" 1.25") (1 2 3 4) (3lb) (Hanburger ChickenFry)				//3lb option?
+	Flank			(Hamburger ChickenFry Whole)
+	Sirloin			(.5" .75" 1.0" 1.25") (1 2 3 4)
+	T-Bone			(.5" .75" 1.0" 1.25") (1 2 3 4)
+	Rump			(2lb 2.5lb 3lb 3.5lb 4lb) (Hamburger)
+	Pikes Peak		(2lb 2.5lb 3lb 3.5lb 4lb) (Hamburger)
+	Soup Bones		(Yes No ShankOnly MarrowOnly)
+???	Gound Beef		(1 1.5 2 5 10 "1 / 2")													//what is 1 / 2
+	Chuck			(2lb 2.5lb 3lb 3.5lb 4lb) (Hamburger)
+	Arm				(2lb 2.5lb 3lb 3.5lb 4lb) (Hamburger)
+???	Ribs			(BBQ "Part BBQ" Hamburger "Hamburger if Possible")						//split this?
+??? Club			(Ribi Blank) (.5" .75" 1" 1.25") (1 2 3 4)								//ribi?
+	Brisket			(Whole Halved Hamburger)
+	Stew Meat		(5PKG 10PKG 15PKG) (1.0lb/PKG 1.5lb/PKG 2.0lb/PKG)
+???	Patties			(20lb 30lb 40lb) (25% 33% 50%) (3 4 5 6)								//What?

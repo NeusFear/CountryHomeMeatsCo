@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 import * as DummyDatabase from "../DummyDatabase"
 import { editUserDetailsPage } from "../NavBar";
-import { SvgEdit, SvgEmail, SvgPhone, SvgUser } from "../assets/Icons";
+import { SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgUser } from "../assets/Icons";
 
 export const UserDetailsPage = () => {
   const history = useHistory()
@@ -36,7 +36,7 @@ export const UserDetailsPage = () => {
           <div className="bg-gray-200 rounded-lg flex-grow mt-4">
             <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Record Sheets</div>
-              <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => history.push(editUserDetailsPage, id)}/>
+              <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => console.log("new cut instructions modal")}/>
             </div>
           </div>
 
@@ -46,14 +46,13 @@ export const UserDetailsPage = () => {
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Animals Brought</div>
-              <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => history.push(editUserDetailsPage, id)}/>
+              <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => console.log("queue new animal info")}/>
             </div>
           </div>
 
           <div className="bg-gray-200 rounded-lg">
-            <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
-              <div className="flex-grow text-gray-200 pl-4 font-semibold">Invoices</div>
-              <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => history.push(editUserDetailsPage, id)}/>
+            <div className="bg-gray-700 p-1 mb-1 rounded-t-lg">
+              <div className="text-gray-200 pl-4 font-semibold">Invoices</div>
             </div>
           </div>
 

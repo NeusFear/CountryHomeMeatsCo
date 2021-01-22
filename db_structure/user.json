@@ -1,0 +1,18 @@
+{
+  "name": "Some Name Goes Here",
+  "phoneNumbers": [
+	"cell": 4054968884,
+	"wife": 1234567890
+  ],
+  "emails": [
+	"main": "someemail@mail.com"
+  ],
+  "animals": [124983, 109584, 120834],
+  "invoices": [123-1353-124, 129-3523-12],
+  "recordCards": [
+	{
+		...TBD
+	},
+	...
+  ]
+}

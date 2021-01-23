@@ -1,22 +1,28 @@
-import mongoose, { Schema, Document, ObjectId } from 'mongoose';
-import { ChangeEventUpdate } from "mongodb"
+import mongoose, { Schema, Document } from 'mongoose';
 
 import { createGetElement, createRefreshListener } from '../Database';
-import { ChangeEvent } from 'react';
 
 export interface IUser extends Document {
   name: string
-  phoneNumbers: { name: string, number: Number }[]
+  phoneNumbers: { name: string, number: string }[]
   emails: string[]
 }
 
 const userSchmea = new Schema({
   name: { type: String, required: true },
-  phoneNumbers: { type: [{ name: String, number: Number }], required: true },
+  phoneNumbers: { type: [{ name: String, number: String }], required: true },
   emails: {type: [String], required: true }
 });
 
 const User = mongoose.model<IUser>('User', userSchmea)
+
+export const createEmptyUser = (): IUser => {
+  return new User({
+    name: '',
+    phoneNumbers: [{ name: '', number:'' }],
+    emails: ['']
+  })
+}
 
 const refreshListener = createRefreshListener(User)
 export const useUserById = createGetElement<IUser, string>(

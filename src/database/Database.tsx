@@ -11,26 +11,22 @@ let connected = false
 
 type ConnectState = { details: string, connected: boolean }
 export const connectToDB = (ip: string): ConnectState => {
-  if(!connected) {
-    connected = true
-    mongoose.connect(`mongodb://${ip}:27017/`, {useNewUrlParser: true, useUnifiedTopology: true})
-  }
   let [ connectState,  setConnectState ] = useState<ConnectState>({
     details: "Connecting to database...",
     connected: false
   })
 
-  const db = mongoose.connection;
-  db.on('error', err => setConnectState({
-    details: `Error: ${err}`,
-    connected: false
-  }));
-  db.once('open', function() {
-    setConnectState({
-      details: `Conneted`,
-      connected: true
-    })
-  });
+  if(!connected) {
+    connected = true
+    mongoose.connect(`mongodb://${ip}:27017/`, {useNewUrlParser: true, useUnifiedTopology: true})
+
+    const db = mongoose.connection;
+    db.on('error', err => setConnectState({ details: `Error: ${err}`, connected: false }));
+    db.on('disconnected', () => setConnectState({details: `Connection Closed`, connected: false }));
+    db.on('connecting', () => setConnectState({details: `Trying to establish a connection...`, connected: false }));
+    db.on('open', () => setConnectState({details: `Connected`, connected: true }));
+  }
+
 
   return connectState
 }

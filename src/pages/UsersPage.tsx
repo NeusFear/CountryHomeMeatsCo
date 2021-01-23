@@ -43,7 +43,7 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
           <input type="text" name="search" id="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
         </div>
         <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
-        <div onClick={() => createEmptyUserInfo().then(id => history.push(editUserDetailsPage, id))} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgNewUser /></div>
+        <div onClick={() => history.push(editUserDetailsPage)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgNewUser /></div>
       </div>
       <div className="bg-gray-400 px-1 py-0.5 shadow-sm flex flex-row mb-2">
         <span className="ml-6 pr-2 flex-1 text-gray-700">Name</span>
@@ -67,7 +67,7 @@ async function createEmptyUserInfo(): Promise<IUser> {
       "pumpkin", "reduction", "cupboard", "criticism", "blast", "series", "stumble", "agency", 
       "cower", "pluck", "member", "branch", "excitement", "row", "squeeze"
    ][Math.floor(32*Math.random())],
-   phoneNumbers: [ { name: "cell", number: Math.floor(1000000000 + Math.random()*8999999999) } ],
+   phoneNumbers: [ { name: "cell", number: Math.floor(1000000000 + Math.random()*8999999999).toString() } ],
    emails: [ Math.random().toString(36).substring(7) + "@someemail.com" ]
   })
   

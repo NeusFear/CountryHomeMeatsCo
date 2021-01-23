@@ -11,7 +11,7 @@ import { connectToDB } from './database/Database';
 
 export const AppContainer = () => {
   let connectState = connectToDB("localhost")
-  return connectState.connected ? <App/> : <div>Connecting...</div>
+  return connectState.connected ? <App/> : <div>Not Connected: {connectState.details}</div>
 }
 
 const App = () => {  

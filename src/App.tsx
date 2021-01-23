@@ -1,21 +1,26 @@
 import * as React from 'react';
 import { 
-  BrowserRouter as Router,
+  MemoryRouter as Router,
   Switch,
   Route
 } from 'react-router-dom';
 
 import './styles/tailwind.scss'
 import { NavBar, routes } from './NavBar';
+import { connectToDB } from './database/Database';
 
-export const App = () => {
-  
-  const [pinnedList, setPinnedList]: [UserPinnedList, (list: UserPinnedList) => void] = React.useState<UserPinnedList>({ 
+export const AppContainer = () => {
+  let connectState = connectToDB("localhost")
+  return connectState.connected ? <App/> : <div>Not Connected: {connectState.details}</div>
+}
+
+const App = () => {  
+  const [pinnedList, setPinnedList] = React.useState<UserPinnedList>({ 
     allPinned: [],
     updatePinned: () => {},
   })
 
-  pinnedList.updatePinned = React.useCallback((id: number, add: boolean) => {
+  pinnedList.updatePinned = React.useCallback((id: string, add: boolean) => {
     let newArray = [...pinnedList.allPinned]
 
     let existIndex = newArray.indexOf(id)
@@ -48,6 +53,6 @@ export const App = () => {
 }
 
 export type UserPinnedList = {
-  allPinned: number[];
-  updatePinned: (id: number, add: boolean) => void;
+  allPinned: string[];
+  updatePinned: (id: string, add: boolean) => void;
 }

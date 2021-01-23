@@ -3,10 +3,11 @@ import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 
 import { editUserDetailsPage } from "../NavBar";
-import { SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgUser } from "../assets/Icons";
+import { SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgTack, SvgUser } from "../assets/Icons";
 import { useUserById } from "../database/types/User";
+import { UserPinnedList } from "../App";
 
-export const UserDetailsPage = () => {
+export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const history = useHistory()
   const id = useHistoryListState()
   const user = useUserById(id)
@@ -33,6 +34,7 @@ export const UserDetailsPage = () => {
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Contact Information</div>
+              <SvgTack className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => pinnedList.updatePinned(id, true)}/>
               <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => history.push(editUserDetailsPage, id)}/>
             </div>
             <div className="bg-white rounded-md p-2 mx-4 mb-1 mt-4 flex flex-row"><SvgUser className="mt-1 mr-1 text-gray-400" />{user.name}</div>

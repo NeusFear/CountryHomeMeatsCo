@@ -21,7 +21,7 @@ export const editUserDetailsPage = "/edit/userdetails"
 export const routes = [
   { path: "/", exact: true, page: () => <LandingPage /> },
   { path: "/users", page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UsersPage pinnedList={pinnedList}/> },
-  { path: userDetailsPage, page: () => <UserDetailsPage /> },
+  { path: userDetailsPage, page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UserDetailsPage pinnedList={pinnedList} /> },
   { path: editUserDetailsPage, page: () => <EditUserDetailsPage /> },
   { path: "/today", page: () => <TodayPage /> },
   { path: "/calendar", page: () => <CalendarPage /> }

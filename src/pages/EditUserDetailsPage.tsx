@@ -152,8 +152,6 @@ const EditUserDetailsPageWithUser = ({user}: {user: IUser}) => {
   )
 }
 
-
-
 const EditorValidateInput = ({current, predicate, onChange}: 
   { 
     current: string, 

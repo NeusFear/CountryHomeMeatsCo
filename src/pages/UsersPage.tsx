@@ -57,19 +57,3 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
     </div>
   )
 }
-
-//Creates a debug user info, used for testing as it makes it quicker.
-async function createEmptyUserInfo(): Promise<IUser> {
-  const newUser = new User({
-    name: ["Mr", "Mrs", "Ms", "Dr"][Math.floor(4*Math.random())] + " " + [
-      "order", "credibility", "remain", "steam", "exaggerate", "explode", "abundant", "rhythm", 
-      "rare", "prescription", "damn", "bee", "wall", "arm", "compete", "football", "justify", 
-      "pumpkin", "reduction", "cupboard", "criticism", "blast", "series", "stumble", "agency", 
-      "cower", "pluck", "member", "branch", "excitement", "row", "squeeze"
-   ][Math.floor(32*Math.random())],
-   phoneNumbers: [ { name: "cell", number: Math.floor(1000000000 + Math.random()*8999999999).toString() } ],
-   emails: [ Math.random().toString(36).substring(7) + "@someemail.com" ]
-  })
-  
-  return (await newUser.save()).id
-}

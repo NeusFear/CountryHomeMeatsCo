@@ -56,12 +56,7 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
             key={id} 
             id={id} 
             onClick={() => onDetailsClicked(id)}
-            onRemove={() => {
-              pinnedList.updatePinned(id, false)
-              if(selectedId === id) {
-                history.goBack()
-              }
-            }}
+            onRemove={() => pinnedList.updatePinned(id, false)}
             selected={id === selectedId}
           />) 
         }

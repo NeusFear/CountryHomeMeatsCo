@@ -32,15 +32,15 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const allPinned = pinnedList.allPinned
   const history = useHistory()
   const selectedId = useHistoryListState()
-  const onDetailsClicked = (id: number) => {
+  const onDetailsClicked = (id: string) => {
     //Select the user details page with the id as the state
     history.push(userDetailsPage, id)
   }
 
   return (
-    <div className="bg-gray-100 w-2/12 h-full" style={{width: "20%", display: "flex", flexDirection: 'column', height: '100vh'}}>
+    <div className="bg-gray-100 w-2/12 flex flex-col h-full" style={{minWidth:"200px"}}>
       <ul>
-        <li><Link to="/"><div className="bg-tomato-800 w-12/12 h-14"><img src={logo} className="ml-8 h-14" ></img></div></Link></li>
+        <li><Link to="/"><div className="bg-tomato-800 h-14"><img src={logo} className="ml-8 h-14" ></img></div></Link></li>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
         <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
         <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>

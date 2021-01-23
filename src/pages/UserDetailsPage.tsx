@@ -2,16 +2,19 @@ import * as React from "react"
 import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 
-import * as DummyDatabase from "../DummyDatabase"
 import { editUserDetailsPage } from "../NavBar";
 import { SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgUser } from "../assets/Icons";
+import { useUserById } from "../database/types/User";
 
 export const UserDetailsPage = () => {
   const history = useHistory()
   const id = useHistoryListState()
-  const user = DummyDatabase.useUserById(id)
+  const user = useUserById(id)
   if(user === undefined) {
-    return (<div>Error: User with id '{id}' was not found</div>)
+    return (<div>Loading Info for user id {id}</div>)
+  }
+  if(user === null) {
+    return (<div>Error finding Info for user id {id}</div>)
   }
   return (
     <div className="w-full h-screen">
@@ -29,8 +32,8 @@ export const UserDetailsPage = () => {
               <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => history.push(editUserDetailsPage, id)}/>
             </div>
             <div className="bg-white rounded-md p-2 mx-4 mb-1 mt-4 flex flex-row"><SvgUser className="mt-1 mr-1 text-gray-400" />{user.name}</div>
-            <div className="bg-white rounded-md p-2 mx-4 mb-1 flex flex-row"><SvgPhone className="mt-1 mr-1 text-gray-400" />{user.phoneNum}</div>
-            <div className="bg-white rounded-md p-2 mx-4 mb-4 flex flex-row"><SvgEmail className="mt-1 mr-1 text-gray-400" />{user.email}</div>
+            {/* <div className="bg-white rounded-md p-2 mx-4 mb-1 flex flex-row"><SvgPhone className="mt-1 mr-1 text-gray-400" />{user.phoneNum}</div> */}
+            {/* <div className="bg-white rounded-md p-2 mx-4 mb-4 flex flex-row"><SvgEmail className="mt-1 mr-1 text-gray-400" />{user.email}</div> */}
           </div>
 
           <div className="bg-gray-200 rounded-lg flex-grow mt-4">

@@ -2,7 +2,8 @@ import * as React from "react"
 import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 
-import * as DummyDatabase from "../DummyDatabase"
+import { IUser, useUserById } from "../database/types/User";
+import { ObjectId } from "mongoose";
 
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
@@ -10,47 +11,38 @@ const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export const EditUserDetailsPage = () => {
-  const id = useHistoryListState()
-  const user = DummyDatabase.useUserById(id)
-  const history = useHistory()
+  const objectId: string = useHistoryListState()
 
-  if(id !== undefined && user === undefined) {
-    return (<div>Error: Could not find user with ID: {id}</div>)
-  }
+  return objectId === undefined ? 
+  (<EditUserDetailsPageWithUser />) : 
+  (<EditUserDetailsPageWithUserID id={objectId}/>)
+}
+
+const EditUserDetailsPageWithUserID = ({id}: {id: string}) => {
+  const user = useUserById(id)
+  return user === undefined ?
+    (<div>Loading User ID {id}</div>) :
+    (<EditUserDetailsPageWithUser user={user}/>)
+}
+
+const EditUserDetailsPageWithUser = ({user}: {user?: IUser}) => {
+  const history = useHistory()
   
   const nameData = useValidatedInput(user?.name, t => t.length >= 3) //Name has to be 3 or more characters long
-  const phoneData = useValidatedInput(user?.phoneNum, t => {
-    try {
-      return phoneUtil.isValidNumber(phoneUtil.parse(t, 'US'))
-    } catch (error) {
-      return false
-    }
-  })
-  const emailData = useValidatedInput(user?.email, t => t.match(emailRegex) !== null)
+  const phoneData = useValidatedInput(`${user?.phoneNumbers}`, t => true)
+  const emailData = useValidatedInput(`${user?.emails}`, t => true)
   const valid = nameData.valid && phoneData.valid && emailData.valid
 
   const trySubmitData = () => {
-    if(user === undefined) {
-      DummyDatabase.addUserToDatabase({
-        id: DummyDatabase.getNextID(),
-        name: nameData.data,
-        phoneNum: phoneData.data,
-        email: emailData.data
-      })
-    } else {
-      user.name = nameData.data
-      user.phoneNum = phoneData.data
-      user.email = emailData.data
-      DummyDatabase.databaseChanged()
-    }
-    history.goBack()
+    user.name = nameData.data
+    user.save().then(e => history.goBack())
   }
 
   return (
     <div>
       <div>
         { user !== undefined ? 
-          <span>Editing User ID: {id}</span> : 
+          <span>Editing User ID: {user.id}</span> : 
           <span>Create New User</span>
         }
       </div>
@@ -77,7 +69,6 @@ type ValidatedInput = {
   valid: boolean
 }
 export const useValidatedInput = (current: string, predicate: (test: string) => boolean): ValidatedInput => {
-  current = current ?? ''
   const [data, setData] = React.useState(current)
   const [valid, setValid] = React.useState(predicate(current))
 

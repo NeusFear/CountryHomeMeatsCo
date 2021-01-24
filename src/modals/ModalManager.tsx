@@ -2,6 +2,7 @@ import * as React from 'react';
 import Modal from 'react-modal';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
+import { SchueduleAnimalModal } from './ScheduleAnimalModal';
 
 Modal.setAppElement("#root")
 const customStyles = {
@@ -12,9 +13,11 @@ const customStyles = {
 export let setModal: (type: string, state?: any) => void = () => {}
 
 export const editUserDetails = "edit-user-details"
+export const scheduleAnimal = "schedule-animal"
 
 const modals = {
-  [editUserDetails]: state => <EditUserDetailsModal objectId={state} />
+  [editUserDetails]: state => <EditUserDetailsModal objectId={state} />,
+  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />
 }
 
 

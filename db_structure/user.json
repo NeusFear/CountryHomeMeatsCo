@@ -11,7 +11,44 @@
   "invoices": [123-1353-124, 129-3523-12],
   "recordCards": [
 	{
-		...TBD
+    "type": "beef",
+    "round": {
+      "amount": 0.25,
+      "tenderized": false,
+      "size": 0.75,
+      "type": "hamburger"
+    },
+    "sirlointip": {
+      "size": 1.25,
+      "amount": 3,
+      "type": "chickenfry"
+    },
+    "flank": "whole",
+    "sirloin": {
+      "size": 1,
+      "amount": 3
+    },
+    "rump": 3,
+    "pikespeak": 3.5,
+    "soupbones": "shankonly",
+    "groundbeef": 10,
+    "chuck": 2.5,
+    "arm": 2,
+    "ribs": "allhamburger",
+    "club": {
+      "type": "bonein",
+      "size": 1.25,
+      "amount": 3
+    },
+    "brisket": "halved",
+    "stewmeat": {
+      "packages": 10,
+      "amount": 1.5
+    },
+    "patties": {
+      "weight": 40,
+      "amount": 5
+    }
 	},
 	...
   ]

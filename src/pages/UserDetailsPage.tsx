@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgTack, SvgUser } from "../assets/Icons";
 import { useUserById } from "../database/types/User";
 import { UserPinnedList } from "../App";
-import { editUserDetails, setModal } from "../modals/ModalManager";
+import { editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
@@ -16,7 +16,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
   if(user === null) {
     return (<div>Error finding Info for user id {id}</div>)
   }
-  
+
   const PhoneNumber = ({name, number}: {name: string, number: string}) => (<div>{name}: {number}</div>)
   const Email = ({email}: {email: string}) => (<div>{email}</div>)
 
@@ -62,7 +62,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Animals Brought</div>
-              <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => console.log("queue new animal info")}/>
+              <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(scheduleAnimal, id)}/>
             </div>
           </div>
 

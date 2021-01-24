@@ -25,8 +25,7 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
 
 export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const users = useAllUsers()
-  const history = useHistory()
-
+  
   const deleteEntry = (user: IUser) => {
     user.delete()
     pinnedList.updatePinned(user.id, false)

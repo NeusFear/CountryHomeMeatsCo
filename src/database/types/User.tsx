@@ -2,6 +2,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 import { createGetElement, createRefreshListener } from '../Database';
 
+export const userModelName = 'User'
+
 export interface IUser extends Document {
   name: string
   phoneNumbers: { name: string, number: string }[]
@@ -14,7 +16,7 @@ const userSchmea = new Schema({
   emails: {type: [String], required: true }
 });
 
-const User = mongoose.model<IUser>('User', userSchmea)
+const User = mongoose.model<IUser>(userModelName, userSchmea)
 
 export const createEmptyUser = (): IUser => {
   return new User({

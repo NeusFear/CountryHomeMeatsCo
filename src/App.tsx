@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 
 import './styles/tailwind.scss'
+
 import { NavBar, routes } from './NavBar';
 import { connectToDB } from './database/Database';
 import { ModalManager } from './modals/ModalManager';

@@ -1,7 +1,7 @@
 import { Model, Document } from "mongoose";
 import { ChangeEvent } from "mongodb"
 import { list } from "postcss";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import User, { IUser } from "./types/User";
 
 //Import the mongoose module
@@ -46,7 +46,7 @@ export const createRefreshListener = (model: Model<any>): (listener: (event: Cha
 export const createGetElement = 
   <T, A>
   (
-    modelDataGetter: (param: A) => Promise<T>,
+    modelDataGetter: (param: A) => PromiseLike<T>,
     refreshListener: (listener: (event: ChangeEvent<any>) => void) => void,
     refreshMatcher: (param: A, event: ChangeEvent<any>) => boolean = () => true
   ):
@@ -54,11 +54,15 @@ export const createGetElement =
   return (param) => {
     const update = () => modelDataGetter(param).then(obj => setElement(obj))
     const [element, setElement] = useState<T>(undefined)
-    if(element === undefined) {
-      update()
-    }
+    //We need to keep track of the parameter here, as sometimes it can change without a full re-render.
+    const prevParam = useRef<A>()
+    useEffect(() => {
+      if(element === undefined || prevParam.current !== param) {
+        update()
+      }
+      prevParam.current = param
+    })
     refreshListener(e => {
-      console.log(e)
       if(refreshMatcher(param, e)) {
         update()
       }

@@ -8,7 +8,6 @@ import { UserPinnedList } from "../App";
 import { editUserDetails, setModal } from "../modals/ModalManager";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
-  const history = useHistory()
   const id = useHistoryListState()
   const user = useUserById(id)
   if(user === undefined) {
@@ -17,7 +16,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
   if(user === null) {
     return (<div>Error finding Info for user id {id}</div>)
   }
-
+  
   const PhoneNumber = ({name, number}: {name: string, number: string}) => (<div>{name}: {number}</div>)
   const Email = ({email}: {email: string}) => (<div>{email}</div>)
 

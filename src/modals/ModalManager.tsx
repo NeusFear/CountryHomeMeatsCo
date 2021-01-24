@@ -25,8 +25,6 @@ export const ModalManager = () => {
     return () => setModal = () => {}
   })
 
-  console.log(activeModal)
-
   if(activeModal === null) {
     return (<></>)
   }

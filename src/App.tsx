@@ -8,6 +8,7 @@ import {
 import './styles/tailwind.scss'
 import { NavBar, routes } from './NavBar';
 import { connectToDB } from './database/Database';
+import { ModalManager } from './modals/ModalManager';
 
 export const AppContainer = () => {
   let connectState = connectToDB("localhost")
@@ -38,7 +39,8 @@ const App = () => {
     })
   }, [pinnedList])
 
-  return (
+  return (<>
+    <ModalManager />
     <Router>
       <div className="flex w-full h-full">
         <NavBar pinnedList={pinnedList} />
@@ -49,7 +51,7 @@ const App = () => {
         </div>
       </div>
     </Router>
-);
+  </>)
 }
 
 export type UserPinnedList = {

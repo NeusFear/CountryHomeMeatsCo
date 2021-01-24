@@ -1,8 +1,7 @@
 import * as React from "react"
-import { useHistoryListState } from "../AppHooks"
-import { useHistory } from 'react-router-dom';
 
-import User, { createEmptyUser, IUser, useUserById } from "../database/types/User";
+import { createEmptyUser, IUser, useUserById } from "../database/types/User";
+import { setModal } from "../modals/ModalManager";
 
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 const isValidPhoneNum = (text: string) => {
@@ -16,19 +15,17 @@ const isValidPhoneNum = (text: string) => {
 //http://emailregex.com/
 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-export const EditUserDetailsPage = () => {
-  const objectId: string = useHistoryListState()
-
+export const EditUserDetailsModal = ({objectId}: {objectId: string}) => {
   return objectId === undefined ? 
-  (<EditUserDetailsPageWithUser user={createEmptyUser()}/>) : 
-  (<EditUserDetailsPageWithUserID id={objectId}/>)
+  (<EditUserDetailsModalWithUser user={createEmptyUser()}/>) : 
+  (<EditUserDetailsModalWithUserID id={objectId}/>)
 }
 
-const EditUserDetailsPageWithUserID = ({id}: {id: string}) => {
+const EditUserDetailsModalWithUserID = ({id}: {id: string}) => {
   const user = useUserById(id)
   return user === undefined ?
     (<div>Loading User ID {id}</div>) :
-    (<EditUserDetailsPageWithUser user={user}/>)
+    (<EditUserDetailsModalWithUser user={user}/>)
 }
 
 type ValidatedString = {
@@ -36,9 +33,7 @@ type ValidatedString = {
   valid: boolean
 }
 
-const EditUserDetailsPageWithUser = ({user}: {user: IUser}) => {
-  const history = useHistory()
-  
+const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {  
   const [nameData, setNameData] = React.useState<ValidatedString>(null) 
   const [phoneNumbers, setPhoneNumbers] = React.useState<{name: ValidatedString, number:ValidatedString}[]>(() => 
     [...user.phoneNumbers].map(d => {
@@ -64,21 +59,21 @@ const EditUserDetailsPageWithUser = ({user}: {user: IUser}) => {
       }
     })
     user.emails = emails.map(e => e.text)
-    user.save().then(() => history.goBack())
+    user.save().then(() => setModal(null))
   }
 
   return (
     <div>
       <div>
-        { user !== undefined ? 
-          <span>Editing User ID: {user.id}</span> : 
-          <span>Create New User</span>
+        { user.isNew ? 
+          <span>Create New User</span> :
+          <span>Editing User ID: {user.id}</span> 
         }
       </div>
 
       <div className="pt-4">
         <span className="pr-2">Name:</span>
-        <EditorValidateInput current={user?.name} predicate={t => t.length >= 3} onChange={d => setNameData(d)} />
+        <EditorValidateInput current={user.name} predicate={t => t.length >= 3} onChange={d => setNameData(d)} />
       </div>
 
       <div className="pt-5">

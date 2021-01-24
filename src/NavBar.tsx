@@ -11,18 +11,17 @@ import { useHistoryListState } from "./AppHooks"
 import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgUser } from './assets/Icons'
 import { UserPinnedList } from './App';
 import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
-import { EditUserDetailsPage } from './pages/EditUserDetailsPage';
 
 const logo = require('./assets/logo.png');
 
 export const userDetailsPage = "/userdetails"
-export const editUserDetailsPage = "/edit/userdetails"
+// export const editUserDetailsPage = "/edit/userdetails"
 
 export const routes = [
   { path: "/", exact: true, page: () => <LandingPage /> },
   { path: "/users", page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UsersPage pinnedList={pinnedList}/> },
   { path: userDetailsPage, page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UserDetailsPage pinnedList={pinnedList} /> },
-  { path: editUserDetailsPage, page: () => <EditUserDetailsPage /> },
+  // { path: editUserDetailsPage, page: () => <EditUserDetailsPage /> },
   { path: "/today", page: () => <TodayPage /> },
   { path: "/calendar", page: () => <CalendarPage /> }
 ];

@@ -1,9 +1,10 @@
 import * as React from "react"
 import { UserPinnedList } from "../App"
 import { useHistory } from 'react-router-dom';
-import { editUserDetailsPage, userDetailsPage } from "../NavBar";
+import { userDetailsPage } from "../NavBar";
 import { SvgNewUser, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
 import User, { IUser, useAllUsers } from "../database/types/User";
+import { editUserDetails, setModal } from "../modals/ModalManager";
 
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void, deleteUserDetails: () => void}) => {
   const history = useHistory()
@@ -43,7 +44,7 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
           <input type="text" name="search" id="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
         </div>
         <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
-        <div onClick={() => history.push(editUserDetailsPage)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgNewUser /></div>
+        <div onClick={() => setModal(editUserDetails)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgNewUser /></div>
       </div>
       <div className="bg-gray-400 px-1 py-0.5 shadow-sm flex flex-row mb-2">
         <span className="ml-6 pr-2 flex-1 text-gray-700">Name</span>

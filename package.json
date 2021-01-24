@@ -16,6 +16,7 @@
     "postcss": "^8.2.4",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-modal": "^3.12.1",
     "react-router-dom": "^5.2.0",
     "tailwindcss": "^2.0.2"
   },

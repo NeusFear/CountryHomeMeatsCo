@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Date, Types, mongo } from 'mongoose';
+import mongoose, { Schema, Document, Types, mongo } from 'mongoose';
 import { ObjectId } from 'bson'
 import { createGetElement, createRefreshListener } from '../Database';
 import { userModelName } from './User';
@@ -67,5 +67,5 @@ export const useAnimalById = createGetElement<IAnimal, string>(
     return false
   }
 )
-export const useAllAnimals = createGetElement<Array<IAnimal>, any>(() => Animal.find(), refreshListener)
+export const useAnimals = createGetElement<Array<IAnimal>, any>(q => Animal.find(q), refreshListener)
 export default Animal

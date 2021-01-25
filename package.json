@@ -19,6 +19,7 @@
     "react-dom": "^16.9.0",
     "react-modal": "^3.12.1",
     "react-router-dom": "^5.2.0",
+    "react-tooltip": "^4.2.13",
     "tailwindcss": "^2.0.2"
   },
   "scripts": {

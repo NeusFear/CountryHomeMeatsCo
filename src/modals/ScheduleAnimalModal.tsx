@@ -1,25 +1,55 @@
-import { atRule } from "postcss"
+import { setModal } from "./ModalManager";
 import * as React from "react"
 import DayPicker from "react-day-picker"
 import { SvgCow, SvgPig } from "../assets/Icons"
-import { createEmptyAnimal } from "../database/types/Animal"
+import { AnimalType, createEmptyAnimal, useAnimals } from "../database/types/Animal"
+import ReactTooltip from "react-tooltip";
 
+const style = `
+.DayPicker-Day {
+  border-radius: 0
+}
+.DayPicker-Day--isQuietDay {
+  background-color: var(--green-100)
+} 
+.DayPicker-Day--isNormalDay {
+  background-color: var(--yellow-200)
+} 
+.DayPicker-Day--isBusyDay {
+  background-color: var(--tomato-100)
+} 
+.DayPicker-Day--isSelected {
+  background-color: var(--blue-300)
+}
+.DayPicker-Day:hover {
+  background-color: var(--blue-100) !important
+}
+`
+
+//Gets the day number
+function getDayNumber(date = new Date()) {
+  return Math.floor(date.getTime() / 8.64e+7)
+}
 
 export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
-  const [ newAnimal ] = React.useState(createEmptyAnimal(userID))
+  const [ newAnimal ] = React.useState(() => createEmptyAnimal(userID))
 
-  const [ animalType, setAnimalType ] = React.useState<String>()
+  const [ animalType, setAnimalType ] = React.useState<"Cow"|"Pig">()
+  const [ scheduledDate, setScheduledDate ] = React.useState<Date>()
 
-
+  const dayNumber = getDayNumber()
+  const allAnimals = useAnimals(React.useMemo(() => { return { killDate: { $gte: Date.now() } } }, [dayNumber]))
+  
   function isDayAvailable(date: Date) {
-    return false
+    return getDayNumber(date) >= dayNumber
   }
   
-  //TODO: actually link this to the database.
-  //Note this shouldn't querty the database every time, and isntead
-  //use a cahce
+
   function getOrdersForDay(date: Date) {
-    return ((date.getTime()/8.64e+7)^51) % 9
+    if(allAnimals === undefined) {
+      return 0
+    }
+    return allAnimals.filter(a => getDayNumber(a.killDate) == getDayNumber(date)).length
   }
 
   const isOrdersBetween = (date: Date, min: number, max: number): boolean => {
@@ -31,47 +61,58 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
     return num >= min && num <= max
   }
 
+  const valid = animalType !== undefined && scheduledDate !== null
+  const trySubmitData = () => {
+    newAnimal.animalType = animalType
+    newAnimal.killDate = scheduledDate
+    newAnimal.save().then(() => setModal(null))
+  }
+
   return (
-    <div className="flex flex-row" style={{height: '400px', width:'400px'}}>
-      <div className="mr-5">
-        Animal Type:
-        <div className="flex flex-row">
-          <div className="mr-2">
-            <SvgCow />
-            Cow
-          </div>
+    <div>
+      <div className="flex flex-row" style={{height: '400px', width:'450px'}}>
+        <div className="mr-5">
+          Animal Type:
           <div>
-            <SvgPig />
-            Pig
+            <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Cow} />
+            <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pig} />
           </div>
         </div>
+        <div>
+          Date:
+          <style>{style}</style>
+          <ReactTooltip delayShow={200} />
+          <DayPicker 
+            onDayClick={setScheduledDate}
+            modifiers={{
+              isSelected: date => date.getTime() === scheduledDate?.getTime(),
+              isQuietDay: date => isOrdersBetween(date, 1, 3),
+              isNormalDay: date => isOrdersBetween(date, 4, 6),
+              isBusyDay: date => isOrdersBetween(date, 7, 9),
+            }}
+            fixedWeeks
+            disabledDays={[{ daysOfWeek: [0, 6] }, date => !isDayAvailable(date)]}
+            renderDay={day => {
+              const orders = getOrdersForDay(day)
+              return (
+                <span data-tip={`${orders} Order${orders===1?'':'s'}`}>
+                  {day.getDate()}
+                </span>
+              )
+            }}
+          />
+        </div>
       </div>
-      <div>
-        Date:
-        <style>{`
-          .DayPicker-Day {
-            border-radius: 0
-          }
-          .DayPicker-Day--isQuietDay {
-            background-color: var(--green-100)
-          } 
-          .DayPicker-Day--isNormalDay {
-            background-color: var(--yellow-100)
-          } 
-          .DayPicker-Day--isBusyDay {
-            background-color: var(--tomato-100)
-          } 
-        `}</style>
-        <DayPicker 
-          modifiers={{
-            isQuietDay: date => isOrdersBetween(date, 1, 3),
-            isNormalDay: date => isOrdersBetween(date, 4, 6),
-            isBusyDay: date => isOrdersBetween(date, 7, 9),
-          }}
-          fixedWeeks
-          disabledDays={[{ daysOfWeek: [0, 6] }, date => isDayAvailable(date)]}
-        />
-      </div>
+      <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-300 hover:bg-blue-500" : "bg-gray-300 text-gray-500"} p-1 mt-2 border-solid border-2 border-gray-900`}>Submit</button>
+    </div>
+  )
+}
+
+const AnimalTypeSelect = ({Icon, onSelected, isSelected}: {Icon: any, onSelected:()=>void, isSelected:boolean}) => {
+  return (
+    <div className={"flex flex-row" + (isSelected?" bg-blue-300":"")}>
+      <Icon className="w-8 h-8"/>
+      <input className="mt-2.5 ml-2" type="radio" name="animal" onInput={() => onSelected() }/>
     </div>
   )
 }

@@ -6,11 +6,13 @@ import { SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgTack, SvgUser } from "../assets
 import { useUserById } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
+import { useAnimals, IAnimal } from "../database/types/Animal";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
   const user = useUserById(id)
-  if(user === undefined) {
+  const usersAnimals = useAnimals(React.useMemo(() => { eater: user?.id ?? null }, [id]))
+  if(user === undefined || usersAnimals === undefined) {
     return (<div>Loading Info for user id {id}</div>)
   }
   if(user === null) {
@@ -64,6 +66,9 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Animals Brought</div>
               <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(scheduleAnimal, id)}/>
             </div>
+            <div className="ml-2 flex flex-col">
+              {usersAnimals.map((a, id) => <BroughtInAnimalEntry key={id} animal={a}/>)}
+            </div>
           </div>
 
           <div className="bg-gray-200 rounded-lg">
@@ -74,6 +79,15 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
 
         </div>
       </div>
+    </div>
+  )
+}
+
+const BroughtInAnimalEntry = ({animal}: {animal: IAnimal}) => {
+  return (
+    <div className="flex flex-row">
+      <div className="flex-grow">{animal.animalType}:</div>
+      <div>{animal.killDate.toLocaleDateString()}</div>
     </div>
   )
 }

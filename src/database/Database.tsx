@@ -54,14 +54,7 @@ export const createGetElement =
   return (param) => {
     const update = () => modelDataGetter(param).then(obj => setElement(obj))
     const [element, setElement] = useState<T>(undefined)
-    //We need to keep track of the parameter here, as sometimes it can change without a full re-render.
-    const prevParam = useRef<A>()
-    useEffect(() => {
-      if(element === undefined || prevParam.current !== param) {
-        update()
-      }
-      prevParam.current = param
-    })
+    useEffect(() => { update() }, [param])
     refreshListener(e => {
       if(refreshMatcher(param, e)) {
         update()

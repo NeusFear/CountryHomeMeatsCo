@@ -6,7 +6,7 @@ import { SchueduleAnimalModal } from './ScheduleAnimalModal';
 
 Modal.setAppElement("#root")
 const customStyles = {
-  content : { top : '50%', left : '50%', right : 'auto', bottom : 'auto', marginRight : '-50%', transform : 'translate(-50%, -50%)', },
+  content : { top : '50%', left : '50%', right : 'auto', bottom : 'auto', marginRight : '-50%', transform : 'translate(-50%, -50%)', padding : '0px', border : 'none' },
   overlay: { backgroundColor : 'rgba(33, 33, 33, 0.75)' }
 }
 

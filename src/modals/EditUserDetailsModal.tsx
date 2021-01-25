@@ -68,7 +68,7 @@ const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
         { user.isNew ? 
           <span className="text-gray-300 font-semibold">Create New User</span> :
-          <span className="text-gray-300 font-semibold">Editing User ID: {user.id}</span> 
+          <span className="text-gray-300">Editing User ID: {user.id}</span> 
         }
       </div>
 
@@ -172,6 +172,6 @@ const EditorValidateInput = ({placeholder, current, predicate, onChange}:
   })
 
   return (    
-    <input placeholder={placeholder} className={`${valid ? "border-blue-500" : "border-red-500"} w-60 border-1 p-1 my-1 bg-gray-200 mx-2`} type="text" onChange={e => onInputChange(e.target.value)} value={data || ''}/>
+    <input placeholder={placeholder} className={`${valid ? "border-blue-500 bg-blue-100" : "border-red-500 bg-tomato-100"} w-60 border-2 rounded-sm p-1 my-1 mx-2 text-gray-800`} type="text" onChange={e => onInputChange(e.target.value)} value={data || ''}/>
   )
 }

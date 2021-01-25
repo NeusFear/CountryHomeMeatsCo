@@ -2,7 +2,7 @@ import * as React from "react"
 import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 
-import { SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgTack, SvgUser } from "../assets/Icons";
+import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser } from "../assets/Icons";
 import { useUserById } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
@@ -62,11 +62,11 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
         <div className="col-span-2 grid grid-cols-2 gap-4">
 
           <div className="bg-gray-200 rounded-lg">
-            <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
+            <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Animals Brought</div>
               <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(scheduleAnimal, id)}/>
             </div>
-            <div className="ml-2 flex flex-col">
+            <div className="ml-2 mb-2 flex flex-col">
               {usersAnimals.map((a, id) => <BroughtInAnimalEntry key={id} animal={a}/>)}
             </div>
           </div>
@@ -85,8 +85,8 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
 
 const BroughtInAnimalEntry = ({animal}: {animal: IAnimal}) => {
   return (
-    <div className="flex flex-row">
-      <div className="flex-grow">{animal.animalType}:</div>
+    <div  className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md">
+      <div className="flex-grow">{animal.animalType == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
       <div>{animal.killDate.toLocaleDateString()}</div>
     </div>
   )

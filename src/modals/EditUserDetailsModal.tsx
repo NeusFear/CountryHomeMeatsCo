@@ -36,15 +36,16 @@ type ValidatedString = {
 
 const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {  
   const [nameData, setNameData] = React.useState<ValidatedString>(null) 
-  const [phoneNumbers, setPhoneNumbers] = React.useState<{name: ValidatedString, number:ValidatedString}[]>(() => 
+  const [phoneNumbers, setPhoneNumbers] = React.useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
     [...user.phoneNumbers].map(d => {
       return {
         name: { text: d.name, valid: false },
-        number: { text: d.number, valid: false }
+        number: { text: d.number, valid: false },
+        _id: Math.random()
       }
     })
   )
-  const [emails, setEmails] = React.useState(() => [...user.emails].map(e => { return { text: e, valid: false }}))
+  const [emails, setEmails] = React.useState(() => [...user.emails].map(e => { return { text: e, valid: false, _id: Math.random() }}))
   
   const valid = 
     (nameData !== null && nameData.valid) && 
@@ -64,84 +65,88 @@ const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col" style={{width:'700px', height:'500px'}}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
         { user.isNew ? 
           <span className="text-gray-300 font-semibold">Create New User</span> :
           <span className="text-gray-300">Editing User ID: {user.id}</span> 
         }
       </div>
-
-      <div className="pt-4">
-        <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Name:</span>
-        <div>
-          <EditorValidateInput placeholder="Name" current={user.name} predicate={t => t.length >= 3} onChange={d => setNameData(d)} />
+      <div className="flex-grow overflow-auto">
+        <div className="pt-4">
+          <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Name:</span>
+          <div>
+            <EditorValidateInput placeholder="Name" current={user.name} predicate={t => t.length >= 3} onChange={d => setNameData(d)} />
+          </div>
         </div>
-      </div>
 
-      <div className="pt-5">
-        <span className="ml-2 pr-2 text-gray-700"><SvgPhone className="float-left mx-2" />Phone Numbers:</span>
-        <div>
-          {phoneNumbers.map((d, i) => (
-            <div key={i}>
-              <EditorValidateInput placeholder="Name" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
-                if(d.name.text !== data.text || d.name.valid !== data.valid) {
-                  d.name = data
-                  setPhoneNumbers([...phoneNumbers])
+        <div className="pt-5">
+          <span className="ml-2 pr-2 text-gray-700"><SvgPhone className="float-left mx-2" />Phone Numbers:</span>
+          <div>
+            {phoneNumbers.map(d=> (
+              <div key={d._id}>
+                <EditorValidateInput placeholder="Name" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
+                  if(d.name.text !== data.text || d.name.valid !== data.valid) {
+                    d.name = data
+                    setPhoneNumbers([...phoneNumbers])
+                  }
+                }} />
+                :
+                <EditorValidateInput placeholder="Number" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
+                  if(d.number.text !== data.text || d.number.valid !== data.valid) {
+                    d.number = data
+                    setPhoneNumbers([...phoneNumbers])
+                  }
+                }}/>
+                {phoneNumbers.length === 1 ? <></> : 
+                  <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3"  onClick={() => {
+                    phoneNumbers.splice(phoneNumbers.indexOf(d), 1)
+                    setPhoneNumbers([...phoneNumbers])
+                  }}><SvgCross /></span>
+                }
+              </div>
+            ))}
+          </div>
+          <div className="bg-gray-200 p-1, rounded-sm ml-2 w-60 text-gray-700 mt-0.5 hover:bg-gray-300" onClick={() => {
+            phoneNumbers.push({
+              name: { text: '', valid: false },
+              number: { text: '', valid: false },
+              _id: Math.random()
+            })
+            setPhoneNumbers([...phoneNumbers])
+          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add New Phone</div>
+        </div>
+
+        <div className="pt-5">
+          <span className="ml-2 pr-2 text-gray-700"><SvgEmail className="float-left mx-2" />Emails:</span>
+          <div>
+            {emails.map(email => (
+            <div key={email._id}>
+              <EditorValidateInput placeholder="Email" current={email.text} predicate={t => t.match(emailRegex) !== null} onChange={data => {
+                if(email.text !== data.text || email.valid !== data.valid) {
+                  email.text = data.text
+                  email.valid = data.valid
+                  setEmails([...emails])
                 }
               }} />
-              :
-              <EditorValidateInput placeholder="Number" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
-                if(d.number.text !== data.text || d.number.valid !== data.valid) {
-                  d.number = data
-                  setPhoneNumbers([...phoneNumbers])
-                }
-              }}/>
-              {phoneNumbers.length === 1 ? <></> : 
-                <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3"  onClick={() => {
-                  phoneNumbers.splice(i, 1)
-                  setPhoneNumbers([...phoneNumbers])
+              { emails.length === 1 ? <></> : 
+                <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
+                  emails.splice(emails.indexOf(email), 1)
+                  setEmails([...emails])
                 }}><SvgCross /></span>
               }
             </div>
-          ))}
-        </div>
-        <div className="bg-gray-200 p-1, rounded-sm ml-2 w-60 text-gray-700 mt-0.5 hover:bg-gray-300" onClick={() => {
-          phoneNumbers.push({
-            name: { text: '', valid: false },
-            number: { text: '', valid: false }
-          })
-          setPhoneNumbers([...phoneNumbers])
-        }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add New Phone</div>
-      </div>
-
-      <div className="pt-5">
-        <span className="ml-2 pr-2 text-gray-700"><SvgEmail className="float-left mx-2" />Emails:</span>
-        <div>
-          {emails.map((email, i) => (
-          <div key={i}>
-            <EditorValidateInput placeholder="Email" current={email.text} predicate={t => t.match(emailRegex) !== null} onChange={data => {
-              if(email.text !== data.text || email.valid !== data.valid) {
-                emails[i] = data
-                setEmails([...emails])
-              }
-            }} />
-            { emails.length === 1 ? <></> : 
-              <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
-                emails.splice(i, 1)
-                setEmails([...emails])
-              }}><SvgCross /></span>
-            }
+            ))}
           </div>
-          ))}
+          <div className="bg-gray-200 p-1, rounded-sm ml-2 w-60 text-gray-700 mt-0.5 hover:bg-gray-300" onClick={() => {
+            emails.push({ text: '', valid: false, _id: Math.random() })
+            setEmails([...emails])
+          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add New Email</div>
         </div>
-        <div className="bg-gray-200 p-1, rounded-sm ml-2 w-60 text-gray-700 mt-0.5 hover:bg-gray-300" onClick={() => {
-          emails.push({ text: '', valid: false })
-          setEmails([...emails])
-        }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add New Email</div>
-      </div>
 
-      <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
+        <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
+
+      </div>
     </div>
   )
 }

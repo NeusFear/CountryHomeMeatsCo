@@ -37,7 +37,7 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   }
 
   return (
-    <div className="bg-gray-100 w-2/12 flex flex-col h-full" style={{minWidth:"200px"}}>
+    <div className="bg-gray-100 w-6/12 flex flex-col h-full md:w-4/14 lg:w-2/12">
       <ul>
         <li><Link to="/"><div className="bg-tomato-800 h-14"><img src={logo} className="ml-8 h-14" ></img></div></Link></li>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>

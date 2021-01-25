@@ -70,16 +70,21 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
 
   return (
     <div>
-      <div className="flex flex-row" style={{height: '400px', width:'450px'}}>
-        <div className="mr-5">
-          Animal Type:
-          <div>
-            <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Cow} />
-            <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pig} />
+      <div className="bg-gray-800 w-full rounded-t-sm text-white p-2 font-semibold">
+        Schedule a New Animal
+      </div>
+      <div className="flex flex-row min-w-0">
+        <div className="pr-2 mr-5 bg-gray-100 ml-2 flex flex-col">
+          <div className="flex-grow">
+            Animal Type:
+            <div>
+              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Cow} />
+              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pig} />
+            </div>
           </div>
+          <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
         </div>
         <div>
-          Date:
           <style>{style}</style>
           <ReactTooltip delayShow={200} />
           <DayPicker 
@@ -103,16 +108,14 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
           />
         </div>
       </div>
-      <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-300 hover:bg-blue-500" : "bg-gray-300 text-gray-500"} p-1 mt-2 border-solid border-2 border-gray-900`}>Submit</button>
     </div>
   )
 }
 
 const AnimalTypeSelect = ({Icon, onSelected, isSelected}: {Icon: any, onSelected:()=>void, isSelected:boolean}) => {
   return (
-    <div className={"flex flex-row" + (isSelected?" bg-blue-300":"")}>
-      <Icon className="w-8 h-8"/>
-      <input className="mt-2.5 ml-2" type="radio" name="animal" onInput={() => onSelected() }/>
-    </div>
+    <button className={"w-full flex flex-row rounded-md p-1" + (isSelected?" bg-blue-100":"")} name="animal" onClick={() => onSelected() }>
+      <Icon className="w-8 h-8 transform translate-x-1/2"/>
+    </button>
   )
 }

@@ -79,8 +79,8 @@ export const AnimalDetailsPage = () => {
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Related Invoices</div>
             </div>
             <div className="py-4">
-                <InvoiceListItem delivered={false} name="Some Name" id={1238293}/>
-                <InvoiceListItem delivered={true} name="Some Other Name" id={1442343}/>
+                <InvoiceListItem delivered={false} name="Jerry Henderson" id={1238293}/>
+                <InvoiceListItem delivered={true} name="Guy Guuyerson" id={1442343}/>
             </div>
           </div>
         </div>
@@ -92,17 +92,17 @@ export const AnimalDetailsPage = () => {
 const InvoiceListItem = ({delivered, name, id} : {delivered: boolean, name: string, id?: number}) => {
     return (
         <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => console.log("go to animal")}>
-          <div className="w-1/4 text-gray-800 group-hover:text-gray-900">
-            <p className="font-semibold">Invoice Number:</p>
+          <div className="w-1/6 text-gray-800 group-hover:text-gray-900">
+            <p className="font-semibold">Invoice:</p>
             <StringUserTag name={id.toString()} />
           </div>
-          <div className="w-1/4 text-gray-800 group-hover:text-gray-900">
+          <div className="w-1/5 text-gray-800 group-hover:text-gray-900">
             <p className="font-semibold">Status:</p>
             <p className={`${delivered ? "bg-green-100 hover:bg-green-200" : "bg-tomato-100 hover:bg-tomato-200"} px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{delivered ? "Delivered" : "Pending"}</p>
           </div>
-          <div className="w-1/4 ml-4 text-gray-800 group-hover:text-gray-900">
+          <div className="w-1/6 mx-4 text-gray-800 group-hover:text-gray-900">
             <p className="font-semibold">Portion:</p>
-            <StringUserTag name="Half" id={82} />
+            <StringUserTag name="Half" />
           </div>
           <div className="flex-grow text-gray-800 group-hover:text-gray-900">
             <p className="font-semibold">Record Card:</p>

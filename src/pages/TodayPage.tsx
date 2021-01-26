@@ -61,7 +61,7 @@ const SelectedCutList = () => {
 const ScheduledSlaughterList = () => {
   const now = new Date()
   now.setHours(12, 0, 0, 0)
-  const scheduledToday = useAnimals(() => Animal.where('killDate', now), [ getDayNumber(now) ]))
+  const scheduledToday = useAnimals(() => Animal.where('killDate', now), [ getDayNumber(now) ])
 
   if(scheduledToday === undefined) {
     return (<div>Loading...</div>)

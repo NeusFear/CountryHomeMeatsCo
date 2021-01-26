@@ -1,12 +1,14 @@
 import { ObjectId } from "mongoose"
 import * as React from "react"
 import ReactTooltip from "react-tooltip"
+import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig } from "../assets/Icons"
 import Animal, { IAnimal, useAnimals, validateEaters } from "../database/types/Animal"
-import User, { useUsers } from "../database/types/User"
+import User, { IUser, useUsers } from "../database/types/User"
 import { editAnimalEaters, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
 import { getDayNumber } from "../Util"
+import { userDetailsPage } from "../NavBar";
 
 export const TodayPage = () => {
   const today = React.useMemo(() => new Date(), [])
@@ -47,12 +49,12 @@ const SelectedCutList = () => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>
-        <UserTag name="The Bringer Name" />
+        <StringUserTag name="The Bringer Name" />
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        <UserTag name="Some Name" id={4} />
-        <UserTag name="Some Other Name" id={2} />
+        <StringUserTag name="Some Name" id={4} />
+        <StringUserTag name="Some Other Name" id={2} />
       </div>
     </div>
   )
@@ -113,22 +115,33 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>
-        <UserTag name={user.name} />
+        <UserTag user={user} />
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
         {!eatersValid && <span data-tip="Invalid Eaters. Click to fix" onClick={() => setModal(editAnimalEaters, animal.id)} className="px-2 bg-red-200 text-tomato-700">!</span> }
-        {sortedEaters && sortedEaters.map(e => <UserTag name={e.name} id={e.card}/>)}
+        {sortedEaters && sortedEaters.map(e => <UserTag user={user} id={e.card}/>)}
       </div>
     </div>
   )
 }
 
-const UserTag = ({name, id} : {name: string, id?: number}) => {
+const UserTag = ({user, id} : {user: IUser, id?: number}) => {
+  const history = useHistory();
   return (
     <div className="flex">
-      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={() => console.log("go to bringer")}>{name}</p>
+      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={() => history.push(userDetailsPage, user.id)}>{user.name}</p>
       {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={() => console.log("go to sub user's individual cut instructions")}>#{id}</p>}
+    </div>
+  )
+}
+
+//Delete this once the placeholder stuff for the cut list users is removed and replace with UserTag.
+const StringUserTag = ({name, id} : {name: string, id?: number}) => {
+  return (
+    <div className="flex">
+      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">{name}</p>
+      {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">#{id}</p>}
     </div>
   )
 }

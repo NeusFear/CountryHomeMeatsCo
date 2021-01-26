@@ -1,19 +1,21 @@
 import * as React from 'react';
 import { Switch, Route, Link, useHistory } from 'react-router-dom';
+import { AnimalDetailsPage } from './pages/AnimalDetailsPage';
 import { LandingPage } from './pages/LandingPage';
 import { UsersPage } from './pages/UsersPage';
 import { UserDetailsPage } from './pages/UserDetailsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
 import { NavPageButton } from './components/NavPageButton';
-import { useHistoryListState } from "./AppHooks"
+import { useHistoryListState } from "./AppHooks";
 
-import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgUser } from './assets/Icons'
+import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgUser } from './assets/Icons';
 import { UserPinnedList } from './App';
 import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
 
 const logo = require('./assets/logo.png');
 
+export const animalDetailsPage = "/animaldetails"
 export const userDetailsPage = "/userdetails"
 // export const editUserDetailsPage = "/edit/userdetails"
 
@@ -21,6 +23,7 @@ export const routes = [
   { path: "/", exact: true, page: () => <LandingPage /> },
   { path: "/users", page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UsersPage pinnedList={pinnedList}/> },
   { path: userDetailsPage, page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UserDetailsPage pinnedList={pinnedList} /> },
+  { path: animalDetailsPage, page: () => <AnimalDetailsPage />},
   // { path: editUserDetailsPage, page: () => <EditUserDetailsPage /> },
   { path: "/today", page: () => <TodayPage /> },
   { path: "/calendar", page: () => <CalendarPage /> }

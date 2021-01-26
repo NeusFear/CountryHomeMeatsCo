@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
+import { animalDetailsPage } from "../NavBar";
 
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser } from "../assets/Icons";
 import User, {  useUsers } from "../database/types/User";
@@ -85,8 +86,9 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
 }
 
 const BroughtInAnimalEntry = ({animal}: {animal: IAnimal}) => {
+  const history = useHistory();
   return (
-    <div  className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md">
+    <div  className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="flex-grow">{animal.animalType == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
       <div>{animal.killDate.toLocaleDateString()}</div>
     </div>

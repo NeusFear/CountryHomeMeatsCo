@@ -2,8 +2,9 @@ import { setModal } from "./ModalManager";
 import * as React from "react"
 import DayPicker from "react-day-picker"
 import { SvgCow, SvgPig } from "../assets/Icons"
-import { AnimalType, createEmptyAnimal, useAnimals } from "../database/types/Animal"
+import Animal, { AnimalType, createEmptyAnimal, useAnimals } from "../database/types/Animal"
 import ReactTooltip from "react-tooltip";
+import { getDayNumber } from "../Util";
 
 const style = `
 .DayPicker-Day {
@@ -25,12 +26,6 @@ const style = `
   background-color: var(--blue-100) !important
 }
 `
-
-//Gets the day number
-function getDayNumber(date = new Date()) {
-  return Math.floor(date.getTime() / 8.64e+7)
-}
-
 export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
   const [ newAnimal ] = React.useState(() => createEmptyAnimal(userID))
 
@@ -38,7 +33,7 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
   const [ scheduledDate, setScheduledDate ] = React.useState<Date>()
 
   const dayNumber = getDayNumber()
-  const allAnimals = useAnimals(React.useMemo(() => { return { killDate: { $gte: Date.now() } } }, [dayNumber]))
+  const allAnimals = useAnimals(() => Animal.where('killDate').gte(Date.now()), [dayNumber])
   
   function isDayAvailable(date: Date) {
     return getDayNumber(date) >= dayNumber
@@ -86,7 +81,6 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
         </div>
         <div>
           <style>{style}</style>
-          <ReactTooltip delayShow={200} />
           <DayPicker 
             onDayClick={setScheduledDate}
             modifiers={{

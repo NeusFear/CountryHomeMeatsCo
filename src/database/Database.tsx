@@ -1,8 +1,9 @@
-import { Model, Document } from "mongoose";
+import { Model, ObjectId, Query, Types, Document } from "mongoose";
 import { ChangeEvent } from "mongodb"
 import { list } from "postcss";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, DependencyList } from "react";
 import User, { IUser } from "./types/User";
+import { ObjectId as BsonObjectId } from 'bson'
 
 //Import the mongoose module
 const mongoose = require('mongoose')
@@ -27,39 +28,40 @@ export const connectToDB = (ip: string): ConnectState => {
     db.on('open', () => setConnectState({details: `Connected`, connected: true }));
   }
 
-
   return connectState
 }
 
-export const createRefreshListener = (model: Model<any>): (listener: (event: ChangeEvent<any>) => void) => void => {
+export const createResultWatcher = <DocType extends Document,> (model: Model<DocType>):
+<T,>(
+  func: () => Query<T, DocType>, 
+  deps?: DependencyList | undefined, 
+  ...ids: (string | ObjectId | BsonObjectId)[]) => T => {
   const listeners: ((event: ChangeEvent<any>) => void)[] = []
   model.watch().on('change', event => listeners.forEach(l => l(event)))
 
-  return (listener) => {
-    useEffect(() => {
-      listeners.push(listener)
-      return () => listeners.splice(listeners.indexOf(listener), 1)
-    })
+  const subscribeListener = (listener: (event?: ChangeEvent<any>) => void): () => void => {
+    listeners.push(listener)
+    listener()
+    return () => listeners.splice(listeners.indexOf(listener), 1)
   }
-}
 
-export const createGetElement = 
-  <T, A>
-  (
-    modelDataGetter: (param: A) => PromiseLike<T>,
-    refreshListener: (listener: (event: ChangeEvent<any>) => void) => void,
-    refreshMatcher: (param: A, event: ChangeEvent<any>) => boolean = () => true
-  ):
-  (param?: A) => T | undefined => {
-  return (param) => {
-    const update = () => modelDataGetter(param).then(obj => setElement(obj))
-    const [element, setElement] = useState<T>(undefined)
-    useEffect(() => { update() }, [param])
-    refreshListener(e => {
-      if(refreshMatcher(param, e)) {
-        update()
+  return <T,> (
+    func: () => Query<T, DocType>, 
+    deps: DependencyList, 
+    ...ids: (string | ObjectId | BsonObjectId)[]
+  ) => {
+    const [state, setState] = useState<T>()
+    useEffect(() => subscribeListener(evt => {
+      const any: any = evt
+      if(
+        ids.length &&
+        any &&
+        any.documentKey &&
+        ids.some(id => id.toString() === any.documentKey._id.toString())) {
+        return
       }
-    })
-    return element
+      func().exec().then(d => setState(d))
+    }), deps ?? [])
+    return state
   }
 }

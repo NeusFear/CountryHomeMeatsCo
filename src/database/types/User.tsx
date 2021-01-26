@@ -1,42 +1,33 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { useMemo, DependencyList, useEffect, useState } from 'react'
+import mongoose, { Schema, Document, ObjectId, FilterQuery, Query } from 'mongoose';
+import { ObjectId as BsonObjectId } from 'bson'
 
-import { createGetElement, createRefreshListener } from '../Database';
+import { createResultWatcher } from '../Database';
+import { stat } from 'fs';
 
 export const userModelName = 'User'
 
 export interface IUser extends Document {
   name: string
   phoneNumbers: { name: string, number: string }[]
-  emails: string[]
+  emails: string[],
+  recordCards: {id: number}[],
 }
 
 const userSchmea = new Schema({
   name: { type: String, required: true },
-  phoneNumbers: { type: [{ name: String, number: String }], required: true },
-  emails: {type: [String], required: true }
+  phoneNumbers: { type: [{ 
+    name: { type: String, required: true }, 
+    number: { type: String, required: true }
+  }], required: true },
+  emails: {type: [String], required: true },
+  recordCards: { type: [{ 
+    id: { type: Number, required: true },
+    //TODO: record cards data
+   }], required: true}
 });
 
 const User = mongoose.model<IUser>(userModelName, userSchmea)
 
-export const createEmptyUser = (): IUser => {
-  return new User({
-    name: '',
-    phoneNumbers: [{ name: '', number:'' }],
-    emails: ['']
-  })
-}
-
-const refreshListener = createRefreshListener(User)
-export const useUserById = createGetElement<IUser, string>(
-  id => User.findById(id), 
-  refreshListener, 
-  (param, evt) => {
-    const any: any = evt
-    if(any.documentKey) {
-      return param === any.documentKey._id.toString()
-    }
-    return false
-  }
-)
-export const useAllUsers = createGetElement<Array<IUser>, any>(() => User.find(), refreshListener)
+export const useUsers = createResultWatcher(User)
 export default User

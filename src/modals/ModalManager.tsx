@@ -1,5 +1,7 @@
 import * as React from 'react';
 import Modal from 'react-modal';
+import ReactTooltip from 'react-tooltip';
+import { EditAnimalEatersModal } from './EditAnimalEatersModal';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
 import { SchueduleAnimalModal } from './ScheduleAnimalModal';
@@ -14,10 +16,12 @@ export let setModal: (type: string, state?: any) => void = () => {}
 
 export const editUserDetails = "edit-user-details"
 export const scheduleAnimal = "schedule-animal"
+export const editAnimalEaters = "edit-animal-eaters"
 
 const modals = {
   [editUserDetails]: state => <EditUserDetailsModal objectId={state} />,
-  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />
+  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />,
+  [editAnimalEaters]: state => <EditAnimalEatersModal id={state} />
 }
 
 
@@ -40,6 +44,7 @@ export const ModalManager = () => {
       style={customStyles}
       contentLabel="Example Modal"
     >
+    <ReactTooltip delayShow={200} /> 
     { modals[activeModal.type](activeModal.state) }
     </Modal>
   )

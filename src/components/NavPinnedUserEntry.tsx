@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { SvgUser, SvgCross } from "../assets/Icons"
-import { useUserById } from '../database/types/User'
+import User, { useUsers } from '../database/types/User'
 
 export const NavPinnedUserEntry = ({id, onClick, onRemove, selected} : {id: string, onClick: any, onRemove: any, selected: boolean}) => {
-  const details = useUserById(id)
+  const details = useUsers(() => User.findById(id), [id], id)
   if(details === undefined) {
     return (<div>Loading Info...</div>)
   }

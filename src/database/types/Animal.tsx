@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document, Types, mongo } from 'mongoose';
+import mongoose, { Schema, Document, Types, mongo, FilterQuery } from 'mongoose';
 import { ObjectId } from 'bson'
-import { createGetElement, createRefreshListener } from '../Database';
+import { createResultWatcher } from '../Database';
 import { userModelName } from './User';
 
 export const AnimalType = {
@@ -8,10 +8,21 @@ export const AnimalType = {
   Pig: "Pig"
 }
 
+export type Eater = { 
+  id: ObjectId, 
+  portion: number, 
+  recordCard: number
+}
+export const validateEaters = (eaters: Eater[]): boolean => {
+  const portions = eaters.map(e => e.portion)
+  return portions.reduce((a, b) => a + b, 0) === 1 &&
+         portions.every(p => p === 1 || p === 0.5 || p === 0.25)
+}
+
 export interface IAnimal extends Document {
   animalType: "Cow" | "Pig"
   bringer: ObjectId,
-  eater: { id: ObjectId, portion: number, recordCard: number }[],
+  eaters: Eater[],
   killDate: Date,
   bringInData?: {
     liveWeight: number,
@@ -51,21 +62,9 @@ const Animal = mongoose.model<IAnimal>('Animal', animalSchmea)
 export const createEmptyAnimal = (userID: string): IAnimal => {
   return new Animal({
     bringer: new ObjectId(userID),
-    eater: [],
+    eaters: [],
   })
 }
 
-const refreshListener = createRefreshListener(Animal)
-export const useAnimalById = createGetElement<IAnimal, string>(
-  id => Animal.findById(id), 
-  refreshListener, 
-  (param, evt) => {
-    const any: any = evt
-    if(any.documentKey) {
-      return param === any.documentKey._id.toString()
-    }
-    return false
-  }
-)
-export const useAnimals = createGetElement<Array<IAnimal>, any>(q => Animal.find(q), refreshListener)
+export const useAnimals = createResultWatcher(Animal)
 export default Animal

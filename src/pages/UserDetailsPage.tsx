@@ -3,15 +3,16 @@ import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser } from "../assets/Icons";
-import { useUserById } from "../database/types/User";
+import User, {  useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
-import { useAnimals, IAnimal } from "../database/types/Animal";
+import Animal, { useAnimals, IAnimal } from "../database/types/Animal";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
-  const user = useUserById(id)
-  const usersAnimals = useAnimals(React.useMemo(() => { eater: user?.id ?? null }, [id]))
+  const user = useUsers(() => User.findById(id), [id], id)
+
+  const usersAnimals = useAnimals(() => Animal.where('bringer', user?.id ?? null), [user, id])
   if(user === undefined || usersAnimals === undefined) {
     return (<div>Loading Info for user id {id}</div>)
   }

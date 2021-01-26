@@ -1,7 +1,7 @@
 import * as React from "react"
 import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
 
-import { createEmptyUser, IUser, useUserById } from "../database/types/User";
+import User, { IUser, useUsers } from "../database/types/User";
 import { setModal } from "../modals/ModalManager";
 
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
@@ -18,12 +18,16 @@ const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\
 
 export const EditUserDetailsModal = ({objectId}: {objectId: string}) => {
   return objectId === undefined ? 
-  (<EditUserDetailsModalWithUser user={createEmptyUser()}/>) : 
+  (<EditUserDetailsModalWithUser user={new User({
+    name: '',
+    phoneNumbers: [{ name: '', number:'' }],
+    emails: ['']
+  })}/>) : 
   (<EditUserDetailsModalWithUserID id={objectId}/>)
 }
 
 const EditUserDetailsModalWithUserID = ({id}: {id: string}) => {
-  const user = useUserById(id)
+  const user = useUsers(() => User.findById(id), [id], id)
   return user === undefined ?
     (<div>Loading User ID {id}</div>) :
     (<EditUserDetailsModalWithUser user={user}/>)
@@ -177,6 +181,6 @@ const EditorValidateInput = ({placeholder, current, predicate, onChange}:
   })
 
   return (    
-    <input placeholder={placeholder} className={`${valid ? "border-blue-500 bg-blue-100" : "border-red-500 bg-tomato-100"} w-60 border-2 rounded-sm p-1 my-1 mx-2 text-gray-800`} type="text" onChange={e => onInputChange(e.target.value)} value={data || ''}/>
+    <input placeholder={placeholder} className={`${valid ? "border-blue-500 bg-blue-100" : "border-red-500 bg-tomato-100"} placeholder-gray-700 w-60 border-2 rounded-sm p-1 my-1 mx-2 text-gray-800`} type="text" onChange={e => onInputChange(e.target.value)} value={data || ''}/>
   )
 }

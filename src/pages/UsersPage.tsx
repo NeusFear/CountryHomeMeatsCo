@@ -3,7 +3,7 @@ import { UserPinnedList } from "../App"
 import { useHistory } from 'react-router-dom';
 import { userDetailsPage } from "../NavBar";
 import { SvgNewUser, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
-import User, { IUser, useAllUsers } from "../database/types/User";
+import User, { IUser, useUsers } from "../database/types/User";
 import { editUserDetails, setModal } from "../modals/ModalManager";
 
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void, deleteUserDetails: () => void}) => {
@@ -24,7 +24,7 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
 }
 
 export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
-  const users = useAllUsers()
+  const users = useUsers(() => User.find())
   
   const deleteEntry = (user: IUser) => {
     user.delete()

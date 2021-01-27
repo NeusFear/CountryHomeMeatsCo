@@ -115,7 +115,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
       <div className="w-20">
         <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />
       </div>
-      <div className="flex-grow text-gray-800 group-hover:text-gray-900">
+      <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>
         <UserTag user={user} />
       </div>

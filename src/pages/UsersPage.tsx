@@ -9,7 +9,7 @@ import { editUserDetails, setModal } from "../modals/ModalManager";
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void, deleteUserDetails: () => void}) => {
   const history = useHistory()
   return (
-    <div className="bg-gray-100 hover:shadow-md rounded-lg px-2 py-2 shadow-sm flex flex-row mb-2" onClick={() => history.push(userDetailsPage, details.id)}>
+    <div className="cursor-pointer bg-gray-100 hover:shadow-md rounded-lg px-2 py-2 shadow-sm flex flex-row mb-2" onClick={() => history.push(userDetailsPage, details.id)}>
       <span className="pr-2 flex-1">{details.name}</span>
       <span className="pr-2 flex-1 flex flex-row">{details.phoneNumbers[0]?.number ?? 'Invalid: No Number'}{details.phoneNumbers.length > 1 ? <p className="ml-3 pt-0.5 text-xs bg-gray-200 rounded-md px-1"> +{details.phoneNumbers.length - 1}</p> : <></>}</span>
       <span className="pr-2 flex-1 flex flex-row">{details.emails[0] ?? 'Invalid: No Email'}{details.emails.length > 1 ? <p className="ml-3 pt-0.5 text-xs bg-gray-200 rounded-md px-1"> +{details.emails.length - 1}</p> : <></>}</span>

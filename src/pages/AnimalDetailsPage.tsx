@@ -98,7 +98,7 @@ const InvoiceListItem = ({delivered, name, id} : {delivered: boolean, name: stri
           </div>
           <div className="w-1/5 text-gray-800 group-hover:text-gray-900">
             <p className="font-semibold">Status:</p>
-            <p className={`${delivered ? "bg-green-100 hover:bg-green-200" : "bg-tomato-100 hover:bg-tomato-200"} px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{delivered ? "Delivered" : "Pending"}</p>
+            <p className={`${delivered ? "bg-green-100 hover:bg-green-200" : "bg-tomato-100 hover:bg-tomato-200"} px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{delivered ? "Paid" : "Pending"}</p>
           </div>
           <div className="w-1/6 mx-4 text-gray-800 group-hover:text-gray-900">
             <p className="font-semibold">Portion:</p>

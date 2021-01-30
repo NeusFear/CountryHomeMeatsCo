@@ -12,6 +12,7 @@ export interface IUser extends Document {
   phoneNumbers: { name: string, number: string }[]
   emails: string[],
   recordCards: {id: number}[],
+  notes: string
 }
 
 const userSchmea = new Schema({
@@ -24,7 +25,8 @@ const userSchmea = new Schema({
   recordCards: { type: [{ 
     id: { type: Number, required: true },
     //TODO: record cards data
-   }], required: true}
+   }], required: true},
+   notes: { type: String, required: true, default: '' },
 });
 
 const User = mongoose.model<IUser>(userModelName, userSchmea)

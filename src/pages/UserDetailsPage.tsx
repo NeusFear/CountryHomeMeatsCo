@@ -51,6 +51,14 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
                 {user.emails.map((e, idx) => <Email key={idx} email={e}/>)}
               </div>
             </div>
+            <div className="bg-white rounded-md p-2 mx-4 mb-4">
+                <textarea className="w-full border-black border" 
+                defaultValue={user.notes}
+                onBlur={e => {
+                  user.notes = e.target.value ?? ''
+                  user.save()
+                }}></textarea>
+            </div>
           </div>
 
           <div className="bg-gray-200 rounded-lg flex-grow mt-4">

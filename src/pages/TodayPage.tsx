@@ -103,11 +103,12 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
 
   const eatersValid = validateEaters(animal.eaters)
 
+  const history = useHistory();
+
+
   if(user === undefined) {
     return (<div>Loading...</div>)
   }
-
-  const history = useHistory();
   
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>

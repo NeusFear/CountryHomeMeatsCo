@@ -57,7 +57,7 @@ export const createResultWatcher = <DocType extends Document,> (model: Model<Doc
         ids.length &&
         any &&
         any.documentKey &&
-        ids.some(id => id.toString() === any.documentKey._id.toString())) {
+        ids.some(id => id.toString() !== any.documentKey._id.toString())) {
         return
       }
       func().exec().then(d => setState(d))

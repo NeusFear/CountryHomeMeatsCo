@@ -1,12 +1,13 @@
 import * as React from "react";
 import { useHistoryListState } from "../AppHooks";
 import { useHistory } from 'react-router-dom';
-import Animal, {  useAnimals } from "../database/types/Animal";
+import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter } from "../database/types/Animal";
 import { SvgArrow } from "../assets/Icons";
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(() => Animal.findById(id), [id], id)
+  const animalSexes = React.useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
 
   if(animal === undefined) {
     return (<div>Loading Info for animal id {id}</div>)
@@ -60,11 +61,60 @@ export const AnimalDetailsPage = () => {
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Living Info</div>
             </div>
             <div className="p-4">
-                <p className="font-semibold">Live Weight</p>
-                <p className="font-semibold">Color</p>
-                <p className="font-semibold">Sex</p>
-                <p className="font-semibold">Tag Number</p>
-                <p className="font-semibold">Pen Letter</p>
+                <p className="font-semibold">
+                  Live Weight: 
+                  <input type="number" defaultValue={animal.liveWeight} onBlur={e => {
+                    animal.liveWeight = e.target.valueAsNumber
+                    animal.save()
+                  }}/>
+                  lb
+                </p>
+                <p className="font-semibold">
+                  Color
+                  <input type="text" defaultValue={animal.color} onBlur={e => {
+                    animal.color = e.target.value
+                    animal.save()
+                  }}/>
+                </p>
+                <p className="font-semibold">
+                  Sex
+                  <select defaultValue={animal.sex ?? "__default"} onBlur={e => {
+                    animal.sex = e.target.value as AnimalSexes
+                    animal.save()
+                  }}>
+                    <option hidden disabled value="__default"></option>
+                    <option value={animalSexes[0]}>{animalSexes[0]}</option>
+                    <option value={animalSexes[1]}>{animalSexes[1]}</option>
+                    <option value={animalSexes[2]}>{animalSexes[2]}</option>
+                    <option value={animalSexes[3]}>{animalSexes[3]}</option>
+                  </select>
+                </p>
+                <p className="font-semibold">
+                  Tag Number
+                  <input type="number" defaultValue={animal.tagNumber} onBlur={e => {
+                    animal.tagNumber = e.target.valueAsNumber
+                    animal.save()
+                  }}/>
+                </p>
+                <p className="font-semibold">
+                  Pen Letter
+                  <select defaultValue={animal.penLetter ?? "__default"} onBlur={e => {
+                    animal.penLetter = e.target.value as PenLetter
+                    animal.save()
+                  }}>
+                      <option hidden disabled value="__default"></option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                      <option value="E">E</option>
+                      <option value="F">F</option>
+                      <option value="G">G</option>
+                      <option value="H">H</option>
+                      <option value="I">I</option>
+                      <option value="J">J</option>
+                  </select>
+                </p>
             </div>
           </div>
           <div className="bg-gray-200 rounded-lg mt-4">

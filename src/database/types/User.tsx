@@ -26,7 +26,7 @@ const userSchmea = new Schema({
     id: { type: Number, required: true },
     //TODO: record cards data
    }], required: true},
-   notes: { type: String, required: true, default: '' },
+   notes: { type: String, default: '' },
 });
 
 const User = mongoose.model<IUser>(userModelName, userSchmea)

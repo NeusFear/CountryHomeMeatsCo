@@ -19,22 +19,33 @@ export const validateEaters = (eaters: Eater[]): boolean => {
          portions.every(p => p === 1 || p === 0.5 || p === 0.25)
 }
 
+export const getSexes = (animal: IAnimal): AnimalSexes[] => {
+  return animal.animalType === "Cow" ? 
+    ["Steer", "Heffer", "Cow", "Bull"] :
+    ["Barrow", "Gilt", "Sow", "Boar"]
+}
+
+export type AnimalSexes = 
+    "Steer" | "Heffer" | "Cow" | "Bull" | 
+    "Barrow" | "Gilt" | "Sow" | "Boar"
+
+export type PenLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+
 export interface IAnimal extends Document {
   animalType: "Cow" | "Pig"
   bringer: ObjectId,
   eaters: Eater[],
   killDate: Date,
   confirmed: boolean,
-  bringInData?: {
-    liveWeight: number,
-    dressWeight: number,
-    color: string,
-    sex: string,
-    penLetter: string
-    processDate: Date,
-    tagNumber: number,
-    pigTatooNumber?: number
-  }
+  
+  liveWeight: number,
+  dressWeight: number,
+  color: string,
+  sex: AnimalSexes,
+  penLetter: PenLetter
+  processDate: Date,
+  tagNumber: number,
+  pigTatooNumber?: number
 }
 
 const animalSchmea = new Schema({
@@ -44,19 +55,18 @@ const animalSchmea = new Schema({
     id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
     portion: { type: Number, required: true },
     recordCard: { type: Number, required: true }
-  }], required: true },
+  }], default: [] },
   killDate: { type: Schema.Types.Date, required: true },
-  confirmed: { type: Boolean, required: true, default: false },
-  bringInData: { type: {
-    liveWeight: { type: Number, required: true },
-    dressWeight: { type: Number, required: true },
-    color: { type: String, required: true },
-    sex: { type: String, required: true },
-    penLetter: { type: String, required: true, uppercase: true, enum: ['A','B','C','D','E','F','G','H','I','J']},
-    processDate: { type: Schema.Types.Date, required: true },
-    tagNumber: { type: Number, required: true },
-    pigTatooNumber: { type: Number, required: false }
-  }},
+  confirmed: { type: Boolean, default: false },
+  
+  liveWeight: { type: Number },
+  dressWeight: { type: Number },
+  color: { type: String },
+  sex: { type: String },
+  penLetter: { type: String, uppercase: true, enum: ['A','B','C','D','E','F','G','H','I','J']},
+  processDate: { type: Schema.Types.Date },
+  tagNumber: { type: Number },
+  pigTatooNumber: { type: Number }
 });
 
 const Animal = mongoose.model<IAnimal>('Animal', animalSchmea)

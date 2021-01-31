@@ -21,7 +21,8 @@ export const EditUserDetailsModal = ({objectId}: {objectId: string}) => {
   (<EditUserDetailsModalWithUser user={new User({
     name: '',
     phoneNumbers: [{ name: '', number:'' }],
-    emails: ['']
+    emails: [''],
+    notes: ''
   })}/>) : 
   (<EditUserDetailsModalWithUserID id={objectId}/>)
 }

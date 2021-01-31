@@ -12,7 +12,7 @@ export const AnimalDetailsPage = () => {
     return (<div>Loading Info for animal id {id}</div>)
   }
   if(animal === null) {
-    return (<div>Error finding Info for user id {id}</div>)
+    return (<div>Error finding Info for animal id {id}</div>)
   }
 
   const currentState = 4;
@@ -45,8 +45,14 @@ export const AnimalDetailsPage = () => {
             </div>
             <div className="p-4">
                 <p>Kill Date</p>
-                <div className="bg-gray-100 p-2 font-semibold">00/00/0000</div>
-                <div className="font-semibold">Confirmed [x]</div>
+                <div className="bg-gray-100 p-2 font-semibold">{animal.killDate.toLocaleDateString()}</div>
+                <div className="font-semibold">
+                  Confirmed
+                  <input type="checkbox" checked={animal.confirmed} onChange={e => {
+                    animal.confirmed = e.target.checked
+                    animal.save()
+                  }}/>
+                </div>
             </div>
           </div>
           <div className="bg-gray-200 rounded-lg mt-4">

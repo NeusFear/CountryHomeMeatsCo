@@ -24,6 +24,7 @@ export interface IAnimal extends Document {
   bringer: ObjectId,
   eaters: Eater[],
   killDate: Date,
+  confirmed: boolean,
   bringInData?: {
     liveWeight: number,
     dressWeight: number,
@@ -45,6 +46,7 @@ const animalSchmea = new Schema({
     recordCard: { type: Number, required: true }
   }], required: true },
   killDate: { type: Schema.Types.Date, required: true },
+  confirmed: { type: Boolean, required: true, default: false },
   bringInData: { type: {
     liveWeight: { type: Number, required: true },
     dressWeight: { type: Number, required: true },

@@ -39,12 +39,12 @@ export const ModalManager = () => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen
       onRequestClose={() => setActiveModal(null)}
       style={customStyles}
       contentLabel="Example Modal"
     >
-    <ReactTooltip delayShow={200} /> 
+    <ReactTooltip delayShow={200} multiline /> 
     { modals[activeModal.type](activeModal.state) }
     </Modal>
   )

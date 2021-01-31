@@ -2,9 +2,12 @@ import { setModal } from "./ModalManager";
 import * as React from "react"
 import DayPicker from "react-day-picker"
 import { SvgCow, SvgPig } from "../assets/Icons"
-import Animal, { AnimalType, createEmptyAnimal, useAnimals } from "../database/types/Animal"
+import Animal, { AnimalType, createEmptyAnimal, IAnimal, useAnimals } from "../database/types/Animal"
 import ReactTooltip from "react-tooltip";
 import { getDayNumber } from "../Util";
+import User, { useUsers } from "../database/types/User";
+import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
+import { mongo } from "mongoose";
 
 const style = `
 .DayPicker-Day {
@@ -33,7 +36,10 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
   const [ scheduledDate, setScheduledDate ] = React.useState<Date>()
 
   const dayNumber = getDayNumber()
-  const allAnimals = useAnimals(() => Animal.where('killDate').gte(Date.now()), [dayNumber])
+  const allAnimals = useAnimals(() => Animal.where('killDate').gte(Date.now()).select('killDate bringer'), [dayNumber])
+
+  const allUsers = useUsers(() => User.find().select('name'))
+  const allUserNames = allUsers === undefined ? undefined : allUsers.reduce((map, obj) => map.set(obj.id, obj.name), new Map<string, string>())
   
   function isDayAvailable(date: Date) {
     return getDayNumber(date) >= dayNumber
@@ -42,9 +48,9 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
 
   function getOrdersForDay(date: Date) {
     if(allAnimals === undefined) {
-      return 0
+      return []
     }
-    return allAnimals.filter(a => getDayNumber(a.killDate) == getDayNumber(date)).length
+    return allAnimals.filter(a => getDayNumber(a.killDate) == getDayNumber(date))
   }
 
   const isOrdersBetween = (date: Date, min: number, max: number): boolean => {
@@ -52,7 +58,7 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
     if(date.getDay() === 0 || date.getDay() === 6) {
       return false
     }
-    const num = getOrdersForDay(date)
+    const num = getOrdersForDay(date).length
     return num >= min && num <= max
   }
 
@@ -63,8 +69,10 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
     newAnimal.save().then(() => setModal(null))
   }
 
+  const [selectedMonth, setSelectedMonth] = React.useState(new Date())
+
   return (
-    <div>
+    <div style={{width: '450px', height:'400px'}}>
       <div className="bg-gray-800 w-full rounded-t-sm text-white p-2 font-semibold">
         Schedule a New Animal
       </div>
@@ -89,14 +97,35 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
               isNormalDay: date => isOrdersBetween(date, 4, 6),
               isBusyDay: date => isOrdersBetween(date, 7, 9),
             }}
-            fixedWeeks
+            month={selectedMonth}
+            captionElement={({ date, localeUtils }) => 
+              <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth}/>
+            }
+            fromMonth={fromMonth}
+            toMonth={toMonth}
             disabledDays={[{ daysOfWeek: [0, 6] }, date => !isDayAvailable(date)]}
             renderDay={day => {
               const orders = getOrdersForDay(day)
+              const orderMap = new Map<string, number>()
+              orders.forEach(order => {
+                if(allUserNames === undefined) {
+                  return
+                }
+                const key = allUserNames.get(order.bringer.toHexString())
+                if(orderMap.has(key)) {
+                  orderMap.set(key, orderMap.get(key) + 1)  
+                } else {
+                  orderMap.set(key, 1)
+                }
+              })
+
               return (
-                <span data-tip={`${orders} Order${orders===1?'':'s'}`}>
+                <div data-tip={Array.from(orderMap).map(o => `${o[1]}x ${o[0]}`).join("<br>")}
+                //Below is some hacks to make this div take up the entire parent area.
+                //This is to have the data-tip take up the whole area
+                style={{ margin: '-8px', padding: '8px'}}>
                   {day.getDate()}
-                </span>
+                </div>
               )
             }}
           />

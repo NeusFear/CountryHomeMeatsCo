@@ -1,13 +1,44 @@
 import * as React from "react";
 import { useHistoryListState } from "../AppHooks";
 import { useHistory } from 'react-router-dom';
-import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter } from "../database/types/Animal";
+import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters } from "../database/types/Animal";
 import { SvgArrow } from "../assets/Icons";
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(() => Animal.findById(id), [id], id)
   const animalSexes = React.useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
+
+  const currentState = React.useMemo(() => {
+    if(!animal || !animal.confirmed) return 0
+    if([ animal.liveWeight, animal.color, animal.sex, 
+        animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
+    if(animal.dressWeight === undefined) return 2
+    if(validateEaters(animal.eaters)) return 3
+    if(animal.processDate === undefined) return 4
+    if(animal.pickedUp) return 5
+    return 6
+  }, [
+    //To get from scheduled to confirmed
+    animal?.confirmed,
+
+    //To get from confirmed to arrived
+    animal?.liveWeight, animal?.color, animal?.sex, animal?.tagNumber, animal?.penLetter,
+
+    //To get from arrived to hanging
+    animal?.dressWeight,
+
+    //To get from hanging to ready-to-cut.
+    //The stringify is as it needs to be one element, rather than several
+    JSON.stringify(animal?.eaters.map(e => { return [e.id, e.portion, e.recordCard] })),
+
+    //To get from ready-to-cut to ready-for-pickup
+    animal?.processDate,
+
+    //To get from ready-for-pickup to archived
+    animal?.pickedUp
+  ])
+
 
   if(animal === undefined) {
     return (<div>Loading Info for animal id {id}</div>)
@@ -16,7 +47,7 @@ export const AnimalDetailsPage = () => {
     return (<div>Error finding Info for animal id {id}</div>)
   }
 
-  const currentState = 4;
+  const nanToUndefined = (num: number) => isNaN(num) ? undefined : num
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -24,19 +55,19 @@ export const AnimalDetailsPage = () => {
         <div className="text-white text-4xl font-bold ml-4">ANIMAL INFO</div>
       </div>
       <div className="flex flex-row w-full mt-4 font-bold text-center">
-        <div className={`flex-grow p-2 rounded-md shadow-md my-1 mr-1 ml-4 border-4 ${currentState > 1 ? "border-green-500" : "border-gray-600"}`}>Scheduled</div>
-        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState > 2 ? "text-green-300" : "text-gray-400"}`} />
-        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState > 2 ? "border-green-500" : "border-gray-600"}`}>Confirmed</div>
-        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState > 3 ? "text-green-300" : "text-gray-400"}`} />
-        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState > 3 ? "border-green-500" : "border-gray-600"}`}>Arrived</div>
-        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState > 4 ? "text-green-300" : "text-gray-400"}`} />
-        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState > 4 ? "border-green-500" : "border-gray-600"}`}>Hanging</div>
-        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState > 5 ? "text-green-300" : "text-gray-400"}`} />
-        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState > 5 ? "border-green-500" : "border-gray-600"}`}>Ready to Cut</div>
-        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState > 6 ? "text-green-300" : "text-gray-400"}`} />
-        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState > 6 ? "border-green-500" : "border-gray-600"}`}>Ready to Pickup</div>
-        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState > 7 ? "text-green-300" : "text-gray-400"}`} />
-        <div className={`flex-grow p-2 rounded-md shadow-md my-1 ml-1 mr-2 border-4 ${currentState > 7 ? "border-green-500" : "border-gray-600"}`}>Delivered</div>
+        <div className={`flex-grow p-2 rounded-md shadow-md my-1 mr-1 ml-4 border-4 ${currentState >= 0 ? "border-green-500" : "border-gray-600"}`}>Scheduled</div>
+        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 1 ? "text-green-300" : "text-gray-400"}`} />
+        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState >= 1 ? "border-green-500" : "border-gray-600"}`}>Confirmed</div>
+        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 2 ? "text-green-300" : "text-gray-400"}`} />
+        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState >= 2 ? "border-green-500" : "border-gray-600"}`}>Arrived</div>
+        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 3 ? "text-green-300" : "text-gray-400"}`} />
+        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState >= 3 ? "border-green-500" : "border-gray-600"}`}>Hanging</div>
+        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 4 ? "text-green-300" : "text-gray-400"}`} />
+        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState >= 4 ? "border-green-500" : "border-gray-600"}`}>Ready to Cut</div>
+        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 5 ? "text-green-300" : "text-gray-400"}`} />
+        <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState >= 5 ? "border-green-500" : "border-gray-600"}`}>Ready to Pickup</div>
+        <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 6 ? "text-green-300" : "text-gray-400"}`} />
+        <div className={`flex-grow p-2 rounded-md shadow-md my-1 ml-1 mr-2 border-4 ${currentState >= 7 ? "border-green-500" : "border-gray-600"}`}>Delivered</div>
       </div>
       <div className="flex-grow flex flex-row w-full">
       <div className="flex-grow pl-4 pr-2 py-4 flex flex-col">
@@ -63,22 +94,22 @@ export const AnimalDetailsPage = () => {
             <div className="p-4">
                 <p className="font-semibold">
                   Live Weight: 
-                  <input type="number" defaultValue={animal.liveWeight} onBlur={e => {
-                    animal.liveWeight = e.target.valueAsNumber
+                  <input type="number" disabled={currentState < 1} defaultValue={animal.liveWeight} onChange={e => {
+                    animal.liveWeight = nanToUndefined(e.target.valueAsNumber)
                     animal.save()
                   }}/>
                   lb
                 </p>
                 <p className="font-semibold">
                   Color
-                  <input type="text" defaultValue={animal.color} onBlur={e => {
+                  <input type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
                     animal.color = e.target.value
                     animal.save()
                   }}/>
                 </p>
                 <p className="font-semibold">
                   Sex
-                  <select defaultValue={animal.sex ?? "__default"} onBlur={e => {
+                  <select disabled={currentState < 1} defaultValue={animal.sex ?? "__default"} onChange={e => {
                     animal.sex = e.target.value as AnimalSexes
                     animal.save()
                   }}>
@@ -91,14 +122,14 @@ export const AnimalDetailsPage = () => {
                 </p>
                 <p className="font-semibold">
                   Tag Number
-                  <input type="number" defaultValue={animal.tagNumber} onBlur={e => {
+                  <input type="number" disabled={currentState < 1} defaultValue={animal.tagNumber} onChange={e => {
                     animal.tagNumber = e.target.valueAsNumber
                     animal.save()
                   }}/>
                 </p>
                 <p className="font-semibold">
                   Pen Letter
-                  <select defaultValue={animal.penLetter ?? "__default"} onBlur={e => {
+                  <select disabled={currentState < 1} defaultValue={animal.penLetter ?? "__default"} onChange={e => {
                     animal.penLetter = e.target.value as PenLetter
                     animal.save()
                   }}>

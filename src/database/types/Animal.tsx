@@ -45,7 +45,11 @@ export interface IAnimal extends Document {
   penLetter: PenLetter
   processDate: Date,
   tagNumber: number,
-  pigTatooNumber?: number
+  pigTatooNumber?: number,
+
+  processedDate: Date,
+
+  pickedUp: boolean
 }
 
 const animalSchmea = new Schema({
@@ -66,7 +70,11 @@ const animalSchmea = new Schema({
   penLetter: { type: String, uppercase: true, enum: ['A','B','C','D','E','F','G','H','I','J']},
   processDate: { type: Schema.Types.Date },
   tagNumber: { type: Number },
-  pigTatooNumber: { type: Number }
+  pigTatooNumber: { type: Number },
+
+  processedDate: { type: Schema.Types.Date },
+
+  pickedUp: { type: Boolean },
 });
 
 const Animal = mongoose.model<IAnimal>('Animal', animalSchmea)

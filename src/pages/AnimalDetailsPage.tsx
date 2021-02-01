@@ -16,7 +16,7 @@ export const AnimalDetailsPage = () => {
     if([ animal.liveWeight, animal.color, animal.sex, 
         animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
     if(animal.dressWeight === undefined) return 2
-    if(validateEaters(animal.eaters)) return 3
+    if(!validateEaters(animal.eaters)) return 3
     if(animal.processDate === undefined) return 4
     if(animal.pickedUp) return 5
     return 6
@@ -40,6 +40,8 @@ export const AnimalDetailsPage = () => {
     //To get from ready-for-pickup to archived
     animal?.pickedUp
   ])
+
+  console.log(currentState)
 
 
   if(animal === undefined) {

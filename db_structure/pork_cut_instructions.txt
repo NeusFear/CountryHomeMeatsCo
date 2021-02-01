@@ -1,22 +1,22 @@
 //This is not json format and not final really, need to confirm a few things
 
-				Fresh																					Cured
-	Ham			(1 2)(whole 2pcs endsForRoast shankForRoast)(centers/buttEnd/sliceAll .5" 2/pkg)		(1 2)(whole 2pcs endsForRoast shankForRoast)(centers/buttEnd/sliceAll .5" 2/pkg)	//See ham notes at bottom it's complicated
-	Bacon 		(1 2)(SliceFresh grind) (1.0lb 1.5lb 2.0lb)												(1 2)(regular thick thin)(1.0lb 1.5lb 2.0lb)
-	Jowl		(1 2)(Grind Whole Slice)																(1 2)(Chunk Whole Slice)
-	Loin		(1 2)(.5" .75" 1" 1.25")(2 3 4 5 6)														(1 2)(.5" .75" 1" 1.25")(2 3 4 5 6)
-	Butt		(1 2)(CSRibs 3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75" grind)(2 3 4)				(1 2)(CSRibs 3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75")(2 3 4)
-	Picnic		(1 2)(3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75" grind)(2 3 4)						(1 2)(3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75")(2 3 4)
-	
-	Ribs		(whole split)
-	Sausage		(regular hot noSeasoning noPreservatives)
-	Head 		(yes no)
-	Feet 		(yes no)
-	Heart 		(yes no)
-	Fat			(yes no)
-	
+                Fresh                                                                                    Cured
+    Ham            (1 2)(whole 2pcs endsForRoast shankForRoast)(centers/buttEnd/sliceAll .5" 2/pkg)        (1 2)(whole 2pcs endsForRoast shankForRoast)(centers/buttEnd/sliceAll .5" 2/pkg)    //See ham notes at bottom it's complicated
+    Bacon         (1 2)(SliceFresh grind) (1.0lb 1.5lb 2.0lb)                                                (1 2)(regular thick thin)(1.0lb 1.5lb 2.0lb)
+    Jowl        (1 2)(Grind Whole Slice)                                                                (1 2)(Chunk Whole Slice)
+    Loin        (1 2)(.5" .75" 1" 1.25")(2 3 4 5 6)                                                        (1 2)(.5" .75" 1" 1.25")(2 3 4 5 6)
+    Butt        (1 2)(CSRibs 3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75" grind)(2 3 4)                (1 2)(CSRibs 3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75")(2 3 4)
+    Picnic        (1 2)(3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75" grind)(2 3 4)                        (1 2)(3lbRoast 4lbRoast 5lbRoast 2pcs whole .5" .75")(2 3 4)
+    
+    Ribs        (whole split)
+    Sausage        (regular hot noSeasoning noPreservatives)
+    Head         (yes no)
+    Feet         (yes no)
+    Heart         (yes no)
+    Fat            (yes no)
+    
 //Note for all dropdowns is that they don't require you to select values in that dropdown, you can double click in the field and enter a cutsom value.
-	
+    
 //The first dropdown (1 2) is how many of this cut are to be fresh or cured (we can do this differently)
 
 //Ham because it's weird

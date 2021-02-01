@@ -1,8 +1,10 @@
 import * as React from "react";
 import { useHistoryListState } from "../AppHooks";
 import { useHistory } from 'react-router-dom';
-import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters } from "../database/types/Animal";
+import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters, IAnimal } from "../database/types/Animal";
 import { SvgArrow } from "../assets/Icons";
+import Autosuggest from 'react-autosuggest';
+import User, { IUser, useUsers } from "../database/types/User";
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
@@ -76,7 +78,7 @@ export const AnimalDetailsPage = () => {
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Schedule</div>
             </div>
             <div className="p-4">
-                <p>Kill Date</p>
+                <span>Kill Date</span>
                 <div className="bg-gray-100 p-2 font-semibold">{animal.killDate.toLocaleDateString()}</div>
                 <div className="font-semibold">
                   Confirmed
@@ -92,23 +94,23 @@ export const AnimalDetailsPage = () => {
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Living Info</div>
             </div>
             <div className="p-4">
-                <p className="font-semibold">
-                  Live Weight: 
+                <div className="font-semibold">
+                  <span>Live Weight:</span>
                   <input type="number" disabled={currentState < 1} defaultValue={animal.liveWeight} onChange={e => {
                     animal.liveWeight = nanToUndefined(e.target.valueAsNumber)
                     animal.save()
                   }}/>
-                  lb
-                </p>
-                <p className="font-semibold">
-                  Color
+                  <span>lb</span>
+                </div>
+                <div className="font-semibold">
+                  <span>Color</span>
                   <input type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
                     animal.color = e.target.value
                     animal.save()
                   }}/>
-                </p>
-                <p className="font-semibold">
-                  Sex
+                </div>
+                <div className="font-semibold">
+                  <span>Sex</span>
                   <select disabled={currentState < 1} defaultValue={animal.sex ?? "__default"} onChange={e => {
                     animal.sex = e.target.value as AnimalSexes
                     animal.save()
@@ -119,16 +121,16 @@ export const AnimalDetailsPage = () => {
                     <option value={animalSexes[2]}>{animalSexes[2]}</option>
                     <option value={animalSexes[3]}>{animalSexes[3]}</option>
                   </select>
-                </p>
-                <p className="font-semibold">
-                  Tag Number
+                </div>
+                <div className="font-semibold">
+                  <span>Tag Number</span>
                   <input type="number" disabled={currentState < 1} defaultValue={animal.tagNumber} onChange={e => {
                     animal.tagNumber = e.target.valueAsNumber
                     animal.save()
                   }}/>
-                </p>
-                <p className="font-semibold">
-                  Pen Letter
+                </div>
+                <div className="font-semibold">
+                  <span>Pen Letter</span>
                   <select disabled={currentState < 1} defaultValue={animal.penLetter ?? "__default"} onChange={e => {
                     animal.penLetter = e.target.value as PenLetter
                     animal.save()
@@ -145,7 +147,7 @@ export const AnimalDetailsPage = () => {
                       <option value="I">I</option>
                       <option value="J">J</option>
                   </select>
-                </p>
+                </div>
             </div>
           </div>
           <div className="bg-gray-200 rounded-lg mt-4">
@@ -153,10 +155,16 @@ export const AnimalDetailsPage = () => {
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Cutting Room Info</div>
             </div>
             <div className="p-4">
-                <p className="font-semibold">Dress Weight</p>
+                <div className="font-semibold">
+                  <span>Dress Weight</span>
+                  <input type="number" disabled={currentState < 2} defaultValue={animal.dressWeight} onChange={e => {
+                    animal.dressWeight = nanToUndefined(e.target.valueAsNumber)
+                    animal.save()
+                  }}/>
+                  <span>lb</span>
+                </div>
                 <p className="font-semibold">Eaters:</p>
-                <StringUserTag name="Some Name" id={4} />
-                <StringUserTag name="Some Other Name" id={2} />
+                <EaterList animal={animal} currentState={currentState} />
             </div>
           </div>
         </div>
@@ -207,4 +215,97 @@ const StringUserTag = ({name, id} : {name: string, id?: number}) => {
         {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">#{id}</p>}
       </div>
     )
+}
+
+
+type DummyEater = { 
+  _rand: number
+  foundUser?: IUser
+  portion?: number, 
+  recordCard?: number
+}
+
+const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: number}) => {
+  const [ eaters, setEaters] = React.useState<DummyEater[]>()
+
+  const updateEaters = () => setEaters([...eaters])
+  const allUsers = useUsers(() => User.find().select('name recordCards'))?.sort((a, b) => a.name.localeCompare(b.name))
+
+  React.useEffect(() => {
+    if(eaters === undefined && animal !== undefined) {
+      setEaters(animal.eaters.map(e => { return {
+        _rand: Math.random(),
+        id: allUsers.find(u => u.id === e.id.toHexString()), 
+        portion: e.portion,
+        recordCard: e.recordCard
+      }}))
+    }
+  }, [animal])
+
+
+  return (
+    <div>
+      {eaters && eaters.map(eater =>
+        <EaterPart key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState}/>
+      )}
+      <div onClick={() => {
+        eaters.push({ _rand: Math.random() })
+        updateEaters()
+      }}>New</div>
+    </div>
+  )
+}
+
+const EaterPart = ({eater, allUsers, currentState}: {eater: DummyEater, allUsers: IUser[], currentState: number}) => {
+  const [ user, setUser ] = React.useState<IUser>()
+  eater.foundUser = user
+  return (
+    <div className="flex flex-row">
+      <WrappedAutoSuggest 
+        suggestion={allUsers}
+        mappingFunc={(user: IUser) => user.name}
+        onChange={setUser}
+      />
+      <select disabled={eater.foundUser === undefined || currentState < 1} defaultValue={eater.portion ?? "__default"} onChange={e => eater.portion = parseInt(e.target.value)}>
+        <option hidden disabled value="__default"></option>
+        { eater.foundUser && 
+          eater.foundUser.recordCards.slice()
+            .sort((a, b) => a.id - b.id)
+            .map(c => <option key={c.id} value={c.id}>{c.id}</option>)
+        }
+      </select>
+    </div>
+  )
+}
+
+//Export this to a util function
+const WrappedAutoSuggest = ({suggestion, mappingFunc, onChange}: {
+  suggestion: any[],
+  mappingFunc: (t: any) => string,
+  onChange: (value: any, rawValue: string) => void
+}) => {
+  const [ suggestions, setSuggestions ] = React.useState(suggestion)
+  const [ value, setValue ] = React.useState('')
+
+  const onValueChanged = (_, { newValue }: { newValue: string }) => {
+    setValue(newValue)
+    onChange(suggestions.find(s => mappingFunc(s).toLowerCase() == newValue.toLowerCase()), newValue)
+  }
+  return (
+    <Autosuggest 
+    suggestions={suggestions}
+    onSuggestionsFetchRequested={({value}: {value: string}) => {
+      const lowerValue = value.toLowerCase().trim()
+      setSuggestions(suggestion.filter(s => mappingFunc(s).toLowerCase().startsWith(lowerValue)))
+    }}
+    onSuggestionsClearRequested={() => setSuggestions([])}
+    getSuggestionValue={t => mappingFunc(t)}
+    renderSuggestion={t => <div>{mappingFunc(t)}</div>}
+    inputProps={{
+      value,
+      placeholder: 'Type a Name',
+      onChange: onValueChanged
+    }}
+  />
+  )
 }

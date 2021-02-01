@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig } from "../assets/Icons"
 import Animal, { IAnimal, useAnimals, validateEaters } from "../database/types/Animal"
 import User, { IUser, useUsers } from "../database/types/User"
-import { editAnimalEaters, scheduleAnimal, setModal } from "../modals/ModalManager"
+import { scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
 import { getDayNumber } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
@@ -122,7 +122,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        {!eatersValid && <span data-tip="Invalid Eaters. Click to fix" onClick={() => setModal(editAnimalEaters, animal.id)} className="px-2 bg-red-200 text-tomato-700">!</span> }
+        {!eatersValid && <span data-tip="Invalid Eaters. Click to fix" onClick={() => history.push(animalDetailsPage, animal.id)} className="px-2 bg-red-200 text-tomato-700">!</span> }
         {sortedEaters && sortedEaters.map(e => <UserTag user={user} id={e.card}/>)}
       </div>
     </div>

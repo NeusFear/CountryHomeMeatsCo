@@ -15,12 +15,10 @@ export let setModal: (type: string, state?: any) => void = () => {}
 
 export const editUserDetails = "edit-user-details"
 export const scheduleAnimal = "schedule-animal"
-export const editAnimalEaters = "edit-animal-eaters"
 
 const modals = {
   [editUserDetails]: state => <EditUserDetailsModal objectId={state} />,
-  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />,
-  [editAnimalEaters]: state => <EditAnimalEatersModal id={state} />
+  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />
 }
 
 

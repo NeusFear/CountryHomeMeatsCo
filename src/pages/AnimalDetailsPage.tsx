@@ -41,9 +41,6 @@ export const AnimalDetailsPage = () => {
     animal?.pickedUp
   ])
 
-  console.log(currentState)
-
-
   if(animal === undefined) {
     return (<div>Loading Info for animal id {id}</div>)
   }

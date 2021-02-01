@@ -1,5 +1,5 @@
 import * as React from "react"
-import { DayModifiers, DayPickerProps, LocaleUtils } from "react-day-picker";
+import { LocaleUtils } from "react-day-picker";
 
 const currentYear = new Date().getFullYear();
 export const fromMonth = new Date(currentYear, 0);

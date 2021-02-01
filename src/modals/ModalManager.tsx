@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Modal from 'react-modal';
 import ReactTooltip from 'react-tooltip';
-import { EditAnimalEatersModal } from './EditAnimalEatersModal';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
 import { SchueduleAnimalModal } from './ScheduleAnimalModal';

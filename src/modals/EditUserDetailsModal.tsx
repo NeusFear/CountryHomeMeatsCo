@@ -28,7 +28,7 @@ export const EditUserDetailsModal = ({objectId}: {objectId: string}) => {
 }
 
 const EditUserDetailsModalWithUserID = ({id}: {id: string}) => {
-  const user = useUsers(() => User.findById(id), [id], id)
+  const user = useUsers(User.findById(id), [id], id)
   return user === undefined ?
     (<div>Loading User ID {id}</div>) :
     (<EditUserDetailsModalWithUser user={user}/>)

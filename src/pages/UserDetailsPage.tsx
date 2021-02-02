@@ -11,9 +11,9 @@ import Animal, { useAnimals, IAnimal } from "../database/types/Animal";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
-  const user = useUsers(() => User.findById(id), [id], id)
+  const user = useUsers(User.findById(id), [id], id)
 
-  const usersAnimals = useAnimals(() => Animal.where('bringer', user?.id ?? null), [user, id])
+  const usersAnimals = useAnimals(Animal.where('bringer', user?.id ?? null), [user, id])
   if(user === undefined || usersAnimals === undefined) {
     return (<div>Loading Info for user id {id}</div>)
   }

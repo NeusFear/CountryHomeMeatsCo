@@ -63,7 +63,7 @@ const SelectedCutList = () => {
 const ScheduledSlaughterList = () => {
   const now = new Date()
   now.setHours(12, 0, 0, 0)
-  const scheduledToday = useAnimals(() => Animal.where('killDate', now), [ getDayNumber(now) ])
+  const scheduledToday = useAnimals(Animal.where('killDate', now), [ getDayNumber(now) ])
 
   if(scheduledToday === undefined) {
     return (<div>Loading...</div>)
@@ -90,7 +90,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
     animal.eaters.forEach(eater => arr.push(eater.id))
     return arr.map(e => { return { _id: e }})
   }, [animal])
-  const allUsers = useUsers(() => User.where('_id').in(allIds), [allIds], ...allIds.map(i => i._id))
+  const allUsers = useUsers(User.where('_id').in(allIds), [allIds], ...allIds.map(i => i._id))
   
   const user = allUsers?.find(u => u.id === animal.bringer.toHexString())
   const sortedEaters = allUsers !== undefined ? undefined : animal.eaters.map(e => {

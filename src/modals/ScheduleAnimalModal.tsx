@@ -36,9 +36,9 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
   const [ scheduledDate, setScheduledDate ] = React.useState<Date>()
 
   const dayNumber = getDayNumber()
-  const allAnimals = useAnimals(() => Animal.where('killDate').gte(Date.now()).select('killDate bringer'), [dayNumber])
+  const allAnimals = useAnimals(Animal.where('killDate').gte(Date.now()).select('killDate bringer'), [dayNumber])
 
-  const allUsers = useUsers(() => User.find().select('name'))
+  const allUsers = useUsers(User.find().select('name'))
   const allUserNames = allUsers === undefined ? undefined : allUsers.reduce((map, obj) => map.set(obj.id, obj.name), new Map<string, string>())
   
   function isDayAvailable(date: Date) {

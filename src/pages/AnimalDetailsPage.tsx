@@ -8,7 +8,7 @@ import User, { IUser, useUsers } from "../database/types/User";
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
-  const animal = useAnimals(() => Animal.findById(id), [id], id)
+  const animal = useAnimals(Animal.findById(id), [id], id)
   const animalSexes = React.useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
 
   const currentState = React.useMemo(() => {
@@ -228,7 +228,7 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
   const [ eaters, setEaters] = React.useState<DummyEater[]>()
 
   const updateEaters = () => setEaters([...eaters])
-  const allUsers = useUsers(() => User.find().select('name recordCards'))?.sort((a, b) => a.name.localeCompare(b.name))
+  const allUsers = useUsers(User.find().select('name recordCards'))?.sort((a, b) => a.name.localeCompare(b.name))
 
   React.useEffect(() => {
     if(eaters === undefined && animal !== undefined) {

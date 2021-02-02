@@ -33,7 +33,7 @@ export const connectToDB = (ip: string): ConnectState => {
 
 export const createResultWatcher = <DocType extends Document,> (model: Model<DocType>):
 <T,>(
-  func: () => Query<T, DocType>, 
+  query: Query<T, DocType>, 
   deps?: DependencyList | undefined, 
   ...ids: (string | ObjectId | BsonObjectId)[]) => T => {
   const listeners: ((event: ChangeEvent<any>) => void)[] = []
@@ -46,7 +46,7 @@ export const createResultWatcher = <DocType extends Document,> (model: Model<Doc
   }
 
   return <T,> (
-    func: () => Query<T, DocType>, 
+    query: Query<T, DocType>, 
     deps: DependencyList, 
     ...ids: (string | ObjectId | BsonObjectId)[]
   ) => {
@@ -60,7 +60,7 @@ export const createResultWatcher = <DocType extends Document,> (model: Model<Doc
         ids.some(id => id.toString() !== any.documentKey._id.toString())) {
         return
       }
-      func().exec().then(d => setState(d))
+      query.exec().then(d => setState(d))
     }), deps ?? [])
     return state
   }

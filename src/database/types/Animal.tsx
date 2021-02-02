@@ -11,7 +11,7 @@ export const AnimalType = {
 export type Eater = { 
   id: ObjectId, 
   portion: number, 
-  recordCard: number
+  cutInstruction: number
 }
 export const validateEaters = (eaters: Eater[]): boolean => {
   const portions = eaters.map(e => e.portion)
@@ -56,7 +56,7 @@ const animalSchmea = new Schema({
   eaters: { type: [{
     id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
     portion: { type: Number, required: true },
-    recordCard: { type: Number, required: true }
+    cutInstruction: { type: Number, required: true }
   }], default: [] },
   killDate: { type: Schema.Types.Date, required: true },
   confirmed: { type: Boolean, default: false },

@@ -1,4 +1,3 @@
-import * as React from "react"
 import Animal, { IAnimal, useAnimals } from "../database/types/Animal"
 import User, { useUsers } from "../database/types/User"
 import { setModal } from "./ModalManager"

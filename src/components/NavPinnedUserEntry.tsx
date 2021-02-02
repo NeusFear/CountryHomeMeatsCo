@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { SvgUser, SvgCross } from "../assets/Icons"
 import User, { useUsers } from '../database/types/User'
 

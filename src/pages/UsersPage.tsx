@@ -1,10 +1,10 @@
-import * as React from "react"
 import { UserPinnedList } from "../App"
 import { useHistory } from 'react-router-dom';
 import { userDetailsPage } from "../NavBar";
 import { SvgNewUser, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
 import User, { IUser, useUsers } from "../database/types/User";
 import { editUserDetails, setModal } from "../modals/ModalManager";
+import { useMemo, useState } from "react";
 
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void, deleteUserDetails: () => void}) => {
   const history = useHistory()
@@ -24,8 +24,8 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
 }
 
 export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
-  const [search, setSearch] = React.useState<string>('')
-  const regExp = React.useMemo(() => new RegExp(search.split(' ').map(s => `(?=.*${s})`).join(''), 'i'), [search])
+  const [search, setSearch] = useState<string>('')
+  const regExp = useMemo(() => new RegExp(search.split(' ').map(s => `(?=.*${s})`).join(''), 'i'), [search])
   const users = useUsers(User.where('name').regex(regExp), [search])
 
   const deleteEntry = (user: IUser) => {

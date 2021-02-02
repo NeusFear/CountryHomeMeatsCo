@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback, useState } from 'react';
 import { 
   MemoryRouter as Router,
   Switch,
@@ -15,16 +15,18 @@ import ReactTooltip from 'react-tooltip';
 
 export const AppContainer = () => {
   let connectState = connectToDB("localhost")
-  return connectState.connected ? <App/> : <div>Not Connected: {connectState.details}</div>
+  return (
+    connectState.connected ? <App/> : <div>Not Connected: {connectState.details}</div>
+  )
 }
 
 const App = () => {  
-  const [pinnedList, setPinnedList] = React.useState<UserPinnedList>({ 
+  const [pinnedList, setPinnedList] = useState<UserPinnedList>({ 
     allPinned: [],
     updatePinned: () => {},
   })
 
-  pinnedList.updatePinned = React.useCallback((id: string, add: boolean) => {
+  pinnedList.updatePinned = useCallback((id: string, add: boolean) => {
     let newArray = [...pinnedList.allPinned]
 
     let existIndex = newArray.indexOf(id)

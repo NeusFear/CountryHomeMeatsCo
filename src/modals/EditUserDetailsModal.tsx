@@ -1,4 +1,4 @@
-import * as React from "react"
+import { useEffect, useState } from "react";
 import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
 
 import User, { IUser, useUsers } from "../database/types/User";
@@ -40,8 +40,8 @@ type ValidatedString = {
 }
 
 const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {  
-  const [nameData, setNameData] = React.useState<ValidatedString>(null) 
-  const [phoneNumbers, setPhoneNumbers] = React.useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
+  const [nameData, setNameData] = useState<ValidatedString>(null) 
+  const [phoneNumbers, setPhoneNumbers] = useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
     [...user.phoneNumbers].map(d => {
       return {
         name: { text: d.name, valid: false },
@@ -50,7 +50,7 @@ const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {
       }
     })
   )
-  const [emails, setEmails] = React.useState(() => [...user.emails].map(e => { return { text: e, valid: false, _id: Math.random() }}))
+  const [emails, setEmails] = useState(() => [...user.emails].map(e => { return { text: e, valid: false, _id: Math.random() }}))
   
   const valid = 
     (nameData !== null && nameData.valid) && 
@@ -165,8 +165,8 @@ const EditorValidateInput = ({placeholder, current, predicate, onChange}:
   }
   ) => {
   current = current??''
-  const [data, setData] = React.useState(undefined)
-  const [valid, setValid] = React.useState(undefined)
+  const [data, setData] = useState(undefined)
+  const [valid, setValid] = useState(undefined)
 
   const onInputChange = (text: string) => {
     const valid = predicate(text)
@@ -175,7 +175,7 @@ const EditorValidateInput = ({placeholder, current, predicate, onChange}:
     onChange({ text, valid })
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if(data === undefined) {
       onInputChange(current)
     }

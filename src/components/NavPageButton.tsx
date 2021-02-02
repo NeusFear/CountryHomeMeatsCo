@@ -1,5 +1,3 @@
-import * as React from 'react'
-
 export const NavPageButton = ({ Page, Icon }) => {
   return (
     <div className="group bg-gray-200 shadow-sm hover:shadow-lg hover:border-transparent p-1 ml-1 mr-2 my-2 rounded-lg">

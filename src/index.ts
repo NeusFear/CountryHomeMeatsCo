@@ -1,4 +1,5 @@
 import * as React from 'react';
+window.React = React
 import { render } from 'react-dom';
 import { AppContainer } from './App';
 

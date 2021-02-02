@@ -1,5 +1,4 @@
 import { ObjectId } from "mongoose"
-import * as React from "react"
 import ReactTooltip from "react-tooltip"
 import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig } from "../assets/Icons"
@@ -9,9 +8,10 @@ import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
 import { getDayNumber } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
+import { useMemo } from "react";
 
 export const TodayPage = () => {
-  const today = React.useMemo(() => new Date(), [])
+  const today = useMemo(() => new Date(), [])
   return (
     <div className="w-full h-screen">
       <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
@@ -50,7 +50,7 @@ const TodaysCutList = () => {
 }
 
 const SelectedCutList = ({animal}: {animal: IAnimal}) => {
-  const allUsers = React.useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
+  const allUsers = useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
   const allFoundUsers = useUsers(User.where('_id').in(allUsers))
 
   const mainUser = allFoundUsers === undefined ? undefined :allFoundUsers.find(u => u.id === animal.bringer.toHexString())
@@ -74,7 +74,7 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        {animal.eaters.map((eater, i) => <UserTag key={i} user={allFoundUsers.find(u => u.id === eater.id.toHexString())} id={eater.recordCard}/>)}
+        {animal.eaters.map((eater, i) => <UserTag key={i} user={allFoundUsers.find(u => u.id === eater.id.toHexString())} id={eater.cutInstruction}/>)}
       </div>
     </div>
   )
@@ -102,7 +102,7 @@ const ScheduledSlaughterList = () => {
 }
 
 const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
-  const allIds = React.useMemo(() => {
+  const allIds = useMemo(() => {
     if(animal.bringer === undefined || animal.eaters === undefined) {
       return []
     }
@@ -117,7 +117,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
     return {
       name: allUsers.find(user => user.id === e.id.toHexString()).name,
       amount: e.portion,
-      card: e.recordCard,
+      card: e.cutInstruction,
     }
   })
 

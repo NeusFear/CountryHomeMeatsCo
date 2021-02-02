@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useHistoryListState } from "../AppHooks";
 import { useHistory } from 'react-router-dom';
 import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters, IAnimal } from "../database/types/Animal";
@@ -32,7 +31,7 @@ export const AnimalDetailsPage = () => {
 
     //To get from hanging to ready-to-cut.
     //The stringify is as it needs to be one element, rather than several
-    JSON.stringify(animal?.eaters.map(e => { return [e.id, e.portion, e.recordCard] })),
+    JSON.stringify(animal?.eaters.map(e => { return [e.id, e.portion, e.cutInstruction] })),
 
     //To get from ready-to-cut to ready-for-pickup
     animal?.processDate,
@@ -199,7 +198,7 @@ const InvoiceListItem = ({delivered, name, id} : {delivered: boolean, name: stri
             <StringUserTag name="Half" />
           </div>
           <div className="flex-grow text-gray-800 group-hover:text-gray-900">
-            <p className="font-semibold">Record Card:</p>
+            <p className="font-semibold">Cut List:</p>
             <StringUserTag name={name} id={4} />
           </div>
         </div>
@@ -221,14 +220,14 @@ type DummyEater = {
   _rand: number
   foundUser?: IUser
   portion?: number, 
-  recordCard?: number
+  cutInstruction?: number
 }
 
 const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: number}) => {
   const [ eaters, setEaters] = React.useState<DummyEater[]>()
 
   const updateEaters = () => setEaters([...eaters])
-  const allUsers = useUsers(User.find().select('name recordCards'))?.sort((a, b) => a.name.localeCompare(b.name))
+  const allUsers = useUsers(User.find().select('name cutInstructions'))?.sort((a, b) => a.name.localeCompare(b.name))
 
   React.useEffect(() => {
     if(eaters === undefined && animal !== undefined) {
@@ -236,7 +235,7 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
         _rand: Math.random(),
         id: allUsers.find(u => u.id === e.id.toHexString()), 
         portion: e.portion,
-        recordCard: e.recordCard
+        cutInstruction: e.cutInstruction
       }}))
     }
   }, [animal])
@@ -268,7 +267,7 @@ const EaterPart = ({eater, allUsers, currentState}: {eater: DummyEater, allUsers
       <select disabled={eater.foundUser === undefined || currentState < 1} defaultValue={eater.portion ?? "__default"} onChange={e => eater.portion = parseInt(e.target.value)}>
         <option hidden disabled value="__default"></option>
         { eater.foundUser && 
-          eater.foundUser.recordCards.slice()
+          eater.foundUser.cutInstructions.slice()
             .sort((a, b) => a.id - b.id)
             .map(c => <option key={c.id} value={c.id}>{c.id}</option>)
         }

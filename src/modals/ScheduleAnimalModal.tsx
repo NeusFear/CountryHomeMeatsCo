@@ -1,5 +1,4 @@
 import { setModal } from "./ModalManager";
-import * as React from "react"
 import DayPicker from "react-day-picker"
 import { SvgCow, SvgPig } from "../assets/Icons"
 import Animal, { AnimalType, createEmptyAnimal, IAnimal, useAnimals } from "../database/types/Animal"
@@ -8,6 +7,7 @@ import { getDayNumber } from "../Util";
 import User, { useUsers } from "../database/types/User";
 import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
 import { mongo } from "mongoose";
+import { useState } from "react";
 
 const style = `
 .DayPicker-Day {
@@ -30,10 +30,10 @@ const style = `
 }
 `
 export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
-  const [ newAnimal ] = React.useState(() => createEmptyAnimal(userID))
+  const [ newAnimal ] = useState(() => createEmptyAnimal(userID))
 
-  const [ animalType, setAnimalType ] = React.useState<"Cow"|"Pig">()
-  const [ scheduledDate, setScheduledDate ] = React.useState<Date>()
+  const [ animalType, setAnimalType ] = useState<"Cow"|"Pig">()
+  const [ scheduledDate, setScheduledDate ] = useState<Date>()
 
   const dayNumber = getDayNumber()
   const allAnimals = useAnimals(Animal.where('killDate').gte(Date.now()).select('killDate bringer'), [dayNumber])
@@ -69,7 +69,7 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
     newAnimal.save().then(() => setModal(null))
   }
 
-  const [selectedMonth, setSelectedMonth] = React.useState(new Date())
+  const [selectedMonth, setSelectedMonth] = useState(new Date())
 
   return (
     <div style={{width: '450px', height:'400px'}}>

@@ -1,4 +1,3 @@
-import * as React from "react"
 import { LocaleUtils } from "react-day-picker";
 
 const currentYear = new Date().getFullYear();

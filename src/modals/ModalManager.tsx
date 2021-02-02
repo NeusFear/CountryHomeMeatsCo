@@ -1,6 +1,7 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import ReactTooltip from 'react-tooltip';
+import { EditUseCutInstructionsModal } from './EditUseCutInstructionsModal';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
 import { HangingAnimalsModal } from './HangingAnimalsModal';
@@ -17,17 +18,19 @@ export let setModal: (type: string, state?: any) => void = () => {}
 export const editUserDetails = "edit-user-details"
 export const scheduleAnimal = "schedule-animal"
 export const hangingAnimals = "hanging-animals"
+export const editCutInstructions = "edit-cut-instructions"
 
 const modals = {
   [editUserDetails]: state => <EditUserDetailsModal objectId={state} />,
   [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />,
-  [hangingAnimals]: () => <HangingAnimalsModal />
+  [hangingAnimals]: () => <HangingAnimalsModal />,
+  [editCutInstructions]: state => <EditUseCutInstructionsModal {...state} />
 }
 
 
 export const ModalManager = () => {
-  const [activeModal, setActiveModal] = React.useState<{type: string, state: any}>(null)
-  React.useEffect(() => {
+  const [activeModal, setActiveModal] = useState<{type: string, state: any}>(null)
+  useEffect(() => {
     setModal = (type, state) => setActiveModal(type === null ? null : {type, state })
     return () => setModal = () => {}
   })

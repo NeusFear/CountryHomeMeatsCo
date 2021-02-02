@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Switch, Route, Link, useHistory } from 'react-router-dom';
 import { AnimalDetailsPage } from './pages/AnimalDetailsPage';
 import { LandingPage } from './pages/LandingPage';

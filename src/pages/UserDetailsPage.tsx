@@ -51,7 +51,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
               </div>
             </div>
             <div className="bg-white rounded-md p-2 mx-4 mb-4">
-                <textarea className="w-full border-black border" 
+                <textarea className="w-full border-gray-300 border" 
                 defaultValue={user.notes}
                 onBlur={e => {
                   user.notes = e.target.value ?? ''

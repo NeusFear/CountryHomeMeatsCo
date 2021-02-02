@@ -47,8 +47,6 @@ export interface IAnimal extends Document {
   tagNumber: number,
   pigTatooNumber?: number,
 
-  processedDate: Date,
-
   pickedUp: boolean
 }
 
@@ -72,9 +70,7 @@ const animalSchmea = new Schema({
   tagNumber: { type: Number },
   pigTatooNumber: { type: Number },
 
-  processedDate: { type: Schema.Types.Date },
-
-  pickedUp: { type: Boolean },
+  pickedUp: { type: Boolean, default: false },
 });
 
 const Animal = mongoose.model<IAnimal>('Animal', animalSchmea)

@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig } from "../assets/Icons"
 import Animal, { IAnimal, useAnimals, validateEaters } from "../database/types/Animal"
 import User, { IUser, useUsers } from "../database/types/User"
-import { scheduleAnimal, setModal } from "../modals/ModalManager"
+import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
 import { getDayNumber } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
@@ -24,37 +24,57 @@ export const TodayPage = () => {
           {today.getFullYear()}</div>
       </div>
       <div className="flex flex-row w-full h-full">
-        <div className="h-5/6 flex-grow pl-4 pr-2 py-4">
-          <div className="h-5/6 bg-gray-200 rounded-lg">
-            <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
-              <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
-              <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => console.log("view list of hanging animals to select from")}/>
-            </div>
-            <SelectedCutList />
-            <SelectedCutList />
-            <SelectedCutList />
-          </div>
-        </div>
+        <TodaysCutList />
         <ScheduledSlaughterList />
       </div>
     </div>
   )
 }
 
-const SelectedCutList = () => {
+const TodaysCutList = () => {
+  const animals = useAnimals(Animal
+    .where('processDate').ne(null)
+    .where('pickedUp', false)
+  )//?.filter(a => validateEaters(a.eaters)) //TODO remove this comment when the eaters are added 
+  return (
+    <div className="h-5/6 flex-grow pl-4 pr-2 py-4">
+      <div className="h-5/6 bg-gray-200 rounded-lg">
+        <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
+          <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
+          <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(hangingAnimals)}/>
+        </div>
+        {animals && animals.map(a => <SelectedCutList key={a.id} animal={a} />)}
+      </div>
+    </div>
+  )
+}
+
+const SelectedCutList = ({animal}: {animal: IAnimal}) => {
+  const allUsers = React.useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
+  const allFoundUsers = useUsers(User.where('_id').in(allUsers))
+
+  const mainUser = allFoundUsers === undefined ? undefined :allFoundUsers.find(u => u.id === animal.bringer.toHexString())
+
+  if(mainUser === undefined) {
+    return (<div>Loading...</div>)
+  }
+  if(mainUser === null) {
+    return (<div>Problem loading user with ID {animal.bringer.toHexString()}</div>)
+  }
+
+  const Tag = animal.animalType === "Cow" ? SvgCow : SvgPig
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => console.log("go to animal")}>
       <div className="w-20">
-        <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />
+        <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>
-        <StringUserTag name="The Bringer Name" />
+        <UserTag user={mainUser} />
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        <StringUserTag name="Some Name" id={4} />
-        <StringUserTag name="Some Other Name" id={2} />
+        {animal.eaters.map((eater, i) => <UserTag key={i} user={allFoundUsers.find(u => u.id === eater.id.toHexString())} id={eater.recordCard}/>)}
       </div>
     </div>
   )
@@ -135,16 +155,6 @@ const UserTag = ({user, id} : {user: IUser, id?: number}) => {
     <div className="flex">
       <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={e => {history.push(userDetailsPage, user.id); e.stopPropagation();}}>{user.name}</p>
       {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={() => console.log("go to sub user's individual cut instructions")}>#{id}</p>}
-    </div>
-  )
-}
-
-//Delete this once the placeholder stuff for the cut list users is removed and replace with UserTag.
-const StringUserTag = ({name, id} : {name: string, id?: number}) => {
-  return (
-    <div className="flex">
-      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">{name}</p>
-      {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">#{id}</p>}
     </div>
   )
 }

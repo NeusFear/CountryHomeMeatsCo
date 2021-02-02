@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import ReactTooltip from 'react-tooltip';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
+import { HangingAnimalsModal } from './HangingAnimalsModal';
 import { SchueduleAnimalModal } from './ScheduleAnimalModal';
 
 Modal.setAppElement("#root")
@@ -15,10 +16,12 @@ export let setModal: (type: string, state?: any) => void = () => {}
 
 export const editUserDetails = "edit-user-details"
 export const scheduleAnimal = "schedule-animal"
+export const hangingAnimals = "hanging-animals"
 
 const modals = {
   [editUserDetails]: state => <EditUserDetailsModal objectId={state} />,
-  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />
+  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />,
+  [hangingAnimals]: () => <HangingAnimalsModal />
 }
 
 

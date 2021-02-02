@@ -1,6 +1,6 @@
-import * as React from 'react';
-window.React = React
+import { createElement } from 'react';
+window.React = require('react')
 import { render } from 'react-dom';
 import { AppContainer } from './App';
 
-render(React.createElement(AppContainer), document.getElementById("root"));
+render(createElement(AppContainer), document.getElementById("root"));

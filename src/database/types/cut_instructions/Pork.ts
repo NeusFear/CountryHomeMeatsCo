@@ -16,6 +16,13 @@ export const TwoThreeFour = ["2", "3", "4"] as const
 export const Rib = ["Whole", "Split"] as const
 export const Sausage = ["Regular", "Hot", "No Seasoning", "No Preservatives"]
 
+export const validateFreshCuredPart = ({ fresh, cured }: {
+  fresh: { amount: typeof ZeroOneTwo[number] }
+  cured: { amount: typeof ZeroOneTwo[number] }
+}) => {
+  return (parseInt(fresh.amount) + parseInt(cured.amount)) === 2
+}
+
 export type PorkCutInstructions = {
   type: "pork"
   ham: {

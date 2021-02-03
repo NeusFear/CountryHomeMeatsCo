@@ -3,9 +3,9 @@ import { ObjectId } from 'bson'
 import { createResultWatcher } from '../Database';
 import { userModelName } from './User';
 
-export const AnimalType = {
-  Cow: "Cow",
-  Pig: "Pig"
+export enum AnimalType {
+  Cow = "Cow",
+  Pig = "Pig"
 }
 
 export type Eater = { 
@@ -32,7 +32,7 @@ export type AnimalSexes =
 export type PenLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
 
 export interface IAnimal extends Document {
-  animalType: "Cow" | "Pig"
+  animalType: AnimalType
   bringer: ObjectId,
   eaters: Eater[],
   killDate: Date,
@@ -51,7 +51,7 @@ export interface IAnimal extends Document {
 }
 
 const animalSchmea = new Schema({
-  animalType: { type: String, enum: [AnimalType.Cow, AnimalType.Pig], required: true },
+  animalType: { type: String, enum: Object.keys(AnimalType), required: true },
   bringer: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
   eaters: { type: [{
     id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },

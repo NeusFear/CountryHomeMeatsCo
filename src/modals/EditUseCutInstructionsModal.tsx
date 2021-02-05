@@ -1,20 +1,421 @@
 import React, { useMemo } from "react"
 import User, { useUsers } from "../database/types/User"
+import { SvgCow, SvgPig } from "../assets/Icons"
+import Animal, { AnimalType } from "../database/types/Animal"
+import { useState } from "react";
 
 export const EditUseCutInstructionsModal = ({id, instructionID}: {id: string, instructionID: number}) => {
+
   const user = useUsers(User.findById(id).select('cutInstructions'), [id], id)
+  const [ animalType, setAnimalType ] = useState<"Cow"|"Pig">()
   
   //Can be undefined if is a new instruction
   const cutInstruction = instructionID === undefined ? undefined : user.cutInstructions.find(c => c.id === instructionID)
 
   const valid = true;
 
+  if (animalType === undefined) {
+    setAnimalType("Cow")
+  }
+
   return (
-    <div className="flex flex-col" style={{width:'700px', height:'500px'}}>
+    <div className="flex flex-col overflow-clip" style={{width:'840px', height:'500px'}}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
           <span className="text-gray-300 font-semibold mt-1">Create new Cut Instruction</span>
       </div>
-      <div className="flex-grow overflow-auto">
+      <div className="grid grid-cols-5 bg-gray-200">
+        <div></div>
+        <div></div>
+        <div className="flex flex-row">
+          <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Cow} />
+          <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pig} />
+        </div>
+        <div></div>
+        <div></div>
+      </div>
+      <div className="p-4 overflow-y-scroll">
+        { animalType === AnimalType.Pig ? <PorkInstructions /> : <BeefInstructions /> }
+      </div>
+    </div>
+  )
+}
+
+const PorkInstructions = () => {
+
+  const valid = true;
+
+  return (
+    <div className="flex-grow overflow-auto">
+
+      <div className="flex flex-row">
+        <div className="flex-grow">
+          <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">FRESH</span>
+          <br />
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Ham:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">whole</option>
+                <option value="1">2pcs</option>
+                <option value="2">Ends for Roast</option>
+                <option value="2">Shank for Roast</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">Centers</option>
+                <option value="1">Butt End</option>
+                <option value="2">Slice All</option>
+                <option value="2">.5"</option>
+                <option value="2">2 per Pkg</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Bacon:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">Slice Fresh</option>
+                <option value="1">Grind</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">1.0 lb</option>
+                <option value="1">1.5 lb</option>
+                <option value="2">2.0 lb</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Jowl:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">Grind</option>
+                <option value="1">Whole</option>
+                <option value="2">Slice</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Loin:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0.5"</option>
+                <option value="1">0.75"</option>
+                <option value="2">1.0"</option>
+                <option value="2">1.25"</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">2</option>
+                <option value="1">3</option>
+                <option value="2">4</option>
+                <option value="2">5</option>
+                <option value="2">6</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Butt:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">CSRibs</option>
+                <option value="1">3lb Roast</option>
+                <option value="2">4lb Roast</option>
+                <option value="2">5lb Roast</option>
+                <option value="2">2 Pieces</option>
+                <option value="2">Whole</option>
+                <option value="2">0.5"</option>
+                <option value="2">0.75"</option>
+                <option value="2">Grind</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">2</option>
+                <option value="1">3</option>
+                <option value="2">4</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Picnic:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="1">3lb Roast</option>
+                <option value="2">4lb Roast</option>
+                <option value="2">5lb Roast</option>
+                <option value="2">2 Pieces</option>
+                <option value="2">Whole</option>
+                <option value="2">0.5"</option>
+                <option value="2">0.75"</option>
+                <option value="2">Grind</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">2</option>
+                <option value="1">3</option>
+                <option value="2">4</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-grow">
+
+          <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">CURED</span>
+          <br />
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Ham:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">whole</option>
+                <option value="1">2pcs</option>
+                <option value="2">Ends for Roast</option>
+                <option value="2">Shank for Roast</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">Centers</option>
+                <option value="1">Butt End</option>
+                <option value="2">Slice All</option>
+                <option value="2">.5"</option>
+                <option value="2">2 per Pkg</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Bacon:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">Regular</option>
+                <option value="0">Thick</option>
+                <option value="0">Thin</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">1.0 lb</option>
+                <option value="1">1.5 lb</option>
+                <option value="2">2.0 lb</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Jowl:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">Chunk</option>
+                <option value="1">Whole</option>
+                <option value="2">Slice</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Loin:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0.5"</option>
+                <option value="1">0.75"</option>
+                <option value="2">1.0"</option>
+                <option value="2">1.25"</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">2</option>
+                <option value="1">3</option>
+                <option value="2">4</option>
+                <option value="2">5</option>
+                <option value="2">6</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Butt:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">CSRibs</option>
+                <option value="1">3lb Roast</option>
+                <option value="2">4lb Roast</option>
+                <option value="2">5lb Roast</option>
+                <option value="2">2 Pieces</option>
+                <option value="2">Whole</option>
+                <option value="2">0.5"</option>
+                <option value="2">0.75"</option>
+                <option value="2">Grind</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">2</option>
+                <option value="1">3</option>
+                <option value="2">4</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Picnic:</span>
+            <div>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="1">3lb Roast</option>
+                <option value="2">4lb Roast</option>
+                <option value="2">5lb Roast</option>
+                <option value="2">2 Pieces</option>
+                <option value="2">Whole</option>
+                <option value="2">0.5"</option>
+                <option value="2">0.75"</option>
+                <option value="2">Grind</option>
+              </select>
+              <select className="bg-gray-200 border border-gray-500 rounded-md">
+                <option value="0">2</option>
+                <option value="1">3</option>
+                <option value="2">4</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <br />
+      <br />
+      <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">ALL</span>
+      <br />
+
+      <div className="pt-4 flex flex-row">
+        <span className="ml-2 pr-2 text-gray-700 w-1/4">Ribs:</span>
+        <div>
+          <select className="bg-gray-200 border border-gray-500 rounded-md">
+            <option value="A">Whole</option>
+            <option value="A">Split</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="pt-4 flex flex-row">
+        <span className="ml-2 pr-2 text-gray-700 w-1/4">Sausage:</span>
+        <div>
+          <select className="bg-gray-200 border border-gray-500 rounded-md">
+            <option value="A">Regular</option>
+            <option value="A">Hot</option>
+            <option value="A">No Seasoning</option>
+            <option value="A">No Preservatives</option>
+          </select>
+        </div>
+      </div>
+      
+      <div className="pt-4 flex flex-row">
+        <span className="ml-2 pr-2 text-gray-700 w-1/4">Head:</span>
+        <div>
+          <select className="bg-gray-200 border border-gray-500 rounded-md">
+            <option value="A">Yes</option>
+            <option value="A">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="pt-4 flex flex-row">
+        <span className="ml-2 pr-2 text-gray-700 w-1/4">Feet:</span>
+        <div>
+          <select className="bg-gray-200 border border-gray-500 rounded-md">
+            <option value="A">Yes</option>
+            <option value="A">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="pt-4 flex flex-row">
+        <span className="ml-2 pr-2 text-gray-700 w-1/4">Heart:</span>
+        <div>
+          <select className="bg-gray-200 border border-gray-500 rounded-md">
+            <option value="A">Yes</option>
+            <option value="A">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="pt-4 flex flex-row">
+        <span className="ml-2 pr-2 text-gray-700 w-1/4">Fat:</span>
+        <div>
+          <select className="bg-gray-200 border border-gray-500 rounded-md">
+            <option value="A">Yes</option>
+            <option value="A">No</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  )
+}
+
+const BeefInstructions = () => {
+
+  const valid = true;
+
+  return (
+    <div className="flex-grow overflow-auto">
+
+        <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">FRESH</span>
+        <br />
         
         <div className="pt-4 flex flex-row">
           <span className="ml-2 pr-2 text-gray-700 w-1/4">Round:</span>
@@ -313,6 +714,13 @@ export const EditUseCutInstructionsModal = ({id, instructionID}: {id: string, in
         <button className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
 
       </div>
-    </div>
+  )
+}
+
+const AnimalTypeSelect = ({Icon, onSelected, isSelected}: {Icon: any, onSelected:()=>void, isSelected:boolean}) => {
+  return (
+    <button className={"w-full flex flex-row rounded-md p-0.5 m-0.5 flex-shrink place-items-center border-2 border-gray-400" + (isSelected?" bg-blue-100":" bg-white")} name="animal" onClick={() => onSelected() }>
+      <Icon className="w-8 h-8 transform translate-x-1/2 place-self-center"/>
+    </button>
   )
 }

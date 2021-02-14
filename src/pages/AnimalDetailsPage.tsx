@@ -1,5 +1,4 @@
 import { useHistoryListState } from "../AppHooks";
-import { useHistory } from 'react-router-dom';
 import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters, IAnimal } from "../database/types/Animal";
 import { SvgArrow } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';

@@ -1,4 +1,6 @@
 import { SvgAddressbook, SvgPrices, SvgTimesheets } from "../assets/Icons"
+import { Link } from 'react-router-dom';
+import { timeSheet, addressBook, priceSheet } from "../NavBar";
 
 export const LandingPage = () => {
   return (
@@ -37,21 +39,21 @@ export const LandingPage = () => {
             </div>
           </div>
           <div className="w-1/5 h-full flex flex-col">
-            <div className="rounded-lg flex-grow text-white text-7xl bg-green-600 hover:bg-green-500 text-center shadow-sm hover:shadow-md">
+            <Link to={timeSheet} className="rounded-lg flex-grow text-white text-7xl bg-green-600 hover:bg-green-500 text-center shadow-sm hover:shadow-md">
               <br />
               <SvgTimesheets className="w-full ml-1" />
               <p className="text-xl">Time Sheet</p>
-            </div>
-            <div className="rounded-lg my-4 flex-grow text-white text-7xl bg-tomato-600 hover:bg-tomato-500 text-center shadow-sm hover:shadow-md">
+            </Link>
+            <Link to={addressBook} className="rounded-lg my-4 flex-grow text-white text-7xl bg-tomato-600 hover:bg-tomato-500 text-center shadow-sm hover:shadow-md">
               <br /> 
               <SvgAddressbook className="w-full ml-1" />
               <p className="text-xl">Address Book</p>
-            </div>
-            <div className="rounded-lg flex-grow text-white text-7xl bg-blue-600 hover:bg-blue-500 text-center shadow-sm hover:shadow-md">
+            </Link>
+            <Link to={priceSheet} className="rounded-lg flex-grow text-white text-7xl bg-blue-600 hover:bg-blue-500 text-center shadow-sm hover:shadow-md">
               <br />
               <SvgPrices className="w-full ml-1" />
               <p className="text-xl">Price List</p>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

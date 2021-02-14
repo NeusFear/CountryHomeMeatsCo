@@ -5,10 +5,13 @@ import { UsersPage } from './pages/UsersPage';
 import { UserDetailsPage } from './pages/UserDetailsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { TodayPage } from './pages/TodayPage';
+import { TimeSheet } from './pages/TimeSheet';
+import { AddressBook } from './pages/AddressBook';
+import { PriceSheet } from './pages/PriceSheet';
 import { NavPageButton } from './components/NavPageButton';
 import { useHistoryListState } from "./AppHooks";
 
-import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgUser } from './assets/Icons';
+import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons';
 import { UserPinnedList } from './App';
 import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
 
@@ -16,6 +19,9 @@ const logo = require('./assets/logo.png');
 
 export const animalDetailsPage = "/animaldetails"
 export const userDetailsPage = "/userdetails"
+export const timeSheet = "/timesheets"
+export const addressBook = "/addressbook"
+export const priceSheet = "/prices"
 // export const editUserDetailsPage = "/edit/userdetails"
 
 export const routes = [
@@ -23,6 +29,9 @@ export const routes = [
   { path: "/users", page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UsersPage pinnedList={pinnedList}/> },
   { path: userDetailsPage, page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UserDetailsPage pinnedList={pinnedList} /> },
   { path: animalDetailsPage, page: () => <AnimalDetailsPage />},
+  { path: timeSheet, page: () => <TimeSheet /> },
+  { path: addressBook, page: () => <AddressBook /> },
+  { path: priceSheet, page: () => <PriceSheet /> },
   // { path: editUserDetailsPage, page: () => <EditUserDetailsPage /> },
   { path: "/today", page: () => <TodayPage /> },
   { path: "/calendar", page: () => <CalendarPage /> }

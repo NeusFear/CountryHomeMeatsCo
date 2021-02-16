@@ -20,64 +20,64 @@ export const PattiesAmount = [ '3', '4', '5', '6' ] as const
 
 export type BeefCutInstructions = {
   type: "beef"
-  round: { amount: typeof RoundAmount[number], tenderized: boolean, size: typeof RoundSize[number], type: typeof HamCf[number] }
-  sirlointip: { size: typeof SirloinTipSize[number], amount: typeof OneFourAmount[number], type: typeof HamCf[number] }
-  flank: typeof HamCfWhole[number]
-  sirloin: { size: typeof Point5OnePoint5Size[number], amount: typeof OneFourAmount[number] }
-  tbone: { size: typeof Point5OnePoint5Size[number], amount: typeof OneFourAmount[number] }
-  rump: typeof TwoLB4LBWeight[number]
-  pikespeak: typeof TwoLB4LBWeight[number]
-  soupbones: typeof SoupBones[number]
-  groundbeef: typeof GroupBeef[number]
-  chuck: typeof TwoLB4LBWeight[number]
-  arm: typeof TwoLB4LBWeight[number]
-  ribs: typeof Ribs[number]
-  club: { type: typeof ClubType[number], size: typeof Point5OnePoint5Size[number], amount: typeof OneFourAmount[number] }
-  brisket: typeof Brisket[number]
-  stewmeat: { amount: typeof StewmeatAmount[number], size: typeof StewmeatSize[number] }
-  patties: { weight: typeof PattiesWeight[number], amount: typeof PattiesAmount[number] }
+  round: { amount: string, tenderized: boolean, size: string, type: string }
+  sirlointip: { size: string, amount: string, type: string }
+  flank: string
+  sirloin: { size: string, amount: string }
+  tbone: { size: string, amount: string }
+  rump: string
+  pikespeak: string
+  soupbones: string
+  groundbeef: string
+  chuck: string
+  arm: string
+  ribs: string
+  club: { type: string, size: string, amount: string }
+  brisket: string
+  stewmeat: { amount: string, size: string }
+  patties: { weight: string, amount: string }
 }
 
 export const BeefCutInstructionsSchema: SchemaDefinition = {
   round: {
-    amount: { type: String, enum: RoundAmount, required: true },
+    amount: { type: String, required: true },
     tenderized: { type: Boolean, required: true },
-    size: { type: String, enum: RoundSize, required: true },
-    type: { type: String, enum: HamCf, required: true },
+    size: { type: String, required: true },
+    type: { type: String, required: true },
   },
   sirlointip: {
-    size: { type: String, enum: SirloinTipSize, required: true },
-    amount: { type: String, enum: OneFourAmount, required: true },
-    type: { type: String, enum: HamCf, required: true },
+    size: { type: String, required: true },
+    amount: { type: String, required: true },
+    type: { type: String, required: true },
   },
-  flank: { type: String, enum: HamCfWhole },
+  flank: { type: String },
   sirloin: { 
-    size: { type: String, enum: Point5OnePoint5Size, required: true },
-    amount: { type: String, enum: OneFourAmount, required: true },
+    size: { type: String, required: true },
+    amount: { type: String, required: true },
   },
   tbone: { 
-    size: { type: String, enum: Point5OnePoint5Size, required: true },
-    amount: { type: String, enum: OneFourAmount, required: true },
+    size: { type: String, required: true },
+    amount: { type: String, required: true },
   },
-  rump: { type: String, enum: TwoLB4LBWeight },
-  pikespeak: { type: String, enum: TwoLB4LBWeight },
-  soupbones: { type: String, enum: SoupBones },
-  groundbeef: { type: String, enum: GroupBeef },
-  chuck: { type: String, enum: TwoLB4LBWeight },
-  arm: { type: String, enum: TwoLB4LBWeight },
-  ribs: { type: String, enum: Ribs },
+  rump: { type: String },
+  pikespeak: { type: String },
+  soupbones: { type: String },
+  groundbeef: { type: String },
+  chuck: { type: String },
+  arm: { type: String },
+  ribs: { type: String },
   club: {
-    type: { type: String, enum: ClubType, required: true },
-    size: { type: String, enum: Point5OnePoint5Size, required: true },
-    amount: { type: String, enum: OneFourAmount, required: true },
+    type: { type: String, required: true },
+    size: { type: String, required: true },
+    amount: { type: String, required: true },
   },
-  brisket: { type: String, enum: Brisket },
+  brisket: { type: String },
   stewmeat: { 
-    amount: { type: String, enum: StewmeatAmount, required: true },
-    size: { type: String, enum: StewmeatSize, required: true },
+    amount: { type: String, required: true },
+    size: { type: String, required: true },
   },
   patties: {
-    weight: { type: String, enum: PattiesWeight, required: true },
-    amount: { type: String, enum: PattiesAmount, required: true },
+    weight: { type: String, required: true },
+    amount: { type: String, required: true },
   }
 }

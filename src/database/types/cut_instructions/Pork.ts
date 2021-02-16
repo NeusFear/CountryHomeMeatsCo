@@ -17,8 +17,8 @@ export const Rib = ["Whole", "Split"] as const
 export const Sausage = ["Regular", "Hot", "No Seasoning", "No Preservatives"]
 
 export const validateFreshCuredPart = ({ fresh, cured }: {
-  fresh: { amount: typeof ZeroOneTwo[number] }
-  cured: { amount: typeof ZeroOneTwo[number] }
+  fresh: { amount: string }
+  cured: { amount: string }
 }) => {
   return (parseInt(fresh.amount) + parseInt(cured.amount)) === 2
 }
@@ -26,31 +26,31 @@ export const validateFreshCuredPart = ({ fresh, cured }: {
 export type PorkCutInstructions = {
   type: "pork"
   ham: {
-    fresh: { amount: typeof ZeroOneTwo[number], type: typeof HamType[number], cutType: typeof HamCutType[number] }
-    cured: { amount: typeof ZeroOneTwo[number], type: typeof HamType[number], cutType: typeof HamCutType[number] }
+    fresh: { amount: string, type: string, cutType: string }
+    cured: { amount: string, type: string, cutType: string }
   },
   bacon: {
-    fresh: { amount: typeof ZeroOneTwo[number], type: typeof FreshBaconType[number], cutType: typeof BaconWeight[number] }
-    cured: { amount: typeof ZeroOneTwo[number], type: typeof CuredBaconType[number], cutType: typeof BaconWeight[number] }
+    fresh: { amount: string, type: string, cutType: string }
+    cured: { amount: string, type: string, cutType: string }
   },
   jowl: {
-    fresh: { amount: typeof ZeroOneTwo[number], type: typeof FreshJowlType[number] }
-    cured: { amount: typeof ZeroOneTwo[number], type: typeof CuredJowlType[number] }
+    fresh: { amount: string, type: string }
+    cured: { amount: string, type: string }
   },
   loin: {
-    fresh: { amount: typeof ZeroOneTwo[number], size: typeof LoinSize[number], packageAmount: typeof LoinPackageAmount[number] }
-    cured: { amount: typeof ZeroOneTwo[number], size: typeof LoinSize[number], packageAmount: typeof LoinPackageAmount[number] }
+    fresh: { amount: string, size: string, packageAmount: string }
+    cured: { amount: string, size: string, packageAmount: string }
   },
   butt: {
-    fresh: { amount: typeof ZeroOneTwo[number], type: typeof FreshButtType[number], packageAmount: typeof TwoThreeFour[number] }
-    cured: { amount: typeof ZeroOneTwo[number], type: typeof CuredButtType[number], packageAmount: typeof TwoThreeFour[number] }
+    fresh: { amount: string, type: string, packageAmount: string }
+    cured: { amount: string, type: string, packageAmount: string }
   }
   picnic: {
-    fresh: { amount: typeof ZeroOneTwo[number], type: typeof FreshPicnicType[number], packageAmount: typeof TwoThreeFour[number] }
-    cured: { amount: typeof ZeroOneTwo[number], type: typeof CuredPicnicType[number], packageAmount: typeof TwoThreeFour[number] }
+    fresh: { amount: string, type: string, packageAmount: string }
+    cured: { amount: string, type: string, packageAmount: string }
   },
-  rib: typeof Rib[number],
-  sausage: typeof Sausage[number],
+  rib: string,
+  sausage: string,
   head: boolean,
   feet: boolean,
   heart: boolean,

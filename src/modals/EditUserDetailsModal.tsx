@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
 
 import User, { IUser, useUsers } from "../database/types/User";
-import { setModal } from "../modals/ModalManager";
+import { ModalHanle, setModal } from "../modals/ModalManager";
 
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 const isValidPhoneNum = (text: string) => {
@@ -16,30 +16,30 @@ const isValidPhoneNum = (text: string) => {
 //http://emailregex.com/
 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-export const EditUserDetailsModal = ({objectId}: {objectId: string}) => {
+export const EditUserDetailsModal = forwardRef<ModalHanle, {objectId: string}>(({objectId}, ref) => {
   return objectId === undefined ? 
-  (<EditUserDetailsModalWithUser user={new User({
+  (<EditUserDetailsModalWithUser ref={ref} user={new User({
     name: '',
     phoneNumbers: [{ name: '', number:'' }],
     emails: [''],
     notes: ''
   })}/>) : 
-  (<EditUserDetailsModalWithUserID id={objectId}/>)
-}
+  (<EditUserDetailsModalWithUserID ref={ref} id={objectId}/>)
+})
 
-const EditUserDetailsModalWithUserID = ({id}: {id: string}) => {
+const EditUserDetailsModalWithUserID = forwardRef<ModalHanle, {id: string}>(({id}, ref) => {
   const user = useUsers(User.findById(id), [id], id)
   return user === undefined ?
     (<div>Loading User ID {id}</div>) :
-    (<EditUserDetailsModalWithUser user={user}/>)
-}
+    (<EditUserDetailsModalWithUser ref={ref} user={user}/>)
+})
 
 type ValidatedString = {
   text: string
   valid: boolean
 }
 
-const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {  
+const EditUserDetailsModalWithUser = forwardRef<ModalHanle, {user: IUser}>(({user}, ref) => {  
   const [nameData, setNameData] = useState<ValidatedString>(null) 
   const [phoneNumbers, setPhoneNumbers] = useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
     [...user.phoneNumbers].map(d => {
@@ -68,6 +68,8 @@ const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {
     user.emails = emails.map(e => e.text)
     user.save().then(() => setModal(null))
   }
+
+  useImperativeHandle(ref, () => ({ onClose: trySubmitData }))
 
   return (
     <div className="flex flex-col" style={{width:'700px', height:'500px'}}>
@@ -154,7 +156,7 @@ const EditUserDetailsModalWithUser = ({user}: {user: IUser}) => {
       </div>
     </div>
   )
-}
+})
 
 const EditorValidateInput = ({placeholder, current, predicate, onChange}: 
   { 

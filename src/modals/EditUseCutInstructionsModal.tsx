@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react"
 import User, { CutInstructions, useUsers } from "../database/types/User"
 import { SvgCow, SvgPig } from "../assets/Icons"
 import Animal, { AnimalType, validateEaters } from "../database/types/Animal"
@@ -6,17 +6,23 @@ import { useState } from "react";
 import Autosuggest from 'react-autosuggest';
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
-import { setModal } from "./ModalManager";
+import { ModalHanle, setModal } from "./ModalManager";
 
 
-export const EditUseCutInstructionsModal = ({id, instructionID}: {id: string, instructionID: number}) => {
+export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, instructionID: number}>(({id, instructionID}, ref) => {
   const user = useUsers(User.findById(id).select('cutInstructions'), [id], id)
-  console.log(user)
-  const dbInstructions = (user != null && instructionID !== undefined) ?
-     user.cutInstructions.find(c => c.id === instructionID).instructions :
-     undefined
+  const dbInstructionIndex = (user != null && instructionID !== undefined) ?
+    user.cutInstructions.findIndex(c => c.id === instructionID) :
+    undefined
 
-  const [ animalType, setAnimalType ] = useState<"Cow"|"Pig">(dbInstructions?.cutType as "Cow"|"Pig" ?? "Cow")
+  const dbInstrucionObject = dbInstructionIndex !== undefined ? user.cutInstructions[dbInstructionIndex] : undefined
+  const dbInstructions = dbInstrucionObject?.instructions
+
+  const [ animalType, setAnimalType ] = useState<"Cow"|"Pig">(instructionID === undefined ? "Cow" : undefined)
+
+  if(dbInstructions !== undefined && animalType === undefined) {
+    setAnimalType(dbInstructions.cutType === "beef" ? "Cow" : "Pig")
+  }
 
   //Can be undefined if is a new instruction
   const cutInstruction: CutInstructions = useMemo(() => {
@@ -45,14 +51,6 @@ export const EditUseCutInstructionsModal = ({id, instructionID}: {id: string, in
     }
     return dbInstructions
   }, [instructionID, id, animalType, user !== undefined])
-  
-  if(user === undefined) {
-    return (<div>Loading User...</div>)
-  }
-  
-  if(user === null) {
-    return (<div>Error loading User: {id}</div>)
-  }
 
   const submit = () => {
     if(dbInstructions === undefined) {
@@ -66,9 +64,29 @@ export const EditUseCutInstructionsModal = ({id, instructionID}: {id: string, in
       }
       cutInstruction.cutType = animalType === "Cow" ? "beef" : "pork"
       user.cutInstructions.push({ id, instructions: cutInstruction })
+    } else {
+      //We need to update the field so it's actually synced
+      user.cutInstructions[dbInstructionIndex] = {
+        id: dbInstrucionObject.id,
+        instructions: cutInstruction
+      }
     }
     user.save()
-    // setModal(null)
+    setModal(null)
+  }
+
+  useImperativeHandle(ref, () => ({ onClose: submit }))
+
+  if(instructionID !== undefined && dbInstructions == undefined) {
+    return (<div>Loading Cut Instructions...</div>)
+  }
+
+  if(user === undefined) {
+    return (<div>Loading User...</div>)
+  }
+  
+  if(user === null) {
+    return (<div>Error loading User: {id}</div>)
   }
 
   return (
@@ -98,7 +116,7 @@ export const EditUseCutInstructionsModal = ({id, instructionID}: {id: string, in
       </div>
     </div>
   )
-}
+})
 
 const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) => {
   return (
@@ -649,8 +667,10 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
 }
 
 const PorkFreshCuredOptions = ({obj}: { obj: { amount: number }}) => {
+  const [value, setValue] = useState(obj.amount)
+
   return (
-    <select className="bg-gray-200 border border-gray-500 rounded-md" value={obj.amount} onChange={e => console.log(e.target.value)}>
+    <select className="bg-gray-200 border border-gray-500 rounded-md" value={value} onChange={e => setValue(obj.amount = parseInt(e.target.value))}>
       <option value="0">0</option>
       <option value="1">1</option>
       <option value="2">2</option>
@@ -660,15 +680,19 @@ const PorkFreshCuredOptions = ({obj}: { obj: { amount: number }}) => {
 
 const SelectInputType = ({initial, onChange, values, width}: {
   initial: string,
-  onChange: (value: string) => {},
+  onChange: (value: string) => void,
   values: string[], 
   width: number
 }) => {
-  if(initial === undefined) {
-    initial = values[0]
-    onChange(initial)
-  }
-  const [ value, setValue ] = useState(initial)
+  const computedInitial = useMemo(() => {
+    if(initial === undefined) {
+      onChange(values[0])
+      return values[0]
+    }
+    return initial
+  }, [initial])
+  const [ value, setValue ] = useState(computedInitial)
+  
   const onValueChanged = (_, { newValue }: { newValue: string }) => {
     setValue(newValue)
     onChange(newValue)

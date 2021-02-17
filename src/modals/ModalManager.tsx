@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
 import ReactTooltip from 'react-tooltip';
 import { EditUseCutInstructionsModal } from './EditUseCutInstructionsModal';
@@ -20,11 +20,11 @@ export const scheduleAnimal = "schedule-animal"
 export const hangingAnimals = "hanging-animals"
 export const editCutInstructions = "edit-cut-instructions"
 
-const modals = {
-  [editUserDetails]: state => <EditUserDetailsModal objectId={state} />,
-  [scheduleAnimal]: state => <SchueduleAnimalModal userID={state} />,
+const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHanle>) => JSX.Element} = {
+  [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
+  [scheduleAnimal]: (state, ref) => <SchueduleAnimalModal ref={ref} userID={state} />,
   [hangingAnimals]: () => <HangingAnimalsModal />,
-  [editCutInstructions]: state => <EditUseCutInstructionsModal {...state} />
+  [editCutInstructions]: (state, ref) => <EditUseCutInstructionsModal ref={ref} {...state} />
 }
 
 
@@ -35,7 +35,9 @@ export const ModalManager = () => {
     return () => setModal = () => {}
   })
 
-  if(activeModal === null) {
+  const childRef = useRef<ModalHanle>()
+
+  if(activeModal === null || childRef === undefined) {
     return (<></>)
   }
   
@@ -43,12 +45,21 @@ export const ModalManager = () => {
   return (
     <Modal
       isOpen
-      onRequestClose={() => setActiveModal(null)}
+      onRequestClose={() => {
+        setActiveModal(null)
+        if(childRef.current !== undefined) {
+          childRef.current.onClose()
+        }
+      }}
       style={customStyles}
       contentLabel="Example Modal"
     >
     <ReactTooltip delayShow={200} multiline /> 
-    { modals[activeModal.type](activeModal.state) }
+    { modals[activeModal.type](activeModal.state, childRef) }
     </Modal>
   )
+}
+
+export type ModalHanle = {
+  onClose?: () => void
 }

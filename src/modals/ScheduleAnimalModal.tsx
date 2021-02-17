@@ -1,4 +1,4 @@
-import { setModal } from "./ModalManager";
+import { ModalHanle, setModal } from "./ModalManager";
 import DayPicker from "react-day-picker"
 import { SvgCow, SvgPig } from "../assets/Icons"
 import Animal, { AnimalType, createEmptyAnimal, IAnimal, useAnimals } from "../database/types/Animal"
@@ -7,7 +7,7 @@ import { getDayNumber } from "../Util";
 import User, { useUsers } from "../database/types/User";
 import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
 import { mongo } from "mongoose";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 const style = `
 .DayPicker-Day {
@@ -29,10 +29,10 @@ const style = `
   background-color: var(--blue-100) !important
 }
 `
-export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
+export const SchueduleAnimalModal = forwardRef<ModalHanle, { userID: string }>(({ userID }, ref) => {
   const [ newAnimal ] = useState(() => createEmptyAnimal(userID))
 
-  const [ animalType, setAnimalType ] = useState<"Cow"|"Pig">()
+  const [ animalType, setAnimalType ] = useState<AnimalType>()
   const [ scheduledDate, setScheduledDate ] = useState<Date>()
 
   const dayNumber = getDayNumber()
@@ -69,6 +69,8 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
     newAnimal.save().then(() => setModal(null))
   }
 
+  useImperativeHandle(ref, () => ({ onClose: () => valid ? trySubmitData() : false }))
+
   const [selectedMonth, setSelectedMonth] = useState(new Date())
 
   return (
@@ -81,8 +83,8 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
           <div className="flex-grow">
             Animal Type:
             <div>
-              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Cow} />
-              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pig} />
+              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType(AnimalType.Cow)} isSelected={animalType === AnimalType.Cow} />
+              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType(AnimalType.Pig)} isSelected={animalType === AnimalType.Pig} />
             </div>
           </div>
           <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
@@ -133,7 +135,7 @@ export const SchueduleAnimalModal = ({ userID }: { userID: string }) => {
       </div>
     </div>
   )
-}
+})
 
 const AnimalTypeSelect = ({Icon, onSelected, isSelected}: {Icon: any, onSelected:()=>void, isSelected:boolean}) => {
   return (

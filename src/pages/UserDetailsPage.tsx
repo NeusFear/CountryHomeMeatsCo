@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from "../NavBar";
 
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser } from "../assets/Icons";
-import User, {  useUsers } from "../database/types/User";
+import User, {  CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
 import Animal, { useAnimals, IAnimal } from "../database/types/Animal";
@@ -65,11 +65,13 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Cut Instructions</div>
               <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(editCutInstructions, { id })}/>
             </div>
+            <div className="ml-2 mb-2 flex flex-col">
+              {user.cutInstructions.map((i, _id) => <CutInstructionEntry key={_id} id={id} instructionID={i.id} instruction={i.instructions}/>)}
+            </div>
           </div>
-
         </div>
-        <div className="col-span-2 grid grid-cols-2 gap-4">
 
+        <div className="col-span-2 grid grid-cols-2 gap-4">
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Animals Brought</div>
@@ -88,6 +90,15 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
 
         </div>
       </div>
+    </div>
+  )
+}
+
+const CutInstructionEntry = ({id, instructionID, instruction}: {id: number, instructionID: number, instruction: CutInstructions}) => {
+  return (
+    <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => setModal(editCutInstructions, { id, instructionID })}>
+      <div className="flex-grow">{instruction.cutType == "beef" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+      <div>{instructionID}</div>
     </div>
   )
 }

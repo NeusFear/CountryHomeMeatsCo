@@ -4,8 +4,8 @@ import { ObjectId as BsonObjectId } from 'bson'
 
 import { createResultWatcher } from '../Database';
 import { stat } from 'fs';
-import { BeefCutInstructions } from './cut_instructions/Beef';
-import { PorkCutInstructions } from './cut_instructions/Pork';
+import { BeefCutInstructions, BeefCutInstructionsSchema } from './cut_instructions/Beef';
+import { PorkCutInstructions, PorkCutInstructionsSchema } from './cut_instructions/Pork';
 
 export const userModelName = 'User'
 
@@ -33,7 +33,11 @@ const userSchmea = new Schema({
   emails: {type: [String], required: true },
   cutInstructions: { type: [{ 
     id: { type: Number, required: true },
-    //TODO: record cards data
+    instructions: { type: {
+      cutType: { type: String, enum: ["beef", "pork"], required: true },
+      ...BeefCutInstructionsSchema, 
+      ...PorkCutInstructionsSchema 
+    }, required: true }
    }], required: true},
    notes: { type: String, default: '' },
 });

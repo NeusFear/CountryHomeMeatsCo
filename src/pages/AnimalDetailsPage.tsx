@@ -3,13 +3,14 @@ import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters, 
 import { SvgArrow } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
 import User, { IUser, useUsers } from "../database/types/User";
+import { useEffect, useMemo, useState } from "react";
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(Animal.findById(id), [id], id)
-  const animalSexes = React.useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
+  const animalSexes = useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
 
-  const currentState = React.useMemo(() => {
+  const currentState = useMemo(() => {
     if(!animal || !animal.confirmed) return 0
     if([ animal.liveWeight, animal.color, animal.sex, 
         animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
@@ -223,12 +224,12 @@ type DummyEater = {
 }
 
 const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: number}) => {
-  const [ eaters, setEaters] = React.useState<DummyEater[]>()
+  const [ eaters, setEaters] = useState<DummyEater[]>()
 
   const updateEaters = () => setEaters([...eaters])
   const allUsers = useUsers(User.find().select('name cutInstructions'))?.sort((a, b) => a.name.localeCompare(b.name))
 
-  React.useEffect(() => {
+  useEffect(() => {
     if(eaters === undefined && animal !== undefined) {
       setEaters(animal.eaters.map(e => { return {
         _rand: Math.random(),
@@ -254,7 +255,7 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
 }
 
 const EaterPart = ({eater, allUsers, currentState}: {eater: DummyEater, allUsers: IUser[], currentState: number}) => {
-  const [ user, setUser ] = React.useState<IUser>()
+  const [ user, setUser ] = useState<IUser>()
   eater.foundUser = user
   return (
     <div className="flex flex-row">
@@ -281,8 +282,8 @@ const WrappedAutoSuggest = ({suggestion, mappingFunc, onChange}: {
   mappingFunc: (t: any) => string,
   onChange: (value: any, rawValue: string) => void
 }) => {
-  const [ suggestions, setSuggestions ] = React.useState(suggestion)
-  const [ value, setValue ] = React.useState('')
+  const [ suggestions, setSuggestions ] = useState(suggestion)
+  const [ value, setValue ] = useState('')
 
   const onValueChanged = (_, { newValue }: { newValue: string }) => {
     setValue(newValue)

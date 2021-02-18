@@ -10,20 +10,15 @@ export const PriceSheet = () => {
         </div>
         <div className="px-4 mt-4 h-full overflow-y-scroll">
 
-          <table className="table-fixed border-collapse border-tomato-600 w-full bg-gray-100">
+        <table className="table-fixed border-collapse border-tomato-600 w-full bg-gray-100">
             <thead>
               <tr className="bg-tomato-200 border-tomato-600 border-t border-l border-r rounded-t-md font-bold text-center">
                 <th className="w-1/2 text-left">BEEF</th>
                 <th className="w-1/8"></th>
                 <th className="w-3/8"></th>
               </tr>
-              <tr className="border border-red-600 bg-tomato-100">
-                <th className="text-left pl-2">Description</th>
-                <th className="text-right pr-4">Price</th>
-                <th className="text-left pl-4">Unit</th>
-              </tr>
             </thead>
-            <tbody>
+            <tbody className="border-b border-tomato-600">
               <PriceEntry description="Slaughter Fee" currentPrice={75.00} unit="per Animal"/>
               <PriceEntry description="Processing Fee" currentPrice={1.00} unit="per Pound * Dressed Weight"/>
               <PriceEntry description="Make Patties" currentPrice={0.45} unit="per Pound"/>
@@ -47,13 +42,8 @@ export const PriceSheet = () => {
                 <th className="w-1/8"></th>
                 <th className="w-3/8"></th>
               </tr>
-              <tr className="border border-red-600 bg-tomato-100">
-                <th className="text-left pl-2">Description</th>
-                <th className="text-right pr-4">Price</th>
-                <th className="text-left pl-4">Unit</th>
-              </tr>
             </thead>
-            <tbody>
+            <tbody className="border-b border-tomato-600">
               <PriceEntry description="Slaughter Fee < 150lbs" currentPrice={50.00} unit="per Animal"/>
               <PriceEntry description="Slaughter Fee > 150lbs" currentPrice={60.00} unit="per Animal"/>
               <PriceEntry description="Processing" currentPrice={1.00} unit="Per Pound * Dressed Weight"/>

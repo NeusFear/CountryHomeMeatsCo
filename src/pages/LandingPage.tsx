@@ -39,17 +39,17 @@ export const LandingPage = () => {
             </div>
           </div>
           <div className="w-1/5 h-full flex flex-col">
-            <Link to={timeSheet} className="rounded-lg flex-grow text-white text-7xl bg-green-600 hover:bg-green-500 text-center shadow-sm hover:shadow-md">
+            <Link to={timeSheet} className="rounded-lg flex-grow text-white text-7xl bg-green-200 hover:bg-green-100 text-center shadow-sm hover:shadow-md border-4 border-green-600">
               <br />
               <SvgTimesheets className="w-full ml-1" />
               <p className="text-xl">Time Sheet</p>
             </Link>
-            <Link to={addressBook} className="rounded-lg my-4 flex-grow text-white text-7xl bg-tomato-600 hover:bg-tomato-500 text-center shadow-sm hover:shadow-md">
+            <Link to={addressBook} className="rounded-lg my-4 flex-grow text-white text-7xl bg-tomato-200 hover:bg-tomato-100 text-center shadow-sm hover:shadow-md border-4 border-tomato-600">
               <br /> 
               <SvgAddressbook className="w-full ml-1" />
               <p className="text-xl">Address Book</p>
             </Link>
-            <Link to={priceSheet} className="rounded-lg flex-grow text-white text-7xl bg-blue-600 hover:bg-blue-500 text-center shadow-sm hover:shadow-md">
+            <Link to={priceSheet} className="rounded-lg flex-grow text-white text-7xl bg-blue-200 hover:bg-blue-100 text-center shadow-sm hover:shadow-md border-4 border-blue-600">
               <br />
               <SvgPrices className="w-full ml-1" />
               <p className="text-xl">Price List</p>
@@ -61,7 +61,7 @@ export const LandingPage = () => {
   )
 }
 
-const DaysEnum = Object.freeze({"scheduledBeef":"bg-tomato-800 group-hover:bg-tomato-700", "scheduledPig":"bg-green-400 group-hover:bg-green-300", "somethingElse":"bg-blue-700 group-hover:bg-blue-600"})
+const DaysEnum = Object.freeze({"scheduledBeef":"bg-tomato-400 group-hover:bg-tomato-300", "scheduledPig":"bg-green-300 group-hover:bg-green-200", "somethingElse":"bg-blue-300 group-hover:bg-blue-200"})
 
 const EventItem = ({ eventName, eventType }: { eventName: string, eventType: any }) => {
   return (

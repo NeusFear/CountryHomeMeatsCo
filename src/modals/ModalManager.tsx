@@ -40,7 +40,6 @@ export const ModalManager = () => {
   if(activeModal === null || childRef === undefined) {
     return (<></>)
   }
-  
 
   return (
     <Modal

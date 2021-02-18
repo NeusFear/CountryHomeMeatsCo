@@ -229,22 +229,39 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
   const updateEaters = () => setEaters([...eaters])
   const allUsers = useUsers(User.find().select('name cutInstructions'))?.sort((a, b) => a.name.localeCompare(b.name))
 
+  const saveDummyEaters = () => {
+    animal.eaters = eaters
+      .filter(e => e.foundUser !== undefined && e.cutInstruction !== undefined && e.portion !== undefined)
+      .map(e => {
+        return {
+          id: e.foundUser._id,
+          cutInstruction: e.cutInstruction,
+          portion: e.portion
+        }
+      })
+    animal.save()
+  }
+
   useEffect(() => {
-    if(eaters === undefined && animal !== undefined) {
+    if(eaters === undefined && allUsers !== undefined && animal !== undefined) {
       setEaters(animal.eaters.map(e => { return {
         _rand: Math.random(),
-        id: allUsers.find(u => u.id === e.id.toHexString()), 
+        foundUser: allUsers.find(u => u.id == e.id.toHexString()),
+        id: e.id,
         portion: e.portion,
         cutInstruction: e.cutInstruction
       }}))
     }
-  }, [animal])
+  }, [allUsers, animal])
 
+  if(eaters === undefined) {
+    return (<div>Loading eaters...</div>)
+  }
 
   return (
     <div>
       {eaters && eaters.map(eater =>
-        <EaterPart key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState}/>
+        <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState}/>
       )}
       <div onClick={() => {
         eaters.push({ _rand: Math.random() })
@@ -254,17 +271,26 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
   )
 }
 
-const EaterPart = ({eater, allUsers, currentState}: {eater: DummyEater, allUsers: IUser[], currentState: number}) => {
-  const [ user, setUser ] = useState<IUser>()
+const EaterPart = ({save, eater, allUsers, currentState}: {save: () => void, eater: DummyEater, allUsers: IUser[], currentState: number}) => {
+  const [ user, setUser ] = useState<IUser>(eater.foundUser)
   eater.foundUser = user
   return (
     <div className="flex flex-row">
-      <WrappedAutoSuggest 
+      <WrappedAutoSuggest
         suggestion={allUsers}
+        intial={eater.foundUser}
+        disabled={currentState < 3}
         mappingFunc={(user: IUser) => user.name}
-        onChange={setUser}
+        save={save}
+        onChange={user => setUser(user)}
       />
-      <select disabled={eater.foundUser === undefined || currentState < 1} defaultValue={eater.portion ?? "__default"} onChange={e => eater.portion = parseInt(e.target.value)}>
+      <select disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.portion ?? "__default"} onChange={e => { eater.portion = parseFloat(e.target.value); save() }}>
+        <option hidden disabled value="__default"></option>
+        <option value="0.25">0.25</option>
+        <option value="0.5">0.5</option>
+        <option value="1">1</option>
+      </select>
+      <select disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
         <option hidden disabled value="__default"></option>
         { eater.foundUser && 
           eater.foundUser.cutInstructions.slice()
@@ -277,13 +303,17 @@ const EaterPart = ({eater, allUsers, currentState}: {eater: DummyEater, allUsers
 }
 
 //Export this to a util function
-const WrappedAutoSuggest = ({suggestion, mappingFunc, onChange}: {
+const WrappedAutoSuggest = ({suggestion, disabled, intial, mappingFunc, save, onChange}: {
   suggestion: any[],
+  disabled: boolean,
+  intial: any,
   mappingFunc: (t: any) => string,
+  save: () => void,
   onChange: (value: any, rawValue: string) => void
 }) => {
+  //console.log(intial)
   const [ suggestions, setSuggestions ] = useState(suggestion)
-  const [ value, setValue ] = useState('')
+  const [ value, setValue ] = useState(intial ? mappingFunc(intial) : '')
 
   const onValueChanged = (_, { newValue }: { newValue: string }) => {
     setValue(newValue)
@@ -301,8 +331,10 @@ const WrappedAutoSuggest = ({suggestion, mappingFunc, onChange}: {
     renderSuggestion={t => <div>{mappingFunc(t)}</div>}
     inputProps={{
       value,
+      disabled,
       placeholder: 'Type a Name',
-      onChange: onValueChanged
+      onChange: onValueChanged,
+      onBlur: save,
     }}
   />
   )

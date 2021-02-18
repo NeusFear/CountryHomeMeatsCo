@@ -2,7 +2,7 @@ import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from "../NavBar";
 
-import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser } from "../assets/Icons";
+import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash } from "../assets/Icons";
 import User, {  CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
@@ -66,7 +66,10 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
               <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(editCutInstructions, { id })}/>
             </div>
             <div className="ml-2 mb-2 flex flex-col">
-              {user.cutInstructions.map((i, _id) => <CutInstructionEntry key={_id} id={id} instructionID={i.id} instruction={i.instructions}/>)}
+              {user.cutInstructions.map((i, _id) => <CutInstructionEntry onDelete={() => {
+                user.cutInstructions.splice(_id, 1);
+                user.save()
+              }} key={_id} id={id} instructionID={i.id} instruction={i.instructions}/>)}
             </div>
           </div>
         </div>
@@ -94,11 +97,21 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
   )
 }
 
-const CutInstructionEntry = ({id, instructionID, instruction}: {id: number, instructionID: number, instruction: CutInstructions}) => {
+const CutInstructionEntry = ({id, instructionID, instruction, onDelete}: 
+  {
+    id: number, 
+    instructionID: number, 
+    instruction: CutInstructions,
+    onDelete: () => void,
+}) => {
   return (
     <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => setModal(editCutInstructions, { id, instructionID })}>
       <div className="flex-grow">{instruction.cutType == "beef" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
       <div>{instructionID}</div>
+      <div className="pl-2" onClick={e => {
+        onDelete()
+        e.stopPropagation()
+      }}><SvgTrash /></div>
     </div>
   )
 }

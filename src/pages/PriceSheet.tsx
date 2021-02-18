@@ -9,17 +9,18 @@ export const PriceSheet = () => {
           <span className="ml-2 text-gray-700">This page's prices are used to calculate processing invoices</span>
         </div>
         <div className="px-4 mt-4 h-full overflow-y-scroll">
-          <table className="table-auto border-collapse border-tomato-600">
+
+          <table className="table-fixed border-collapse border-tomato-600 w-full bg-gray-100">
             <thead>
               <tr className="bg-tomato-200 border-tomato-600 border-t border-l border-r rounded-t-md font-bold text-center">
-                <th>BEEF</th>
-                <th></th>
-                <th></th>
+                <th className="w-1/2 text-left">BEEF</th>
+                <th className="w-1/8"></th>
+                <th className="w-3/8"></th>
               </tr>
               <tr className="border border-red-600 bg-tomato-100">
-                <th>Description</th>
-                <th>Price</th>
-                <th>Unit</th>
+                <th className="text-left pl-2">Description</th>
+                <th className="text-right pr-4">Price</th>
+                <th className="text-left pl-4">Unit</th>
               </tr>
             </thead>
             <tbody>
@@ -39,22 +40,22 @@ export const PriceSheet = () => {
 
           <br />
 
-          <table className="table-auto border-collapse border-tomato-600">
+          <table className="table-fixed border-collapse border-tomato-600 w-full bg-gray-100">
             <thead>
               <tr className="bg-tomato-200 border-tomato-600 border-t border-l border-r rounded-t-md font-bold text-center">
-                <th>PORK</th>
-                <th></th>
-                <th></th>
+                <th className="w-1/2 text-left">PORK</th>
+                <th className="w-1/8"></th>
+                <th className="w-3/8"></th>
               </tr>
               <tr className="border border-red-600 bg-tomato-100">
-                <th>Description</th>
-                <th>Price</th>
-                <th>Unit</th>
+                <th className="text-left pl-2">Description</th>
+                <th className="text-right pr-4">Price</th>
+                <th className="text-left pl-4">Unit</th>
               </tr>
             </thead>
             <tbody>
-              <PriceEntry description="Slaughter Fee" currentPrice={50.00} unit="per Animal"/>
-              <PriceEntry description="Slaughter Fee > 150lbs" currentPrice={10.00} unit="per Animal"/>
+              <PriceEntry description="Slaughter Fee < 150lbs" currentPrice={50.00} unit="per Animal"/>
+              <PriceEntry description="Slaughter Fee > 150lbs" currentPrice={60.00} unit="per Animal"/>
               <PriceEntry description="Processing" currentPrice={1.00} unit="Per Pound * Dressed Weight"/>
               <PriceEntry description="Cure" currentPrice={1.00} unit="Per Pound of Cured Meat"/>
               <PriceEntry description="Sausage" currentPrice={0.25} unit="per Pound of Sausage"/>
@@ -68,9 +69,9 @@ export const PriceSheet = () => {
 const PriceEntry = ({ description, currentPrice, unit }: {description: String, currentPrice: number, unit: String}) => {
     return (
       <tr>
-        <td className="border border-red-600 pl-2 pr-4">{description}</td>
-        <td className="border border-red-600 w-20 text-right pr-4">${currentPrice.toFixed(2)}</td>
-        <td className="border border-red-600 px-4">{unit}</td>
+        <td className="border-t border-red-600 pl-2 pr-4">{description}</td>
+        <td className="border-t border-red-600 w-20 text-right pr-4">${currentPrice.toFixed(2)}</td>
+        <td className="border-t border-red-600 px-4">{unit}</td>
       </tr>
     )
 }

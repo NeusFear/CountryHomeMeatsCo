@@ -3,14 +3,14 @@ import User, { CutInstructions, useUsers } from "../database/types/User"
 import { SvgCow, SvgPig } from "../assets/Icons"
 import Animal, { AnimalType, validateEaters } from "../database/types/Animal"
 import { useState } from "react";
-import Autosuggest from 'react-autosuggest';
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
 import { ModalHanle, setModal } from "./ModalManager";
+import { SelectInputType } from "../components/SelectInputType";
 
 
 export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, instructionID: number}>(({id, instructionID}, ref) => {
-  const user = useUsers(User.findById(id).select('cutInstructions'), [id], id)
+  const user = useUsers(User.findById(id).select('cutInstructions'), [id], id);
   const dbInstructionIndex = (user != null && instructionID !== undefined) ?
     user.cutInstructions.findIndex(c => c.id === instructionID) :
     undefined
@@ -90,7 +90,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, i
   }
 
   return (
-    <div className="flex flex-col overflow-clip" style={{width:'900px', height:'500px'}}>
+    <div className="flex flex-col overflow-clip" style={{width:'900px', height:'620px'}}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
           <span className="text-gray-300 font-semibold mt-1">Create new Cut Instruction</span>
       </div>
@@ -108,11 +108,11 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, i
         <div></div>
         <div></div>
       </div>
-      <div className="p-4 overflow-y-scroll">
+      <div className="p-4 overflow-y-scroll h-full">
         { animalType === AnimalType.Pig ? 
           <PorkInstructions instructions={cutInstruction as PorkCutInstructions} /> : 
           <BeefInstructions instructions={cutInstruction as BeefCutInstructions}/> }
-        <button onClick={submit} className="bg-blue-100 hover:bg-blue-200 cursor-pointer py-1 mt-2 rounded-sm mb-2 px-4">Submit</button>
+        <button onClick={submit} className="bg-blue-100 hover:bg-blue-200 cursor-pointer py-1 mt-2 rounded-sm mb-2 px-4 absolute bottom-2">Submit</button>
       </div>
     </div>
   )
@@ -120,7 +120,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, i
 
 const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) => {
   return (
-    <div className="flex-grow overflow-auto">
+    <div className="flex-grow overflow-show h-full">
       <div className="flex flex-row">
         <div className="flex-grow">
           <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">FRESH</span>
@@ -129,7 +129,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Ham:</span>
             <div className="flex flex-col">
-              <div className="flex flex-row">
+              <div className="flex flex-row mb-0.5">
                 <PorkFreshCuredOptions obj={instructions.ham.fresh} />
                 <SelectInputType
                   initial={instructions.ham.fresh.type}
@@ -158,6 +158,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
                   width={50} 
                 />
               </div>
+              <br />
             </div>
           </div>
 
@@ -230,7 +231,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
               initial={instructions.picnic.fresh.type}
               onChange={v => instructions.picnic.fresh.type=v}
               values={['3lb Roast', '4lb Roast', '5lb Roast', '2 Pieces', 'Whole', '1/2"', '3/4"', 'Grind']}
-              width={65}
+              width={90}
             />
             <SelectInputType 
               initial={instructions.picnic.fresh.packageAmount}
@@ -247,7 +248,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Ham:</span>
             <div className="flex flex-col">
-              <div className="flex flex-row">
+              <div className="flex flex-row mb-0.5">
                 <PorkFreshCuredOptions obj={instructions.ham.cured} />
                 <SelectInputType
                   initial={instructions.ham.cured.type}
@@ -276,6 +277,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
                   width={65} 
                 />
               </div>
+              <br />
             </div>
           </div>
 
@@ -361,69 +363,73 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
       </div>
       <br />
       <br />
-      <span className="ml-2 pr-2 text-gray-800 font-bold w-1/5">ALL</span>
+      <span className="ml-2 pr-2 text-gray-800 font-bold w-full">ALL</span>
       <br />
 
-      <div className="pt-4 flex flex-row">
-        <span className="ml-2 pr-2 text-gray-700 w-1/4">Ribs:</span>
-        <SelectInputType 
-          initial={instructions.rib}
-          onChange={v => instructions.rib=v}
-          values={['Whole', 'Split']} 
-          width={70} 
-        />
-      </div>
+      <div className="flex flex-row">
+        <div className="flex flex-col w-1/2">
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Ribs:</span>
+            <SelectInputType 
+              initial={instructions.rib}
+              onChange={v => instructions.rib=v}
+              values={['Whole', 'Split']} 
+              width={70} 
+            />
+          </div>
 
-      <div className="pt-4 flex flex-row">
-        <span className="ml-2 pr-2 text-gray-700 w-1/4">Sausage:</span>
-        <SelectInputType
-          initial={instructions.sausage}
-          onChange={v => instructions.sausage=v}
-          values={['Regular', 'Hot', 'No Seasoning', 'No Preservatives']}
-          width={50} 
-        />
-      </div>
-      
-      <div className="pt-4 flex flex-row">
-        <span className="ml-2 pr-2 text-gray-700 w-1/4">Head:</span>
-        <SelectInputType 
-          initial={instructions.head}
-          onChange={v => instructions.head = v}
-          values={['No', 'Yes']} 
-          width={50} 
-        />
-      </div>
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Sausage:</span>
+            <SelectInputType
+              initial={instructions.sausage}
+              onChange={v => instructions.sausage=v}
+              values={['Regular', 'Hot', 'No Seasoning', 'No Preservatives']}
+              width={150} 
+            />
+          </div>
+        </div>
+        <div className="flex flex-col w-1/2 pl-2">
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Head:</span>
+            <SelectInputType 
+              initial={instructions.head}
+              onChange={v => instructions.head = v}
+              values={['No', 'Yes']} 
+              width={50} 
+            />
+          </div>
 
-      <div className="pt-4 flex flex-row">
-        <span className="ml-2 pr-2 text-gray-700 w-1/4">Feet:</span>
-        <SelectInputType 
-          initial={instructions.feet}
-          onChange={v => instructions.feet = v}
-          values={['No', 'Yes']} 
-          width={50} 
-        />
-      </div>
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Feet:</span>
+            <SelectInputType 
+              initial={instructions.feet}
+              onChange={v => instructions.feet = v}
+              values={['No', 'Yes']} 
+              width={50} 
+            />
+          </div>
 
-      <div className="pt-4 flex flex-row">
-        <span className="ml-2 pr-2 text-gray-700 w-1/4">Heart:</span>
-        <SelectInputType 
-          initial={instructions.heart}
-          onChange={v => instructions.heart = v}
-          values={['No', 'Yes']} 
-          width={50} 
-        />
-      </div>
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Heart:</span>
+            <SelectInputType 
+              initial={instructions.heart}
+              onChange={v => instructions.heart = v}
+              values={['No', 'Yes']} 
+              width={50} 
+            />
+          </div>
 
-      <div className="pt-4 flex flex-row">
-        <span className="ml-2 pr-2 text-gray-700 w-1/4">Fat:</span>
-        <SelectInputType 
-          initial={instructions.fat}
-          onChange={v => instructions.fat = v}
-          values={['No', 'Yes']} 
-          width={50} 
-        />
+          <div className="pt-4 flex flex-row">
+            <span className="ml-2 pr-2 text-gray-700 w-1/4">Fat:</span>
+            <SelectInputType 
+              initial={instructions.fat}
+              onChange={v => instructions.fat = v}
+              values={['No', 'Yes']} 
+              width={50} 
+            />
+          </div>
+        </div>
       </div>
-
     </div>
   )
 }
@@ -431,37 +437,45 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) => {
   return (
     <div>
-      <div className="flex-grow overflow-auto flex flex-row">
+      <div className="flex-grow overflow-visible flex flex-row">
         <div className="flex-grow flex flex-row">
-          <div className="flex flex-col flex-grow">
+          <div className="flex flex-col w-7/12">
             <span className="ml-2 pr-2 text-gray-800 font-bold">HIND QUATER</span>
 
             <div className="pt-4 flex flex-row">
               <span className="ml-2 pr-2 text-gray-700 w-1/4">Round:</span>
-              <SelectInputType
-                initial={instructions.round.type}
-                onChange={v => instructions.round.type=v}
-                values={["25%", "50%", "75%", "100%"]} 
-                width={50}
-              />
-              <SelectInputType 
-                initial={instructions.round.tenderized}
-                onChange={v => instructions.round.tenderized=v}
-                values={["Not Tenderized", "Tenderized"]} 
-                width={150} 
-              />
-              <SelectInputType
-                initial={instructions.round.size}
-                onChange={v => instructions.round.size=v}
-                values={['1/2"', '3/4"', '1"', 'Hamburger', 'Chicken Fry']} 
-                width={100} 
-              />
-              <SelectInputType 
-                initial={instructions.round.amount}
-                onChange={v => instructions.round.amount=v}
-                values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']} 
-                width={60} 
-              />
+              <div className="flex flex-col">
+                <div className="flex flex-row mb-1">
+                  <SelectInputType
+                    initial={instructions.round.type}
+                    onChange={v => instructions.round.type=v}
+                    values={["25%", "50%", "75%", "100%"]} 
+                    width={50}
+                  />
+                  <SelectInputType 
+                    initial={instructions.round.tenderized}
+                    onChange={v => instructions.round.tenderized=v}
+                    values={["Not Tenderized", "Tenderized"]} 
+                    width={150} 
+                  />
+                </div>
+                <br />
+                <div className="flex flex-row">
+                  <SelectInputType
+                    initial={instructions.round.size}
+                    onChange={v => instructions.round.size=v}
+                    values={['1/2"', '3/4"', '1"', 'Hamburger', 'Chicken Fry']} 
+                    width={100} 
+                  />
+                  <SelectInputType 
+                    initial={instructions.round.amount}
+                    onChange={v => instructions.round.amount=v}
+                    values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']} 
+                    width={60} 
+                  />
+                </div>
+                <br />
+              </div>
             </div>
                   
             <div className="pt-4 flex flex-row">
@@ -569,7 +583,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
             </div>
           </div>
 
-          <div className="flex flex-col mr-4">
+          <div className="flex flex-col mr-4 w-5/12">
             <span className="ml-2 pr-2 text-gray-800 font-bold">FORE QUATER</span>
 
             <div className="pt-4 flex flex-row">
@@ -675,56 +689,6 @@ const PorkFreshCuredOptions = ({obj}: { obj: { amount: number }}) => {
       <option value="1">1</option>
       <option value="2">2</option>
     </select>
-  )
-}
-
-const SelectInputType = ({initial, onChange, values, width}: {
-  initial: string,
-  onChange: (value: string) => void,
-  values: string[], 
-  width: number
-}) => {
-  const computedInitial = useMemo(() => {
-    if(initial === undefined) {
-      onChange(values[0])
-      return values[0]
-    }
-    return initial
-  }, [initial])
-  const [ value, setValue ] = useState(computedInitial)
-  
-  const onValueChanged = (_, { newValue }: { newValue: string }) => {
-    setValue(newValue)
-    onChange(newValue)
-  }
-
-  const findSuggestions = (value: string) => {
-    // const lowerValue = value.toLowerCase().trim()
-    // return lowerValue === '' ? values : values.filter(s => s.toLowerCase().startsWith(lowerValue))
-    return values
-  }
-
-  const [ suggestions, setSuggestions ] = useState(findSuggestions(value))
-
-
-  const widthInPx = width
-
-  return (
-    <div style={{width: `${widthInPx}px`}}>
-      <Autosuggest 
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={({value}: {value: string}) => setSuggestions(findSuggestions(value))}        
-        onSuggestionsClearRequested={() => setSuggestions(values)}
-        shouldRenderSuggestions={() => true}
-        getSuggestionValue={t => t}
-        renderSuggestion={t => t}
-        inputProps={{
-          className: "bg-gray-200 border border-gray-500 rounded-md w-full",
-          value,
-          onChange: onValueChanged
-        }}
-      />
-    </div>
   )
 }
 

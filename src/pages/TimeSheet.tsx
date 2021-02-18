@@ -6,7 +6,7 @@ export const TimeSheet = () => {
           <div className="text-white text-4xl font-bold ml-4">TIME SHEETS</div>
         </div>
         <div className="bg-gray-400 px-1 py-0.5 shadow-sm mb-2">
-          <span className="ml-2 text-gray-700">Clock in clock out start stop lunch etc.</span>
+          <span className="ml-2 text-gray-700">This page is used to keep track of employee hours</span>
         </div>
         <div className="px-4 mt-4 h-full overflow-y-scroll">
           <EmployeeEntry name="John Doe" hours={32.4} state={1} />

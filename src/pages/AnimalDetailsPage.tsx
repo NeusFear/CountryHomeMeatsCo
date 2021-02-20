@@ -81,6 +81,13 @@ export const AnimalDetailsPage = () => {
                 <span>Kill Date</span>
                 <div className="bg-gray-100 p-2 font-semibold">{animal.killDate.toLocaleDateString()}</div>
                 <div className="font-semibold">
+                  Called
+                  <input type="checkbox" checked={animal.called} onChange={e => {
+                    animal.called = e.target.checked
+                    animal.save()
+                  }}/>
+                </div>
+                <div className="font-semibold">
                   Confirmed
                   <input type="checkbox" checked={animal.confirmed} onChange={e => {
                     animal.confirmed = e.target.checked

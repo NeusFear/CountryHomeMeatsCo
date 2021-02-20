@@ -21,6 +21,10 @@ export const InvoiceDetailsPage = () => {
                     <p className="font-semibold flex-grow">How Paid:</p>
                     <p className="text-right">Card</p>
                 </div>
+                <div className="flex flex-row pl-2 pr-4">
+                    <p className="font-semibold flex-grow">Check Number:</p>
+                    <p className="text-right">---</p>
+                </div>
             </div>
             <div className="bg-gray-300 rounded-md shadow-md flex-grow mx-4">
                 <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2">User Details</div>
@@ -30,6 +34,7 @@ export const InvoiceDetailsPage = () => {
                 </div>
                 <div className="flex flex-row pl-2 pr-4">
                     <p className="font-semibold flex-grow">Phone Number:</p>
+                    <p className="text-right">(405)496-8884)</p>
                     <p className="text-right">(405)496-8884)</p>
                 </div>
                 <div className="flex flex-row pl-2 pr-4">
@@ -53,7 +58,11 @@ export const InvoiceDetailsPage = () => {
                 </div>
                 <div className="flex flex-row pl-2 pr-4">
                     <p className="font-semibold flex-grow">Dress Weight:</p>
-                    <p className="text-right">600lbs</p>
+                    <p className="text-right">600lbs (50% of live)</p>
+                </div>
+                <div className="flex flex-row pl-2 pr-4">
+                    <p className="font-semibold flex-grow">Take Home Weight:</p>
+                    <p className="text-right">400lbs (66% of dress)</p>
                 </div>
             </div>
         </div>

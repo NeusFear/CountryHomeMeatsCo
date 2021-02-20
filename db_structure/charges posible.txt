@@ -1,0 +1,34 @@
+BEEF:
+------------------------------
+Round:			cf/tenderized
+Sirloin Tip:	cf/tenderized
+Flank:			-
+Sirloin:		-
+T-Bone:			bone out loin
+Rump:			-
+Pikes Peak:		-
+Ground Beef:	-
+Patties:		patties
+Chuck:			-
+Arm:			-
+Ribs:			-
+Club:			bone out prime rib (make ribeye/hlaf)
+Brisket:		-
+Stew Meat:		making/lb
+Soup Bones:		-
+
+
+PORK:
+------------------------------
+Ham:			cure and bone out
+Bacon:			cure
+Jowl			cure
+Loin:			cure bone out
+Butt:			cure bone out
+Picnic:			cure bone out
+Ribs:			cure
+Sausage:		.25/lb
+Head:			-
+Feet:			-
+Heart:			-
+Fat:			-

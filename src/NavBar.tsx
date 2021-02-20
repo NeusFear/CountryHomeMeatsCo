@@ -8,6 +8,7 @@ import { TodayPage } from './pages/TodayPage';
 import { TimeSheet } from './pages/TimeSheet';
 import { AddressBook } from './pages/AddressBook';
 import { PriceSheet } from './pages/PriceSheet';
+import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
 import { NavPageButton } from './components/NavPageButton';
 import { useHistoryListState } from "./AppHooks";
 
@@ -22,6 +23,7 @@ export const userDetailsPage = "/userdetails"
 export const timeSheet = "/timesheets"
 export const addressBook = "/addressbook"
 export const priceSheet = "/prices"
+export const invoiceDetails = "/invoice"
 // export const editUserDetailsPage = "/edit/userdetails"
 
 export const routes = [
@@ -32,6 +34,7 @@ export const routes = [
   { path: timeSheet, page: () => <TimeSheet /> },
   { path: addressBook, page: () => <AddressBook /> },
   { path: priceSheet, page: () => <PriceSheet /> },
+  { path: invoiceDetails, page: () => <InvoiceDetailsPage /> },
   // { path: editUserDetailsPage, page: () => <EditUserDetailsPage /> },
   { path: "/today", page: () => <TodayPage /> },
   { path: "/calendar", page: () => <CalendarPage /> }

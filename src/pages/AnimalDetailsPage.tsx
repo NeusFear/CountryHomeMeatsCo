@@ -4,6 +4,8 @@ import { SvgArrow } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
 import User, { IUser, useUsers } from "../database/types/User";
 import { useEffect, useMemo, useState } from "react";
+import { invoiceDetails } from "../NavBar";
+import { Link } from 'react-router-dom';
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
@@ -184,7 +186,7 @@ export const AnimalDetailsPage = () => {
 
 const InvoiceListItem = ({delivered, name, id} : {delivered: boolean, name: string, id?: number}) => {
     return (
-        <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => console.log("go to animal")}>
+        <Link to={invoiceDetails} className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row">
           <div className="w-1/6 text-gray-800 group-hover:text-gray-900">
             <p className="font-semibold">Invoice:</p>
             <StringUserTag name={id.toString()} />
@@ -201,7 +203,7 @@ const InvoiceListItem = ({delivered, name, id} : {delivered: boolean, name: stri
             <p className="font-semibold">Cut List:</p>
             <StringUserTag name={name} id={4} />
           </div>
-        </div>
+        </Link>
       )
 }
 

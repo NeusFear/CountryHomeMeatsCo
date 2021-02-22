@@ -36,7 +36,6 @@ export interface IAnimal extends Document {
   bringer: ObjectId,
   eaters: Eater[],
   killDate: Date,
-  called: boolean,
   confirmed: boolean,
   
   liveWeight: number,
@@ -60,7 +59,6 @@ const animalSchmea = new Schema({
     cutInstruction: { type: Number, required: true }
   }], default: [] },
   killDate: { type: Schema.Types.Date, required: true },
-  called: { type: Boolean, default: false },
   confirmed: { type: Boolean, default: false },
   
   liveWeight: { type: Number },

@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
+import { EditorValidateInput, ValidatedString } from "../components/EditorValidateInput";
 
 import User, { IUser, useUsers } from "../database/types/User";
 import { ModalHanle, setModal } from "../modals/ModalManager";
@@ -34,11 +35,6 @@ const EditUserDetailsModalWithUserID = forwardRef<ModalHanle, {id: string}>(({id
     (<EditUserDetailsModalWithUser ref={ref} user={user}/>)
 })
 
-type ValidatedString = {
-  text: string
-  valid: boolean
-}
-
 const EditUserDetailsModalWithUser = forwardRef<ModalHanle, {user: IUser}>(({user}, ref) => {  
   const [nameData, setNameData] = useState<ValidatedString>(null) 
   const [phoneNumbers, setPhoneNumbers] = useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
@@ -58,6 +54,9 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHanle, {user: IUser}>(({use
     emails.every(e => e.valid)
   
   const trySubmitData = () => {
+    if(!valid) {
+      return
+    }
     user.name = nameData.text
     user.phoneNumbers = phoneNumbers.map(n => {
       return {
@@ -151,39 +150,9 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHanle, {user: IUser}>(({use
           }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add New Email</div>
         </div>
 
-        <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
+        <button onClick={trySubmitData} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
 
       </div>
     </div>
   )
 })
-
-const EditorValidateInput = ({placeholder, current, predicate, onChange}: 
-  { 
-    placeholder: string,
-    current: string, 
-    predicate: (test: string) => boolean,
-    onChange: (data: ValidatedString) => void
-  }
-  ) => {
-  current = current??''
-  const [data, setData] = useState(undefined)
-  const [valid, setValid] = useState(undefined)
-
-  const onInputChange = (text: string) => {
-    const valid = predicate(text)
-    setValid(valid)
-    setData(text)
-    onChange({ text, valid })
-  }
-
-  useEffect(() => {
-    if(data === undefined) {
-      onInputChange(current)
-    }
-  })
-
-  return (    
-    <input placeholder={placeholder} className={`${valid ? "border-blue-500 bg-blue-100" : "border-red-500 bg-tomato-100"} placeholder-gray-700 w-60 border-2 rounded-sm p-1 my-1 mx-2 text-gray-800`} type="text" onChange={e => onInputChange(e.target.value)} value={data || ''}/>
-  )
-}

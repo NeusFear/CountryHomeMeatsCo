@@ -1,6 +1,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
 import ReactTooltip from 'react-tooltip';
+import { EditEmployeeDetailsModal } from './EditEmployeeDetailsModal';
 import { EditUseCutInstructionsModal } from './EditUseCutInstructionsModal';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
@@ -19,12 +20,14 @@ export const editUserDetails = "edit-user-details"
 export const scheduleAnimal = "schedule-animal"
 export const hangingAnimals = "hanging-animals"
 export const editCutInstructions = "edit-cut-instructions"
+export const editEmployeeDetails = "edit-employee-details"
 
 const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHanle>) => JSX.Element} = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
   [scheduleAnimal]: (state, ref) => <SchueduleAnimalModal ref={ref} userID={state} />,
   [hangingAnimals]: () => <HangingAnimalsModal />,
-  [editCutInstructions]: (state, ref) => <EditUseCutInstructionsModal ref={ref} {...state} />
+  [editCutInstructions]: (state, ref) => <EditUseCutInstructionsModal ref={ref} {...state} />,
+  [editEmployeeDetails]: (state, ref) => <EditEmployeeDetailsModal ref={ref} objectId={state} />
 }
 
 

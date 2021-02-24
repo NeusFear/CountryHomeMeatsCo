@@ -31,15 +31,15 @@ export const CalendarPage = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex flex-row pt-3 pb-3">
-        <div className="ml-4 w-24 bg-gray-600 text-gray-900">SUNDAY</div>
-        <div className="ml-4 w-24 bg-gray-600 text-gray-900">MONDAY</div>
-        <div className="ml-4 w-24 bg-gray-600 text-gray-900">TUESDAY</div>
-        <div className="ml-4 w-24 bg-gray-600 text-gray-900">WEDNESDAY</div>
-        <div className="ml-4 w-24 bg-gray-600 text-gray-900">THURSDAY</div>
-        <div className="ml-4 w-24 bg-gray-600 text-gray-900">FRIDAY</div>
-        <div className="ml-4 w-24 bg-gray-600 text-gray-900">SATURDAY</div>
-        <div className="ml-4 mr-6 w-24 bg-gray-600 text-gray-900 flex-grow">SUMMERY</div>
+      <div className="flex flex-row pt-3 pb-3 h-14 bg-gray-800">
+        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white ml-2">SUNDAY</div>
+        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">MONDAY</div>
+        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">TUESDAY</div>
+        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">WEDNESDAY</div>
+        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">THURSDAY</div>
+        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">FRIDAY</div>
+        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">SATURDAY</div>
+        <div className="w-28 text-white flex-grow font-semibold text-sm pt-2 border-r border-white pl-6">SUMMARY</div>
       </div>
 
       <div ref={scrollParent} className="flex-grow" style={{overflowY:'overlay' as Property.OverflowY}}>
@@ -101,9 +101,9 @@ const GridWeekEntry = ({weekEntry, start, config}: {weekEntry: number, start: Da
         <GridDayEntry weekEntry={weekEntry} entry={4} day={addDay(4)}/>
         <GridDayEntry weekEntry={weekEntry} entry={5} day={addDay(5)}/>
         <GridDayEntry weekEntry={weekEntry} entry={6} day={addDay(6)}/>
-        <div className={"pl-1 pr-1 pt-2 pb-2 w-28 h-24 flex-grow flex flex-col border-solid border-tomato-900 " + borderSummary}>
-          <div className={`${isWeekFull?'bg-tomato-600':'bg-gray-600'} text-gray-900 flex-grow`}>
-            Full: <input type="checkbox" checked={isDayFull} onChange={e => {
+        <div className={"p-1.5 w-28 h-28 flex-grow flex flex-col border-solid border-tomato-900 " + borderSummary}>
+          <div className={`${isWeekFull?'bg-tomato-600':'bg-gray-300'} text-gray-900 flex-grow`}>
+            Full: <input type="checkbox" checked={isWeekFull} onChange={e => {
               if(e.target.checked) {
                 config.dates.push(start)
               } else {
@@ -115,10 +115,10 @@ const GridWeekEntry = ({weekEntry, start, config}: {weekEntry: number, start: Da
         </div>
       </div>
       {nextWeek.getMonth() !== start.getMonth() && 
-        <div className="absolute pt-0 z-10 pr-2" style={{
+        <div className="absolute pt-0 z-10 px-2 text-xs font-semibold ml-4" style={{
           transform:'translate(0, -50%)',
           backgroundImage:'linear-gradient(to bottom, transparent, transparent 40%, white 40%, white 60%, transparent 60%)'
-        }}>{months[nextWeek.getMonth()] + (isDiffYear?(' '+nextWeek.getFullYear()):'')}</div>
+        }}>{months[nextWeek.getMonth()].toUpperCase().substring(0, 3) + (isDiffYear?(' '+nextWeek.getFullYear()):'')}</div>
       }
     </div>
   )
@@ -150,8 +150,8 @@ const GridDayEntry = ({entry, weekEntry, day}: {entry: number, weekEntry: number
 
   const isToday = useMemo(() => daysEqual(new Date(), day), [day.getMilliseconds()])
   return (
-    <div className={"flex flex-col pl-1 pr-1 pt-2 pb-2 w-28 h-24 border-solid border-tomato-900 " + borderClassText}>
-      <div className={`${isToday?'bg-gray-600 border-2 border-solid border-blue-500':'bg-gray-500'} text-gray-900 flex-grow relative`}>
+    <div className={"flex flex-col p-1.5 w-28 h-28 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
+      <div className={`${isToday?'bg-gray-200 border-2 border-solid border-blue-500':'bg-gray-300'} text-gray-900 flex-grow relative`}>
         <div className="absolute bottom-0 right-1">
           {day.getDate()}
         </div>

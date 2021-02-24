@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { forwardRef, useMemo, useRef, useState } from 'react';
 import { Property } from 'csstype';
 import InfiniteScroll from 'react-infinite-scroller';
 import { IFullDaysConfig, useConfig } from '../database/types/Configs';
@@ -13,17 +13,19 @@ export const CalendarPage = () => {
   const [items, setItems] = useState<(() => JSX.Element)[]>([])
   const config = useConfig("FullDays")
 
+  const todayElement = useRef<HTMLDivElement>()
+
   const loadMore = (num: number) => {
     const date = new Date()
     date.setDate(date.getDate() - date.getDay() + (num-5)*7)
     const len = items.length
     items.push(
-      () => <GridWeekEntry key={len} weekEntry={len} start={date} config={config}/>
+      () => <GridWeekEntry ref={todayElement} key={len} weekEntry={len} start={date} config={config}/>
     )
     setItems([...items])
   }
 
-  const scrollParent = useRef()
+  const scrollParent = useRef<HTMLDivElement>()
 
   if(config === undefined) {
     return (<div>Loading Config</div>)
@@ -39,7 +41,18 @@ export const CalendarPage = () => {
         <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">THURSDAY</div>
         <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">FRIDAY</div>
         <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">SATURDAY</div>
-        <div className="w-28 text-white flex-grow font-semibold text-sm pt-2 border-r border-white pl-6">SUMMARY</div>
+        <div className="w-28 text-white flex-grow font-semibold text-sm pt-2 border-r border-white pl-6 flex flex-row">
+          <div className="flex-grow">
+          SUMMARY
+          </div>
+          <div className="bg-tomato-300" onClick={() => {
+            if(todayElement.current !== undefined) {
+              todayElement.current.scrollIntoView( { block: 'center', behavior: 'smooth' } )
+            }
+          }}>
+            Back To Today
+          </div>
+        </div>
       </div>
 
       <div ref={scrollParent} className="flex-grow" style={{overflowY:'overlay' as Property.OverflowY}}>
@@ -59,7 +72,7 @@ export const CalendarPage = () => {
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] as const
 
-const GridWeekEntry = ({weekEntry, start, config}: {weekEntry: number, start: Date, config: IFullDaysConfig}) => {
+const GridWeekEntry = forwardRef<HTMLDivElement, {weekEntry: number, start: Date, config: IFullDaysConfig}>(({weekEntry, start, config}, todayRef) => {
   const addDay = (day: number) => {
     const date = new Date(start)
     date.setDate(date.getDate() + day)
@@ -87,11 +100,16 @@ const GridWeekEntry = ({weekEntry, start, config}: {weekEntry: number, start: Da
     return ""
   }, [start.getMilliseconds(), weekEntry])
 
+  const isThisWeek = useMemo(() => {
+    const msBetween = new Date().getTime()- start.getTime()
+    return msBetween >= 0 && msBetween <= 1000*60*60*24*7
+  }, [start.getMilliseconds()])
+
   const isWeekFull = config.dates.some(d => daysEqual(d, start))
 
   return (
     <div className="relative pl-2">
-      <div className="flex flex-row">  
+      <div ref={isThisWeek?todayRef:null} className={"flex flex-row" + (isThisWeek?' bg-blue-100':'')}>  
         <GridDayEntry weekEntry={weekEntry} entry={0} day={addDay(0)}/>
         <GridDayEntry weekEntry={weekEntry} entry={1} day={addDay(1)}/>
         <GridDayEntry weekEntry={weekEntry} entry={2} day={addDay(2)}/>
@@ -120,7 +138,7 @@ const GridWeekEntry = ({weekEntry, start, config}: {weekEntry: number, start: Da
       }
     </div>
   )
-}
+})
 
 const GridDayEntry = ({entry, weekEntry, day}: {entry: number, weekEntry: number, day: Date}) => {
   const borderClassText = useMemo(() => {

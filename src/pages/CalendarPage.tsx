@@ -15,7 +15,7 @@ export const CalendarPage = () => {
 
   const loadMore = (num: number) => {
     const date = new Date()
-    date.setDate(date.getDate() - date.getDay() + (num-1)*7)
+    date.setDate(date.getDate() - date.getDay() + (num-5)*7)
     const len = items.length
     items.push(
       () => <GridWeekEntry key={len} weekEntry={len} start={date} config={config}/>
@@ -72,8 +72,6 @@ const GridWeekEntry = ({weekEntry, start, config}: {weekEntry: number, start: Da
     return week
   }, [start.getMilliseconds()])
 
-  const isDiffYear = useMemo(() => nextWeek.getFullYear() !== new Date().getFullYear(), [nextWeek.getMilliseconds()])
-
   const borderSummary = useMemo(() => {
     const end = new Date(start)
     end.setDate(start.getDate() + 6)
@@ -118,7 +116,7 @@ const GridWeekEntry = ({weekEntry, start, config}: {weekEntry: number, start: Da
         <div className="absolute pt-0 z-10 px-2 text-xs font-semibold ml-4" style={{
           transform:'translate(0, -50%)',
           backgroundImage:'linear-gradient(to bottom, transparent, transparent 40%, white 40%, white 60%, transparent 60%)'
-        }}>{months[nextWeek.getMonth()].toUpperCase().substring(0, 3) + (isDiffYear?(' '+nextWeek.getFullYear()):'')}</div>
+        }}>{months[nextWeek.getMonth()].toUpperCase().substring(0, 3) + ' ' + nextWeek.getFullYear()}</div>
       }
     </div>
   )

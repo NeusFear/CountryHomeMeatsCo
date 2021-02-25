@@ -2,11 +2,25 @@ import { forwardRef, useMemo, useRef, useState } from 'react';
 import { Property } from 'csstype';
 import InfiniteScroll from 'react-infinite-scroller';
 import { IFullDaysConfig, useConfig } from '../database/types/Configs';
+import { SvgArrow } from '../assets/Icons';
 
 const daysEqual = (d1: Date, d2: Date) => {
   return d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() && 
     d1.getDate() === d2.getDate()
+}
+
+const daysBefore = (d1: Date, d2: Date) => {
+  if (d1.getFullYear() < d2.getFullYear()) {
+    return false;
+  }
+  if (d1.getDate() > d2.getDate() && d1.getMonth() >= d2.getMonth() && d1.getFullYear() >= d2.getFullYear()) {
+    return true
+  }
+  if (d1.getMonth() <= d2.getMonth() && d1.getFullYear() <= d2.getFullYear()) {
+    return false;
+  }
+  return true;
 }
 
 export const CalendarPage = () => {
@@ -32,41 +46,43 @@ export const CalendarPage = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex flex-row pt-3 pb-3 h-14 bg-gray-800">
-        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white ml-2">SUNDAY</div>
-        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">MONDAY</div>
-        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">TUESDAY</div>
-        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">WEDNESDAY</div>
-        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">THURSDAY</div>
-        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">FRIDAY</div>
-        <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">SATURDAY</div>
-        <div className="w-28 text-white flex-grow font-semibold text-sm pt-2 border-r border-white pl-6 flex flex-row">
-          <div className="flex-grow">
-          SUMMARY
-          </div>
-          <div className="bg-tomato-300" onClick={() => {
-            if(todayElement.current !== undefined) {
-              todayElement.current.scrollIntoView( { block: 'center', behavior: 'smooth' } )
-            }
-          }}>
-            Back To Today
+    <>
+      <div className="bg-tomato-300 transform -rotate-90 text-4xl w-12 h-12 rounded-full text-center absolute text-white bottom-8 right-12 z-50 shadow-lg cursor-pointer hover:bg-tomato-400 hover:shadow-xl" onClick={() => {
+          if(todayElement.current !== undefined) {
+            todayElement.current.scrollIntoView( { block: 'center', behavior: 'smooth' } )
+          }
+        }}>
+        <SvgArrow className="transform translate-x-1.5 translate-y-1.5" />
+      </div>
+      <div className="h-full flex flex-col">
+        <div className="flex flex-row pt-3 pb-3 h-14 bg-gray-800">
+          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white ml-2">SUNDAY</div>
+          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">MONDAY</div>
+          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">TUESDAY</div>
+          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">WEDNESDAY</div>
+          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">THURSDAY</div>
+          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">FRIDAY</div>
+          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">SATURDAY</div>
+          <div className="w-28 text-white flex-grow font-semibold text-sm pt-2 border-r border-white pl-6 flex flex-row">
+            <div className="flex-grow">
+            SUMMARY
+            </div>
           </div>
         </div>
-      </div>
 
-      <div ref={scrollParent} className="flex-grow" style={{overflowY:'overlay' as Property.OverflowY}}>
-        <InfiniteScroll 
-          hasMore={true}
-          loader={<div className="loader" key={0}>Loading ...</div>} 
-          loadMore={loadMore}
-          useWindow={false}
-          getScrollParent={() => scrollParent.current}
-        >
-          {items.map(f => f())}
-        </InfiniteScroll>
+        <div ref={scrollParent} className="flex-grow" style={{overflowY:'overlay' as Property.OverflowY}}>
+          <InfiniteScroll 
+            hasMore={true}
+            loader={<div className="loader" key={0}>Loading ...</div>} 
+            loadMore={loadMore}
+            useWindow={false}
+            getScrollParent={() => scrollParent.current}
+          >
+            {items.map(f => f())}
+          </InfiniteScroll>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -109,7 +125,7 @@ const GridWeekEntry = forwardRef<HTMLDivElement, {weekEntry: number, start: Date
 
   return (
     <div className="relative pl-2">
-      <div ref={isThisWeek?todayRef:null} className={"flex flex-row" + (isThisWeek?' bg-blue-100':'')}>  
+      <div ref={isThisWeek?todayRef:null} className="flex flex-row">  
         <GridDayEntry weekEntry={weekEntry} entry={0} day={addDay(0)}/>
         <GridDayEntry weekEntry={weekEntry} entry={1} day={addDay(1)}/>
         <GridDayEntry weekEntry={weekEntry} entry={2} day={addDay(2)}/>
@@ -165,9 +181,10 @@ const GridDayEntry = ({entry, weekEntry, day}: {entry: number, weekEntry: number
   }, [entry, day.getMilliseconds()])
 
   const isToday = useMemo(() => daysEqual(new Date(), day), [day.getMilliseconds()])
+  const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getMilliseconds()])
   return (
     <div className={"flex flex-col p-1.5 w-28 h-28 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
-      <div className={`${isToday?'bg-gray-200 border-2 border-solid border-blue-500':'bg-gray-300'} text-gray-900 flex-grow relative`}>
+      <div className={`${isToday?'border-2 border-solid border-blue-500':''} ${isBeforeToday?'bg-gray-400':'bg-gray-200'} text-gray-900 flex-grow relative`}>
         <div className="absolute bottom-0 right-1">
           {day.getDate()}
         </div>

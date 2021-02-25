@@ -39,7 +39,7 @@ const employeeSchema = new Schema({
   birthday: { type: Schema.Types.Date, required: true },
 
   hours: { type: Number, required: true, default: 0 },
-  clockInState: { type: Number, required: true, enum: [1,2,3] },
+  clockInState: { type: Number, default: 3, enum: [1,2,3] },
   clockInTime: { type: Number, default: 0 }
 });
 

@@ -1,3 +1,4 @@
+import { SvgNewUser, SvgTimesheets } from "../assets/Icons";
 import Employee, { useEmployees, ClockInState, IEmployee } from "../database/types/Employee";
 import { editEmployeeDetails, setModal } from "../modals/ModalManager";
 
@@ -8,7 +9,8 @@ export const TimeSheet = () => {
     <div className="w-full h-screen flex flex-col">
         <div className="flex flex-row h-14 bg-gray-800 pt-1">
           <div className="text-white text-4xl font-bold ml-4 flex-grow">TIME SHEETS</div>
-          <div onClick={() => setModal(editEmployeeDetails)}>Add Employee</div>
+          <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-1 mt-1" onClick={() => setModal(editEmployeeDetails)}><SvgNewUser /></div>
+          <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-2 mt-1"><SvgTimesheets /></div>
         </div>
         <div className="bg-gray-400 px-1 py-0.5 shadow-sm mb-2">
           <span className="ml-2 text-gray-700">This page is used to keep track of employee hours</span>

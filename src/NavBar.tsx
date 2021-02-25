@@ -12,7 +12,7 @@ import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
 import { NavPageButton } from './components/NavPageButton';
 import { useHistoryListState } from "./AppHooks";
 
-import { SvgCalendar, SvgHome, SvgDay, SvgUsers } from './assets/Icons';
+import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgArrow } from './assets/Icons';
 import { UserPinnedList } from './App';
 import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
 
@@ -53,7 +53,12 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   return (
     <div className="bg-gray-100 w-6/12 flex flex-col h-full md:w-4/14 lg:w-2/12">
       <ul>
-        <li><Link to="/"><div className="bg-tomato-800 h-14"><img src={logo} className="ml-8 h-14" ></img></div></Link></li>
+        <li>
+          <div className="bg-tomato-800 h-14 flex flex-row">
+            <div className="m-2"><SvgArrow className="hover:text-tomato-800 hover:shadow-md cursor-pointer text-4xl w-10 h-10 text-tomato-500 bg-white rounded-full p-0.5 transform rotate-180" /></div>
+            <div className="m-2"><SvgArrow className="hover:text-tomato-800 hover:shadow-md cursor-pointer text-4xl w-10 h-10 text-tomato-500 bg-white rounded-full p-0.5" /></div>
+          </div>
+        </li>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
         <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
         <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>

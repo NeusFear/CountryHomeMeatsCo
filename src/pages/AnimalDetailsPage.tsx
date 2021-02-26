@@ -52,19 +52,19 @@ export const AnimalDetailsPage = () => {
             <div className="p-4">
                 <span>Kill Date</span>
                 <div className="bg-gray-100 p-2 font-semibold">{animal.killDate.toLocaleDateString()}</div>
-                <div className="font-semibold">
-                  Called
-                  <input type="checkbox" checked={animal.called} onChange={e => {
+                <div className="font-semibold flex flex-row">
+                  <input className="mt-1 h-4 w-4 mr-2" type="checkbox" checked={animal.called} onChange={e => {
                     animal.called = e.target.checked
                     animal.save()
                   }}/>
+                  <p>Called</p>
                 </div>
-                <div className="font-semibold">
-                  Confirmed
-                  <input type="checkbox" checked={animal.confirmed} onChange={e => {
+                <div className="font-semibold flex flex-row">
+                  <input className="mt-1 h-4 w-4 mr-2" type="checkbox" checked={animal.confirmed} onChange={e => {
                     animal.confirmed = e.target.checked
                     animal.save()
                   }}/>
+                  <p>Confirmed</p>
                 </div>
             </div>
           </div>

@@ -262,19 +262,37 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
 }
 
 const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day }: SortedNameEntry & { day: Date }) => {
+
   const history = useHistory()  
+
+  const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getTime()])
+  let confBg = '';
+  if (isBeforeToday) {
+    confBg = "bg-gray-700";
+  } else if (allConfirmed) {
+    confBg = "bg-green-500";
+  } else {
+    confBg = "bg-tomato-400";
+  }
+
+  let background = '';
+  if (isBeforeToday) {
+    background = "bg-gray-600 hover:bg-gray-500";
+  } else if (type === AnimalType.Cow) {
+    background = "bg-tomato-200 hover:bg-tomato-100";
+  } else {
+    background = "bg-red-200 hover:bg-red-100";
+  }
+
   return (
-    <div className={`flex flex-row cursor-pointer mt-0.5 rounded-sm 
-      bg-${type === AnimalType.Cow ?'tomato-300':'red-100'}
-      hover:bg-${type === AnimalType.Cow ?'tomato-500':'red-300'}
-    `} onClick={() => {
+    <div className={`flex flex-row cursor-pointer mt-0.5 rounded-sm ${background}`} onClick={() => {
       if(animalIds.length === 1) {
         history.push(animalDetailsPage, animalIds[0])
       } else {
         setModal(multipleCalendarEntry, { animalIds, type, day, userID: id })
       }
     }}>
-      <div className={`w-1.5 mr-0.5 rounded-l-sm bg-${allConfirmed?'green':'tomato'}-500`}></div>
+      <div className={`w-1.5 mr-0.5 rounded-l-sm ${confBg}`}></div>
       <div className="flex-grow flex flex-col">
         <div className="pl-1 pr-2 text-base flex flex-row">{type === AnimalType.Cow ? <SvgCow /> : <SvgPig />} <p className="text-xs ml-2">{animalIds.length}</p></div>
         <div>{name}</div>

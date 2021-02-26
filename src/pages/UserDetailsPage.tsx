@@ -1,12 +1,12 @@
 import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from "../NavBar";
-
+import { useMemo } from "react";
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash } from "../assets/Icons";
 import User, {  CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
-import Animal, { useAnimals, IAnimal } from "../database/types/Animal";
+import Animal, {  useAnimals, IAnimal, useAnimalCurrentState } from "../database/types/Animal";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
@@ -118,9 +118,29 @@ const CutInstructionEntry = ({id, instructionID, instruction, onDelete}:
 
 const BroughtInAnimalEntry = ({animal}: {animal: IAnimal}) => {
   const history = useHistory();
+  const currentState = useMemo(() => useAnimalCurrentState(animal), [animal])
+  const stateText = useMemo(() => {
+    switch(currentState) {
+      case 0:
+        return "Scheduled"
+      case 1:
+        return "Confirmed"
+      case 2:
+        return "Arrived"
+      case 3:
+        return "Hanging"
+      case 4:
+        return "Ready to Cut"
+      case 5:
+        return "Ready to Pickup"
+      case 6:
+        return "Delivered"
+    }
+  }, [currentState])
   return (
     <div  className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => history.push(animalDetailsPage, animal.id)}>
-      <div className="flex-grow">{animal.animalType == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+      <div>{animal.animalType == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+      <div className="flex-grow text-xs text-gray-600 mt-2 font-semibold ml-2">{stateText}</div>
       <div>{animal.killDate.toLocaleDateString()}</div>
     </div>
   )

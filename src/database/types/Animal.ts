@@ -84,5 +84,16 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
+export const useAnimalCurrentState = (animal: IAnimal): number => {
+  if(!animal || !animal.confirmed) return 0
+  if([ animal.liveWeight, animal.color, animal.sex, 
+      animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
+  if(animal.dressWeight === undefined) return 2
+  if(!validateEaters(animal.eaters)) return 3
+  if(animal.processDate === undefined) return 4
+  if(animal.pickedUp) return 5
+  return 6
+}
+
 export const useAnimals = createResultWatcher(Animal)
 export default Animal

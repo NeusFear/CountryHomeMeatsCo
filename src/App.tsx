@@ -45,8 +45,8 @@ const App = () => {
   }, [pinnedList])
 
   return (<>
-    <ModalManager />
     <Router>
+      <ModalManager />
       <div className="flex w-full h-full">
         <NavBar pinnedList={pinnedList} />
         <div className="w-full h-full">

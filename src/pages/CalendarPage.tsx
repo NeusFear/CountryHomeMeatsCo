@@ -8,6 +8,9 @@ import { normalizeDay } from '../Util';
 import { list } from 'postcss';
 import { ObjectId } from 'bson'
 import User, { useUsers } from '../database/types/User';
+import { useHistory } from 'react-router-dom';
+import { animalDetailsPage } from '../NavBar';
+import { multipleCalendarEntry, setModal } from '../modals/ModalManager';
 
 
 const daysEqual = (d1: Date, d2: Date) => {
@@ -248,7 +251,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
     <div className={"flex flex-col p-1.5 w-28 h-28 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
       <div className={`${isToday?'border-2 border-solid border-blue-500':''} ${isBeforeToday?'bg-gray-400':'bg-gray-200'} text-gray-900 flex-grow relative`}>
         <div className="flex flex-col p-2">
-          {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} {...e} />)}
+          {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} {...e} />)}
         </div>
         <div className="absolute bottom-0 right-1">
           {day.getDate()}
@@ -258,11 +261,21 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
   )
 }
 
-const GridDayAnimalEntry = ({ name, id, animalIds, type, allConfirmed}: SortedNameEntry) => {
+const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day }: SortedNameEntry & { day: Date }) => {
+  const history = useHistory()  
   return (
-    <div className="flex flex-row">
+    <div className={`flex flex-row cursor-pointer 
+      bg-${type === AnimalType.Cow ?'tomato-300':'red-100'}
+      hover:bg-${type === AnimalType.Cow ?'tomato-500':'red-300'}
+    `} onClick={() => {
+      if(animalIds.length === 1) {
+        history.push(animalDetailsPage, animalIds[0])
+      } else {
+        setModal(multipleCalendarEntry, { animalIds, type, day, userID: id })
+      }
+    }}>
       <div className={`w-1 bg-${allConfirmed?'green':'tomato'}-500`}></div>
-      <div className={`flex-grow flex flex-row bg-${type === AnimalType.Cow ?'tomato-300':'red-100'}`}>
+      <div className="flex-grow flex flex-row">
         <div className="pl-1 pr-2 text-base">{type === AnimalType.Cow ? <SvgCow /> : <SvgPig />}</div>
         <div>{animalIds.length} {name}</div>
       </div>

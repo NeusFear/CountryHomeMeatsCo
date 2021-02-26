@@ -178,7 +178,7 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
 type SingleEntry = {
   id: string
   allConfirmed: boolean,
-  count: number
+  animalIds: ObjectId[]
   type: AnimalType
 }
 
@@ -198,9 +198,11 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
       const str = animal.bringer.toHexString()
       const key = str+'#'+animal.animalType
       const old = map.get(key)
+      const arr = old?.animalIds ?? []
+      arr.push(animal.id)
       map.set(key, {
-        id: str, 
-        count: (old?.count ?? 0) + 1,
+        id: str,
+        animalIds: arr,
         allConfirmed: (old?.allConfirmed ?? true) && animal.confirmed,
         type: animal.animalType }
       )
@@ -213,7 +215,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
     v => { return { name: getUsername(v.id), ...v }}
   )
   //Sort by count
-  .sort((a, b) => b.count-a.count)  
+  .sort((a, b) => b.animalIds.length-a.animalIds.length)  
   //Get the first 5 elements
   .slice(0, 5)
 
@@ -256,13 +258,13 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
   )
 }
 
-const GridDayAnimalEntry = ({ name, id, count, type, allConfirmed}: SortedNameEntry) => {
+const GridDayAnimalEntry = ({ name, id, animalIds, type, allConfirmed}: SortedNameEntry) => {
   return (
     <div className="flex flex-row">
       <div className={`w-1 bg-${allConfirmed?'green':'tomato'}-500`}></div>
       <div className={`flex-grow flex flex-row bg-${type === AnimalType.Cow ?'tomato-300':'red-100'}`}>
         <div className="pl-1 pr-2 text-base">{type === AnimalType.Cow ? <SvgCow /> : <SvgPig />}</div>
-        <div>{count} {name}</div>
+        <div>{animalIds.length} {name}</div>
       </div>
     </div>
   )

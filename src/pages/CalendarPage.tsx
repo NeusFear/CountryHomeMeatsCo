@@ -250,7 +250,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
   return (
     <div className={"flex flex-col p-1.5 w-28 h-28 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
       <div className={`${isToday?'border-2 border-solid border-blue-500':''} ${isBeforeToday?'bg-gray-400':'bg-gray-200'} text-gray-900 flex-grow relative`}>
-        <div className="flex flex-col p-2">
+        <div className="flex flex-col p-1">
           {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} {...e} />)}
         </div>
         <div className="absolute bottom-0 right-1">
@@ -264,7 +264,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
 const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day }: SortedNameEntry & { day: Date }) => {
   const history = useHistory()  
   return (
-    <div className={`flex flex-row cursor-pointer 
+    <div className={`flex flex-row cursor-pointer mt-0.5 rounded-sm 
       bg-${type === AnimalType.Cow ?'tomato-300':'red-100'}
       hover:bg-${type === AnimalType.Cow ?'tomato-500':'red-300'}
     `} onClick={() => {
@@ -274,10 +274,10 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day }: So
         setModal(multipleCalendarEntry, { animalIds, type, day, userID: id })
       }
     }}>
-      <div className={`w-1 bg-${allConfirmed?'green':'tomato'}-500`}></div>
-      <div className="flex-grow flex flex-row">
-        <div className="pl-1 pr-2 text-base">{type === AnimalType.Cow ? <SvgCow /> : <SvgPig />}</div>
-        <div>{animalIds.length} {name}</div>
+      <div className={`w-1.5 mr-0.5 rounded-l-sm bg-${allConfirmed?'green':'tomato'}-500`}></div>
+      <div className="flex-grow flex flex-col">
+        <div className="pl-1 pr-2 text-base flex flex-row">{type === AnimalType.Cow ? <SvgCow /> : <SvgPig />} <p className="text-xs ml-2">{animalIds.length}</p></div>
+        <div>{name}</div>
       </div>
     </div>
   )

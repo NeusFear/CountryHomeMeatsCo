@@ -52,13 +52,11 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
 
   return (
     <div className="bg-gray-100 w-6/12 flex flex-col h-full md:w-4/14 lg:w-2/12">
+      <div className="bg-tomato-800 h-14 flex flex-row">
+        <div className="m-2" onClick={history.goBack()}><SvgArrow className="hover:text-tomato-800 hover:shadow-md cursor-pointer text-4xl w-10 h-10 text-tomato-500 bg-white rounded-full p-0.5 transform rotate-180" /></div>
+        <div className="m-2" onClick={history.goForward()}><SvgArrow className="hover:text-tomato-800 hover:shadow-md cursor-pointer text-4xl w-10 h-10 text-tomato-500 bg-white rounded-full p-0.5" /></div>
+      </div>
       <ul>
-        <li>
-          <div className="bg-tomato-800 h-14 flex flex-row">
-            <div className="m-2"><SvgArrow className="hover:text-tomato-800 hover:shadow-md cursor-pointer text-4xl w-10 h-10 text-tomato-500 bg-white rounded-full p-0.5 transform rotate-180" /></div>
-            <div className="m-2"><SvgArrow className="hover:text-tomato-800 hover:shadow-md cursor-pointer text-4xl w-10 h-10 text-tomato-500 bg-white rounded-full p-0.5" /></div>
-          </div>
-        </li>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
         <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
         <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>

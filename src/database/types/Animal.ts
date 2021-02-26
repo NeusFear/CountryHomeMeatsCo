@@ -85,7 +85,7 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
-export const useComputedAnimalState = (animal: IAnimal) => 
+export const useComputedAnimalState = (animal: IAnimal | undefined) => 
   useMemo(() => {
     if(!animal || !animal.confirmed) return 0
     if([ animal.liveWeight, animal.color, animal.sex, 
@@ -107,7 +107,7 @@ export const useComputedAnimalState = (animal: IAnimal) =>
 
     //To get from hanging to ready-to-cut.
     //The stringify is as it needs to be one element, rather than several
-    JSON.stringify(animal?.eaters.map(e => { return [e.id, e.portion, e.cutInstruction] })),
+    JSON.stringify(animal?.eaters?.map(e => { return [e.id, e.portion, e.cutInstruction] })),
 
     //To get from ready-to-cut to ready-for-pickup
     animal?.processDate,

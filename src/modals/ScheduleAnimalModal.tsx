@@ -3,7 +3,7 @@ import DayPicker from "react-day-picker"
 import { SvgCow, SvgPig } from "../assets/Icons"
 import Animal, { AnimalType, createEmptyAnimal, IAnimal, useAnimals } from "../database/types/Animal"
 import ReactTooltip from "react-tooltip";
-import { getDayNumber } from "../Util";
+import { getDayNumber, normalizeDay } from "../Util";
 import User, { useUsers } from "../database/types/User";
 import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
 import { mongo } from "mongoose";
@@ -65,7 +65,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHanle, { userID: string }>((
   const valid = animalType !== undefined && scheduledDate !== null
   const trySubmitData = () => {
     newAnimal.animalType = animalType
-    newAnimal.killDate = scheduledDate
+    newAnimal.killDate = normalizeDay(scheduledDate)
     newAnimal.save().then(() => setModal(null))
   }
 

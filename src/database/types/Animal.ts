@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import mongoose, { Schema, Document, Types, mongo, FilterQuery } from 'mongoose';
 import { ObjectId } from 'bson'
 import { createResultWatcher } from '../Database';
@@ -84,16 +85,38 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
-export const useAnimalCurrentState = (animal: IAnimal): number => {
-  if(!animal || !animal.confirmed) return 0
-  if([ animal.liveWeight, animal.color, animal.sex, 
-      animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
-  if(animal.dressWeight === undefined) return 2
-  if(!validateEaters(animal.eaters)) return 3
-  if(animal.processDate === undefined) return 4
-  if(animal.pickedUp) return 5
-  return 6
-}
+export const useComputedAnimalState = (animal: IAnimal) => 
+  useMemo(() => {
+    if(!animal || !animal.confirmed) return 0
+    if([ animal.liveWeight, animal.color, animal.sex, 
+        animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
+    if(animal.dressWeight === undefined) return 2
+    if(!validateEaters(animal.eaters)) return 3
+    if(animal.processDate === undefined) return 4
+    if(animal.pickedUp) return 5
+    return 6
+  }, [
+    //To get from scheduled to confirmed
+    animal?.confirmed,
+
+    //To get from confirmed to arrived
+    animal?.liveWeight, animal?.color, animal?.sex, animal?.tagNumber, animal?.penLetter,
+
+    //To get from arrived to hanging
+    animal?.dressWeight,
+
+    //To get from hanging to ready-to-cut.
+    //The stringify is as it needs to be one element, rather than several
+    JSON.stringify(animal?.eaters.map(e => { return [e.id, e.portion, e.cutInstruction] })),
+
+    //To get from ready-to-cut to ready-for-pickup
+    animal?.processDate,
+
+    //To get from ready-for-pickup to archived
+    animal?.pickedUp
+  ])
+
+
 
 export const useAnimals = createResultWatcher(Animal)
 export default Animal

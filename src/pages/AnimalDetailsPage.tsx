@@ -1,5 +1,5 @@
 import { useHistoryListState } from "../AppHooks";
-import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters, IAnimal, useAnimalCurrentState } from "../database/types/Animal";
+import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters, IAnimal, useComputedAnimalState } from "../database/types/Animal";
 import { SvgArrow } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
 import User, { IUser, useUsers } from "../database/types/User";
@@ -12,7 +12,7 @@ export const AnimalDetailsPage = () => {
   const animal = useAnimals(Animal.findById(id), [id], id)
   const animalSexes = useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
 
-  const currentState = useMemo(() => useAnimalCurrentState(animal), [animal])
+  const currentState = useComputedAnimalState(animal)
 
   if(animal === undefined) {
     return (<div>Loading Info for animal id {id}</div>)

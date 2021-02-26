@@ -6,7 +6,7 @@ import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, 
 import User, {  CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
-import Animal, {  useAnimals, IAnimal, useAnimalCurrentState } from "../database/types/Animal";
+import Animal, {  useAnimals, IAnimal, useComputedAnimalState } from "../database/types/Animal";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
@@ -118,7 +118,7 @@ const CutInstructionEntry = ({id, instructionID, instruction, onDelete}:
 
 const BroughtInAnimalEntry = ({animal}: {animal: IAnimal}) => {
   const history = useHistory();
-  const currentState = useMemo(() => useAnimalCurrentState(animal), [animal])
+  const currentState = useComputedAnimalState(animal)
   const stateText = useMemo(() => {
     switch(currentState) {
       case 0:

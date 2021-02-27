@@ -35,7 +35,7 @@ const TodaysCutList = () => {
   const animals = useAnimals(Animal
     .where('processDate').ne(null)
     .where('pickedUp', false)
-  )//?.filter(a => validateEaters(a.eaters)) //TODO remove this comment when the eaters are added 
+  )?.filter(validateEaters) //TODO remove this comment when the eaters are added 
   return (
     <div className="h-5/6 flex-grow pl-4 pr-2 py-4">
       <div className="h-5/6 bg-gray-200 rounded-lg">
@@ -116,12 +116,11 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   const sortedEaters = allUsers !== undefined ? undefined : animal.eaters.map(e => {
     return {
       name: allUsers.find(user => user.id === e.id.toHexString()).name,
-      amount: e.portion,
       card: e.cutInstruction,
     }
   })
 
-  const eatersValid = validateEaters(animal.eaters)
+  const eatersValid = validateEaters(animal)
 
   const history = useHistory();
 

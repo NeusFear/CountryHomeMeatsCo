@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Types, mongo, FilterQuery } from 'mongoose'
 import { ObjectId } from 'bson'
 import { createResultWatcher } from '../Database';
 import { userModelName } from './User';
+import { unstable_batchedUpdates } from 'react-dom';
 
 export enum AnimalType {
   Cow = "Cow",
@@ -11,13 +12,21 @@ export enum AnimalType {
 
 export type Eater = { 
   id: ObjectId, 
-  portion: number, 
+  tag: string,
+  halfUser?: { id: ObjectId, tag: string }
   cutInstruction: number
 }
-export const validateEaters = (eaters: Eater[]): boolean => {
-  const portions = eaters.map(e => e.portion)
-  return portions.reduce((a, b) => a + b, 0) === 1 &&
-         portions.every(p => p === 1 || p === 0.5 || p === 0.25)
+export const validateEaters = (animal: IAnimal): boolean => {
+  if(animal.eaters.length !== Math.round(animal.numEaters/2)) {
+    return false
+  }
+  const eaters = animal.eaters
+  switch(animal.numEaters) {
+    case 1: return eaters[0].halfUser === undefined
+    case 2: return eaters[0].halfUser !== undefined
+    case 3: return eaters[0].halfUser !== undefined && eaters[1].halfUser === undefined
+    case 4: return eaters[0].halfUser !== undefined && eaters[1].halfUser !== undefined
+  }
 }
 
 export const getSexes = (animal: IAnimal): AnimalSexes[] => {
@@ -35,6 +44,7 @@ export type PenLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J
 export interface IAnimal extends Document {
   animalType: AnimalType
   bringer: ObjectId,
+  numEaters: number
   eaters: Eater[],
   killDate: Date,
   called: boolean,
@@ -55,9 +65,14 @@ export interface IAnimal extends Document {
 const animalSchmea = new Schema({
   animalType: { type: String, enum: Object.keys(AnimalType), required: true },
   bringer: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
+  numEaters: { type: Number, default: 1 },
   eaters: { type: [{
     id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
-    portion: { type: Number, required: true },
+    tag: { type: String },
+    foundUser: { type: {
+      id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
+      tag: { type: String },
+    }},
     cutInstruction: { type: Number, required: true }
   }], default: [] },
   killDate: { type: Schema.Types.Date, required: true },
@@ -91,7 +106,7 @@ export const useComputedAnimalState = (animal: IAnimal | undefined) =>
     if([ animal.liveWeight, animal.color, animal.sex, 
         animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
     if(animal.dressWeight === undefined) return 2
-    if(!validateEaters(animal.eaters)) return 3
+    if(!validateEaters(animal)) return 3
     if(animal.processDate === undefined) return 4
     if(animal.pickedUp) return 5
     return 6
@@ -107,7 +122,7 @@ export const useComputedAnimalState = (animal: IAnimal | undefined) =>
 
     //To get from hanging to ready-to-cut.
     //The stringify is as it needs to be one element, rather than several
-    JSON.stringify(animal?.eaters?.map(e => { return [e.id, e.portion, e.cutInstruction] })),
+    JSON.stringify(animal?.eaters?.map(e => { return [e.id, e.halfUser, e.cutInstruction] })),
 
     //To get from ready-to-cut to ready-for-pickup
     animal?.processDate,

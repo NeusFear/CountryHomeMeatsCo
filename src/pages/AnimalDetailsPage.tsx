@@ -1,5 +1,5 @@
 import { useHistoryListState } from "../AppHooks";
-import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, validateEaters, IAnimal, useComputedAnimalState } from "../database/types/Animal";
+import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState } from "../database/types/Animal";
 import { SvgArrow } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
 import User, { IUser, useUsers } from "../database/types/User";
@@ -142,7 +142,6 @@ export const AnimalDetailsPage = () => {
                   }}/>
                   <span>lb</span>
                 </div>
-                <p className="font-semibold">Eaters:</p>
                 <EaterList animal={animal} currentState={currentState} />
             </div>
           </div>
@@ -199,55 +198,106 @@ const StringUserTag = ({name, id} : {name: string, id?: number}) => {
 
 type DummyEater = { 
   _rand: number
-  foundUser?: IUser
-  portion?: number, 
+  foundUser?: IUser,
+  tag?: string
+  halfUser?: {
+    foundUser?: IUser
+    tag?: string
+  }
   cutInstruction?: number
 }
 
 const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: number}) => {
   const [ eaters, setEaters] = useState<DummyEater[]>()
+  const [ numEaters, setNumEaters ] = useState(animal.numEaters ?? 1)
 
-  const updateEaters = () => setEaters([...eaters])
   const allUsers = useUsers(User.find().select('name cutInstructions'))?.sort((a, b) => a.name.localeCompare(b.name))
 
   const saveDummyEaters = () => {
-    animal.eaters = eaters
-      .filter(e => e.foundUser !== undefined && e.cutInstruction !== undefined && e.portion !== undefined)
+    animal.eaters = 
+      eaters.filter(e => e.foundUser !== undefined && e.cutInstruction !== undefined)
       .map(e => {
         return {
           id: e.foundUser._id,
+          tag: e.tag,
           cutInstruction: e.cutInstruction,
-          portion: e.portion
+          halfUser: (
+            e.halfUser === undefined || 
+            e.halfUser.foundUser === undefined || 
+            e.halfUser.tag === undefined
+          ) ? undefined : {
+            id: e.halfUser.foundUser._id,
+            tag: e.halfUser.tag
+          }
         }
       })
     animal.save()
   }
 
   useEffect(() => {
-    if(eaters === undefined && allUsers !== undefined && animal !== undefined) {
-      setEaters(animal.eaters.map(e => { return {
-        _rand: Math.random(),
-        foundUser: allUsers.find(u => u.id == e.id.toHexString()),
-        id: e.id,
-        portion: e.portion,
-        cutInstruction: e.cutInstruction
-      }}))
+    const eaters = []
+    eaters.length = Math.round(numEaters / 2)
+    for(let i = 0; i < eaters.length; i++) {
+      if(eaters[i] === undefined) {
+        eaters[i] = { _rand: Math.random() }
+      }
+      if(i*2 !== numEaters-1) {
+        eaters[i].halfUser = {}
+      } else {
+        eaters[i].halfUser = undefined
+      }
     }
-  }, [allUsers, animal])
+
+    
+    if(allUsers !== undefined) {
+      animal.eaters.forEach((e, i) => {
+        const eat = eaters[i]
+        if(eat !== undefined) {
+          eat.foundUser = allUsers.find(u => u.id == e.id.toHexString())
+          eat.tag = e.tag
+          eat.cutInstruction = e.cutInstruction
+          
+          if(e.halfUser !== undefined) {
+            eat.halfUser.foundUser = allUsers.find(u => u.id == e.halfUser.id.toHexString())
+            eat.halfUser.tag = e.halfUser.tag
+          }
+        }
+      })
+    }
+    setEaters(eaters)
+  }, [numEaters, allUsers])
 
   if(eaters === undefined) {
     return (<div>Loading eaters...</div>)
   }
 
+  if(allUsers === undefined) {
+    return (<div>Loading Users...</div>)
+  }
+
   return (
+    <div>
+      <div className="flex flex-row">
+        <div><p className="font-semibold">Eaters:</p></div>
+        <div>
+          <select disabled={currentState < 3} defaultValue={numEaters} onChange={e => {
+            const value = parseInt(e.target.value)
+            setNumEaters(value)
+            animal.numEaters = value
+            animal.save()
+          }}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+      </div>
     <div>
       {eaters && eaters.map(eater =>
         <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState}/>
       )}
-      <div onClick={() => {
-        eaters.push({ _rand: Math.random() })
-        updateEaters()
-      }}>New</div>
+    </div>
     </div>
   )
 }
@@ -255,31 +305,67 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
 const EaterPart = ({save, eater, allUsers, currentState}: {save: () => void, eater: DummyEater, allUsers: IUser[], currentState: number}) => {
   const [ user, setUser ] = useState<IUser>(eater.foundUser)
   eater.foundUser = user
+  const [ halfUser, setHalfUser ] = useState<IUser>(eater.halfUser?.foundUser)
+  if(eater.halfUser !== undefined) {
+    eater.halfUser.foundUser = halfUser
+  }
+
   return (
-    <div className="flex flex-row">
+    <div>
+      <div className="flex flex-row">
+        <EaterSelectPart save={save} part={eater} allUsers={allUsers} currentState={currentState} user={user} setUser={setUser}/>      
+        <select disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
+          <option hidden disabled value="__default"></option>
+          { eater.foundUser && 
+            eater.foundUser.cutInstructions.slice()
+              .sort((a, b) => a.id - b.id)
+              .map(c => <option key={c.id} value={c.id}>{c.id}</option>)
+          }
+        </select>
+      </div>
+      { eater.halfUser !== undefined && 
+        <div className="flex flex-row pb-2">
+          <EaterSelectPart save={save} part={eater.halfUser} allUsers={allUsers} currentState={currentState} user={halfUser} setUser={setHalfUser}/>      
+        </div>
+      }
+    </div>
+  )
+}
+
+const EaterSelectPart = ({save, part, allUsers, currentState, user, setUser}: { 
+  save: () => void, 
+  part: { foundUser?: IUser, tag?: string }, 
+  allUsers: IUser[], 
+  currentState: number,
+  user: IUser
+  setUser: (user: IUser) => void,
+}) => {
+  const [ tag, setUserTag ] = useState(part.tag ?? '')
+
+  part.foundUser = user
+  part.tag = tag
+
+  return (
+    <>
       <WrappedAutoSuggest
         suggestion={allUsers}
-        intial={eater.foundUser}
+        intial={part.foundUser}
         disabled={currentState < 3}
         mappingFunc={(user: IUser) => user.name}
         save={save}
-        onChange={user => setUser(user)}
+        onChange={u => setUser(u) }
       />
-      <select disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.portion ?? "__default"} onChange={e => { eater.portion = parseFloat(e.target.value); save() }}>
-        <option hidden disabled value="__default"></option>
-        <option value="0.25">0.25</option>
-        <option value="0.5">0.5</option>
-        <option value="1">1</option>
-      </select>
-      <select disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
-        <option hidden disabled value="__default"></option>
-        { eater.foundUser && 
-          eater.foundUser.cutInstructions.slice()
-            .sort((a, b) => a.id - b.id)
-            .map(c => <option key={c.id} value={c.id}>{c.id}</option>)
-        }
-      </select>
-    </div>
+
+      <input 
+        className="w-16 border border-gray-500 border-radius" 
+        type="text" 
+        value={part.tag} 
+        disabled={currentState < 3}
+        onChange={e => setUserTag(e.target.value)} 
+        onBlur={save}
+        placeholder="Tag"
+      />
+    </>
   )
 }
 
@@ -292,7 +378,6 @@ const WrappedAutoSuggest = ({suggestion, disabled, intial, mappingFunc, save, on
   save: () => void,
   onChange: (value: any, rawValue: string) => void
 }) => {
-  //console.log(intial)
   const [ suggestions, setSuggestions ] = useState(suggestion)
   const [ value, setValue ] = useState(intial ? mappingFunc(intial) : '')
 

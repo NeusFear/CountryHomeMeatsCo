@@ -41,18 +41,17 @@ export const ModalManager = () => {
     setModal = (type, state) => setActiveModal(type === null ? null : {type, state })
     return () => setModal = () => {}
   })
-  
+  const childRef = useRef<ModalHanle>(null)
+
   const close = () => {
     setActiveModal(null)
-    if(childRef.current !== undefined) {
+    if(childRef.current !== null) {
       childRef.current.onClose()
     }
   }
 
   const history = useHistory()
   useEffect(() => history.listen(close))
-
-  const childRef = useRef<ModalHanle>()
 
   if(activeModal === null || childRef === undefined) {
     return (<></>)

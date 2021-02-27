@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react"
 import User, { CutInstructions, useUsers } from "../database/types/User"
 import { SvgCow, SvgPig } from "../assets/Icons"
-import Animal, { AnimalType, validateEaters } from "../database/types/Animal"
+import Animal, { AnimalType } from "../database/types/Animal"
 import { useState } from "react";
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";

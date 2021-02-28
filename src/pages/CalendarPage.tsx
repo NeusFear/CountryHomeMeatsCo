@@ -187,6 +187,12 @@ type SingleEntry = {
 
 type SortedNameEntry = SingleEntry & { name: string }
 
+export type AnimalEntriesType = {
+  user: string;
+  type: AnimalType;
+  ids: ObjectId[];
+}[]
+
 const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string}) => {
   
   const sortedNamedEntries = 
@@ -222,6 +228,12 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
   //Get the first 5 elements
   .slice(0, 5)
 
+  const allUserAnimalEntries = sortedNamedEntries.map(e => { return {
+    user: e.id,
+    type: e.type,
+    ids: e.animalIds
+  }})
+
   const borderClassText = useMemo(() => {
     const tommorow = new Date(day)
     tommorow.setDate(tommorow.getDate() + 1)
@@ -251,7 +263,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
     <div className={"flex flex-col p-1.5 w-28 h-28 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
       <div className={`${isToday?'border-2 border-solid border-blue-500':''} ${isBeforeToday?'bg-gray-400':'bg-gray-200'} text-gray-900 flex-grow relative`}>
         <div className="flex flex-col p-1">
-          {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} {...e} />)}
+          {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} dayData={allUserAnimalEntries} {...e} />)}
         </div>
         <div className="absolute bottom-0 right-1">
           {day.getDate()}
@@ -261,9 +273,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
   )
 }
 
-const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day }: SortedNameEntry & { day: Date }) => {
-
-  const history = useHistory()  
+const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day, dayData }: SortedNameEntry & { day: Date, dayData: AnimalEntriesType }) => {
 
   const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getTime()])
   let confBg = '';
@@ -286,11 +296,7 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day }: So
 
   return (
     <div className={`flex flex-row cursor-pointer mt-0.5 rounded-sm ${background}`} onClick={() => {
-      if(animalIds.length === 1) {
-        history.push(animalDetailsPage, animalIds[0])
-      } else {
-        setModal(multipleCalendarEntry, { animalIds, type, day, userID: id })
-      }
+      setModal(multipleCalendarEntry, { day, selectedType: type, selectedUserID: id, dayData })
     }}>
       <div className={`w-1.5 mr-0.5 rounded-l-sm ${confBg}`}></div>
       <div className="flex-grow flex flex-col">

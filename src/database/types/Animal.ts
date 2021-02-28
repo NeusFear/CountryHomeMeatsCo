@@ -69,7 +69,7 @@ const animalSchmea = new Schema({
   eaters: { type: [{
     id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
     tag: { type: String },
-    foundUser: { type: {
+    halfUser: { type: {
       id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
       tag: { type: String },
     }},

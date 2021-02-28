@@ -223,8 +223,7 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
           cutInstruction: e.cutInstruction,
           halfUser: (
             e.halfUser === undefined || 
-            e.halfUser.foundUser === undefined || 
-            e.halfUser.tag === undefined
+            e.halfUser.foundUser === undefined
           ) ? undefined : {
             id: e.halfUser.foundUser._id,
             tag: e.halfUser.tag

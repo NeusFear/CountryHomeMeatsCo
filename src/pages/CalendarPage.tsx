@@ -10,7 +10,7 @@ import { ObjectId } from 'bson'
 import User, { useUsers } from '../database/types/User';
 import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from '../NavBar';
-import { multipleCalendarEntry, setModal } from '../modals/ModalManager';
+import { calendarDayEntry, setModal } from '../modals/ModalManager';
 
 
 const daysEqual = (d1: Date, d2: Date) => {
@@ -296,7 +296,7 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day, dayD
 
   return (
     <div className={`flex flex-row cursor-pointer mt-0.5 rounded-sm ${background}`} onClick={() => {
-      setModal(multipleCalendarEntry, { day, selectedType: type, selectedUserID: id, dayData })
+      setModal(calendarDayEntry, { day, selectedType: type, selectedUserID: id, dayData })
     }}>
       <div className={`w-1.5 mr-0.5 rounded-l-sm ${confBg}`}></div>
       <div className="flex-grow flex flex-col">

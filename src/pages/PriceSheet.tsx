@@ -130,6 +130,7 @@ const PriceEntry = ({ description, currentPrice, onChange, unit }: {description:
             ref={inputRef}
             className={(isEdit?'':'hidden ') + " bg-red-100"}
             value={value} 
+            onKeyDown={e => e.key === 'Enter' ? setEditing(false) : false}
             onChange={e => doChange(e.target.value)} 
             onBlur={() => setEditing(false)} 
           />

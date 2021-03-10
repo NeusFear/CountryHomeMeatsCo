@@ -194,6 +194,7 @@ export type AnimalEntriesType = {
 }[]
 
 const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string}) => {
+  const holidays = useCalandarDates(day)
   
   const sortedNamedEntries = 
   Array.from(
@@ -264,6 +265,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
       <div className={`${isToday?'border-2 border-solid border-blue-500':''} ${isBeforeToday?'bg-gray-400':'bg-gray-200'} text-gray-900 flex-grow relative`}>
         <div className="flex flex-col p-1">
           {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} dayData={allUserAnimalEntries} {...e} />)}
+          {holidays.map((e, i) => <GridHolidayEntry key={i} holiday={e} />)}
         </div>
         <div className="absolute bottom-0 right-1">
           {day.getDate()}
@@ -305,4 +307,59 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day, dayD
       </div>
     </div>
   )
+}
+
+const GridHolidayEntry = ({holiday}: {holiday: HolidayEntry}) => 
+  <div className="flex flex-row cursor-pointer mt-0.5 rounded-sm bg-green-200 hover:bg-green-100">
+    <div>{holiday.name}</div>
+  </div>
+
+const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
+const useCalandarDates = (date: Date) => {
+  const normalized = new Date(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
+  if(!calandarCache.has(normalized.getTime())) {
+    const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"
+    const key = "AIzaSyDAPB2hFIxAtXgD1KEIJvoNJg6J-JWm64s"
+    const start = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0).toISOString()
+    const end = new Date(date.getFullYear(), date.getMonth()+1, -1, 59, 59, 59, 0).toISOString()
+
+    const promise = fetch(`${url}?key=${key}&timeMin=${start}&timeMax=${end}`)
+    .then(r => r.json())
+    .then(json => {
+      const arr: HolidayEntry[] = []
+
+      json.items.forEach(item => {
+        arr.push({
+          name: item.summary,
+          date: new Date(item.start.date)
+        })
+      })
+
+      promise['resolvedArray'] = arr
+      return arr
+    })
+    calandarCache.set(normalized.getTime(), promise)
+  }
+
+  const getDatesFromMonth = (dates: HolidayEntry[]) => dates.filter(d => d.date.getDate() == date.getDate())
+
+  const promise = calandarCache.get(normalized.getTime())
+  const resolved = promise['resolvedArray'] !== undefined
+  const [ state, setState ] = useState(() => {
+    if(resolved) {
+      return getDatesFromMonth(promise['resolvedArray'])
+    }
+    return []
+  })
+
+  if(!resolved) {
+    promise.then(r => setState(getDatesFromMonth(r)))
+  }
+  
+  return state
+}
+
+type HolidayEntry = {
+  name: String,
+  date: Date
 }

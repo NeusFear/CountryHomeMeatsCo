@@ -29,15 +29,14 @@ export const validateEaters = (animal: IAnimal): boolean => {
   }
 }
 
+const CowSexes = ["Steer", "Heiffer", "Cow", "Bull"] as const
+const PigSexes = ["Barrow", "Gilt", "Sow", "Boar"] as const
+
 export const getSexes = (animal: IAnimal): AnimalSexes[] => {
-  return animal.animalType === "Cow" ? 
-    ["Steer", "Heffer", "Cow", "Bull"] :
-    ["Barrow", "Gilt", "Sow", "Boar"]
+  return [...animal.animalType === "Cow" ? CowSexes : PigSexes]
 }
 
-export type AnimalSexes = 
-    "Steer" | "Heffer" | "Cow" | "Bull" | 
-    "Barrow" | "Gilt" | "Sow" | "Boar"
+export type AnimalSexes = typeof CowSexes[number] | typeof PigSexes[number]
 
 export type PenLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
 
@@ -49,6 +48,8 @@ export interface IAnimal extends Document {
   killDate: Date,
   called: boolean,
   confirmed: boolean,
+
+  arriveDate: Date,
   
   liveWeight: number,
   dressWeight: number,
@@ -78,6 +79,8 @@ const animalSchmea = new Schema({
   killDate: { type: Schema.Types.Date, required: true },
   called: { type: Boolean, default: false},
   confirmed: { type: Boolean, default: false },
+
+  arriveDate: { type: Schema.Types.Date },
   
   liveWeight: { type: Number },
   dressWeight: { type: Number },

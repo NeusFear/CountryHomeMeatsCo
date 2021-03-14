@@ -181,6 +181,7 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
 type SingleEntry = {
   id: string
   allConfirmed: boolean,
+  arrived: boolean,
   animalIds: ObjectId[]
   type: AnimalType
 }
@@ -214,6 +215,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
         id: str,
         animalIds: arr,
         allConfirmed: (old?.allConfirmed ?? true) && animal.confirmed,
+        arrived: animal.arriveDate !== undefined,
         type: animal.animalType }
       )
       return map
@@ -275,7 +277,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
   )
 }
 
-const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day, dayData }: SortedNameEntry & { day: Date, dayData: AnimalEntriesType }) => {
+const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, arrived, day, dayData }: SortedNameEntry & { day: Date, dayData: AnimalEntriesType }) => {
 
   const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getTime()])
   let confBg = '';
@@ -287,13 +289,17 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, day, dayD
     confBg = "bg-tomato-400";
   }
 
+  
+
   let background = '';
-  if (isBeforeToday) {
+  if(arrived) {
+    background = "bg-green-600 hover:bg-green-500";
+  } else if (isBeforeToday) {
     background = "bg-gray-600 hover:bg-gray-500";
   } else if (type === AnimalType.Cow) {
     background = "bg-tomato-200 hover:bg-tomato-100";
   } else {
-    background = "bg-red-200 hover:bg-red-100";
+    background = "bg-blue-200 hover:bg-blue-100";
   }
 
   return (

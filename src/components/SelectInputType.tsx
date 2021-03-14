@@ -44,7 +44,7 @@ export const SelectInputType = ({initial, onChange, values, width}: {
         getSuggestionValue={t => t}
         renderSuggestion={t => t}
         inputProps={{
-          className: "bg-gray-200 border border-gray-500 rounded-md w-full absolute",
+          className: "bg-gray-200 border border-gray-500 rounded-md w-full",
           value,
           onChange: onValueChanged
         }}

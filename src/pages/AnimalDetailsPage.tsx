@@ -6,6 +6,7 @@ import User, { IUser, useUsers } from "../database/types/User";
 import { useEffect, useMemo, useState } from "react";
 import { invoiceDetails } from "../NavBar";
 import { Link } from 'react-router-dom';
+import { normalizeDay } from "../Util";
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
@@ -22,6 +23,13 @@ export const AnimalDetailsPage = () => {
   }
 
   const nanToUndefined = (num: number) => isNaN(num) ? undefined : num
+
+  const setAnimalArriveDateAndSave = () => {
+    if(animal.arriveDate === undefined) {
+      animal.arriveDate = normalizeDay()
+    }
+    animal.save()
+  }
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -77,7 +85,7 @@ export const AnimalDetailsPage = () => {
                   <span>Live Weight:</span>
                   <input type="number" disabled={currentState < 1} defaultValue={animal.liveWeight} onChange={e => {
                     animal.liveWeight = nanToUndefined(e.target.valueAsNumber)
-                    animal.save()
+                    setAnimalArriveDateAndSave()
                   }}/>
                   <span>lb</span>
                 </div>
@@ -85,14 +93,14 @@ export const AnimalDetailsPage = () => {
                   <span>Color</span>
                   <input type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
                     animal.color = e.target.value
-                    animal.save()
+                    setAnimalArriveDateAndSave()
                   }}/>
                 </div>
                 <div className="font-semibold">
                   <span>Sex</span>
                   <select disabled={currentState < 1} defaultValue={animal.sex ?? "__default"} onChange={e => {
                     animal.sex = e.target.value as AnimalSexes
-                    animal.save()
+                    setAnimalArriveDateAndSave()
                   }}>
                     <option hidden disabled value="__default"></option>
                     <option value={animalSexes[0]}>{animalSexes[0]}</option>
@@ -105,14 +113,14 @@ export const AnimalDetailsPage = () => {
                   <span>Tag Number</span>
                   <input type="number" disabled={currentState < 1} defaultValue={animal.tagNumber} onChange={e => {
                     animal.tagNumber = e.target.valueAsNumber
-                    animal.save()
+                    setAnimalArriveDateAndSave()
                   }}/>
                 </div>
                 <div className="font-semibold">
                   <span>Pen Letter</span>
                   <select disabled={currentState < 1} defaultValue={animal.penLetter ?? "__default"} onChange={e => {
                     animal.penLetter = e.target.value as PenLetter
-                    animal.save()
+                    setAnimalArriveDateAndSave()
                   }}>
                       <option hidden disabled value="__default"></option>
                       <option value="A">A</option>

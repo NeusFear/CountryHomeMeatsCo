@@ -3,14 +3,13 @@ import mongoose, { Schema, Document, ObjectId, FilterQuery, Query } from 'mongoo
 import { ObjectId as BsonObjectId } from 'bson'
 
 import { createResultWatcher } from '../Database';
-import { stat } from 'fs';
 import { BeefCutInstructions, BeefCutInstructionsSchema } from './cut_instructions/Beef';
 import { PorkCutInstructions, PorkCutInstructionsSchema } from './cut_instructions/Pork';
 
 export const userModelName = 'User'
 
 
-export type CutInstructions = BeefCutInstructions | PorkCutInstructions
+export type CutInstructions = (BeefCutInstructions | PorkCutInstructions) & { notes?: string }
 
 
 export interface IUser extends Document {
@@ -36,7 +35,8 @@ const userSchmea = new Schema({
     instructions: { type: {
       cutType: { type: String, enum: ["beef", "pork"], required: true },
       ...BeefCutInstructionsSchema, 
-      ...PorkCutInstructionsSchema 
+      ...PorkCutInstructionsSchema,
+      notes: { type: String, default: '' },
     }, required: true }
    }], required: true},
    notes: { type: String, default: '' },

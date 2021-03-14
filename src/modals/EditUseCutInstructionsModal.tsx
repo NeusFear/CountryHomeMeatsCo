@@ -29,17 +29,19 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, i
     if(instructionID === undefined) {
       if(animalType === "Cow") {
         return {
+          cutType: "beef",
           round: {},
           sirlointip: {},
           sirloin: {},
           tbone: {},
           club: {},
           stewmeat: {},
-          patties: {}
+          patties: {},
         } as BeefCutInstructions
       } else {
         const freshCuredObj = () => { return { fresh: { amount: 0 }, cured: { amount: 0 } } }
         return {
+          cutType: "pork",
           ham: freshCuredObj(),
           bacon: freshCuredObj(),
           jowl: freshCuredObj(),
@@ -108,11 +110,22 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, i
         <div></div>
         <div></div>
       </div>
-      <div className="p-4 overflow-y-scroll h-full">
+      <div className="p-4 overflow-y-scroll h-full flex flex-col">
         { animalType === AnimalType.Pig ? 
           <PorkInstructions instructions={cutInstruction as PorkCutInstructions} /> : 
           <BeefInstructions instructions={cutInstruction as BeefCutInstructions}/> }
-        <button onClick={submit} className="bg-blue-100 hover:bg-blue-200 cursor-pointer py-1 mt-2 rounded-sm mb-2 px-4 absolute bottom-2">Submit</button>
+        <div className="flex flex-col mt-5">
+          Notes:
+          <textarea className="w-full border-gray-300 border"
+            style={{minHeight:'100px'}}
+            defaultValue={cutInstruction.notes}
+            onBlur={e => {
+              cutInstruction.notes = e.target.value ?? ''
+              user.save()
+            }
+          }></textarea>
+        </div>
+        <button onClick={submit} className="bg-blue-100 hover:bg-blue-200 cursor-pointer py-1 mt-5 rounded-sm mb-2 px-4 w-32">Submit</button>
       </div>
     </div>
   )

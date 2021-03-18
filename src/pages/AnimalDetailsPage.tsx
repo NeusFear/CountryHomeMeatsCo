@@ -57,7 +57,7 @@ export const AnimalDetailsPage = () => {
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Schedule</div>
             </div>
-            <div className="p-4">
+            <div className="p-4 font-semibold">
                 <span>Kill Date</span>
                 <div className="bg-gray-100 p-2 font-semibold">{animal.killDate.toLocaleDateString()}</div>
                 <div className="font-semibold flex flex-row">
@@ -80,23 +80,22 @@ export const AnimalDetailsPage = () => {
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Living Info</div>
             </div>
-            <div className="p-4">
-                <div className="font-semibold">
+            <div className="p-4 flex flex-row">
+                <div className="font-semibold flex flex-col p-1">
                   <span>Live Weight:</span>
                   <input type="number" disabled={currentState < 1} defaultValue={animal.liveWeight} onChange={e => {
                     animal.liveWeight = nanToUndefined(e.target.valueAsNumber)
                     setAnimalArriveDateAndSave()
                   }}/>
-                  <span>lb</span>
                 </div>
-                <div className="font-semibold">
+                <div className="font-semibold flex flex-col p-1">
                   <span>Color</span>
                   <input type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
                     animal.color = e.target.value
                     setAnimalArriveDateAndSave()
                   }}/>
                 </div>
-                <div className="font-semibold">
+                <div className="font-semibold flex flex-col p-1">
                   <span>Sex</span>
                   <select disabled={currentState < 1} defaultValue={animal.sex ?? "__default"} onChange={e => {
                     animal.sex = e.target.value as AnimalSexes
@@ -109,14 +108,14 @@ export const AnimalDetailsPage = () => {
                     <option value={animalSexes[3]}>{animalSexes[3]}</option>
                   </select>
                 </div>
-                <div className="font-semibold">
+                <div className="font-semibold flex flex-col p-1">
                   <span>Tag Number</span>
                   <input type="number" disabled={currentState < 1} defaultValue={animal.tagNumber} onChange={e => {
                     animal.tagNumber = e.target.valueAsNumber
                     setAnimalArriveDateAndSave()
                   }}/>
                 </div>
-                <div className="font-semibold">
+                <div className="font-semibold flex flex-col p-1">
                   <span>Pen Letter</span>
                   <select disabled={currentState < 1} defaultValue={animal.penLetter ?? "__default"} onChange={e => {
                     animal.penLetter = e.target.value as PenLetter
@@ -141,14 +140,13 @@ export const AnimalDetailsPage = () => {
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Cutting Room Info</div>
             </div>
-            <div className="p-4">
-                <div className="font-semibold">
+            <div className="p-4 flex flex-row">
+                <div className="font-semibold flex flex-col mr-4">
                   <span>Dress Weight</span>
-                  <input type="number" disabled={currentState < 2} defaultValue={animal.dressWeight} onChange={e => {
+                  <input type="number" className="w-48" disabled={currentState < 2} defaultValue={animal.dressWeight} onChange={e => {
                     animal.dressWeight = nanToUndefined(e.target.valueAsNumber)
                     animal.save()
                   }}/>
-                  <span>lb</span>
                 </div>
                 <EaterList animal={animal} currentState={currentState} />
             </div>
@@ -287,7 +285,7 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
       <div className="flex flex-row">
         <div><p className="font-semibold">Eaters:</p></div>
         <div>
-          <select disabled={currentState < 3} defaultValue={numEaters} onChange={e => {
+          <select className="w-36" disabled={currentState < 3} defaultValue={numEaters} onChange={e => {
             const value = parseInt(e.target.value)
             setNumEaters(value)
             animal.numEaters = value
@@ -301,6 +299,11 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
         </div>
       </div>
     <div>
+      <div className="flex flex-row font-semibold">
+        <p className="w-44">Eater Name</p>
+        <p className="w-36">Identifier</p>
+        <p className="w-36">Record Number</p>
+      </div>
       {eaters && eaters.map(eater =>
         <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState}/>
       )}
@@ -321,7 +324,7 @@ const EaterPart = ({save, eater, allUsers, currentState}: {save: () => void, eat
     <div>
       <div className="flex flex-row">
         <EaterSelectPart save={save} part={eater} allUsers={allUsers} currentState={currentState} user={user} setUser={setUser}/>      
-        <select disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
+        <select className="w-48" disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
           <option hidden disabled value="__default"></option>
           { eater.foundUser && 
             eater.foundUser.cutInstructions.slice()
@@ -364,7 +367,7 @@ const EaterSelectPart = ({save, part, allUsers, currentState, user, setUser}: {
       />
 
       <input 
-        className="w-16 border border-gray-500 border-radius" 
+        className="w-36 border border-gray-500 border-radius" 
         type="text" 
         value={part.tag} 
         disabled={currentState < 3}

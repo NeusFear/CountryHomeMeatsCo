@@ -155,7 +155,7 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
         <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={4} day={addDay(4)}/>
         <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={5} day={addDay(5)}/>
         <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={6} day={addDay(6)}/>
-        <div className={"p-1.5 w-28 h-28 flex-grow flex flex-col border-solid border-tomato-900 " + borderSummary}>
+        <div className={"p-1.5 w-28 h-36 flex-grow flex flex-col border-solid border-tomato-900 " + borderSummary}>
           <div className={`${isWeekFull?'bg-tomato-600':'bg-gray-300'} text-gray-900 flex-grow`}>
             Full: <input type="checkbox" checked={isWeekFull} onChange={e => {
               if(e.target.checked) {
@@ -263,7 +263,7 @@ const GridDayEntry = ({entry, weekEntry, day, getUsername}: {entry: number, week
   const isToday = useMemo(() => daysEqual(new Date(), day), [day.getTime()])
   const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getTime()])
   return (
-    <div className={"flex flex-col p-1.5 w-28 h-28 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
+    <div className={"flex flex-col p-1.5 w-36 h-36 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
       <div className={`${isToday?'border-2 border-solid border-blue-500':''} ${isBeforeToday?'bg-gray-400':'bg-gray-200'} text-gray-900 flex-grow relative`}>
         <div className="flex flex-col p-1">
           {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} dayData={allUserAnimalEntries} {...e} />)}

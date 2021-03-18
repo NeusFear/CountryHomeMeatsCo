@@ -12,11 +12,12 @@ import { NavBar, routes } from './NavBar';
 import { connectToDB } from './database/Database';
 import { ModalManager } from './modals/ModalManager';
 import ReactTooltip from 'react-tooltip';
+import { ConnectingPage } from './pages/ConnectingPage';
 
 export const AppContainer = () => {
   let connectState = connectToDB("localhost")
   return (
-    connectState.connected ? <App/> : <div>Not Connected: {connectState.details}</div>
+    connectState.connected ? <App/> : <ConnectingPage details={connectState.details} />
   )
 }
 

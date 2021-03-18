@@ -72,14 +72,14 @@ export const CalendarPage = () => {
       </div>
       <div className="h-full flex flex-col">
         <div className="flex flex-row pt-3 pb-3 h-14 bg-gray-800">
-          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white ml-2">SUNDAY</div>
-          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">MONDAY</div>
-          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">TUESDAY</div>
-          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">WEDNESDAY</div>
-          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">THURSDAY</div>
-          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">FRIDAY</div>
-          <div className="w-28 text-white font-semibold text-sm text-center pt-2 border-r border-white">SATURDAY</div>
-          <div className="w-28 text-white flex-grow font-semibold text-sm pt-2 border-r border-white pl-6 flex flex-row">
+          <div className="w-36 text-white font-semibold text-sm text-center pt-2 border-r border-white ml-2">SUNDAY</div>
+          <div className="w-36 text-white font-semibold text-sm text-center pt-2 border-r border-white">MONDAY</div>
+          <div className="w-36 text-white font-semibold text-sm text-center pt-2 border-r border-white">TUESDAY</div>
+          <div className="w-36 text-white font-semibold text-sm text-center pt-2 border-r border-white">WEDNESDAY</div>
+          <div className="w-36 text-white font-semibold text-sm text-center pt-2 border-r border-white">THURSDAY</div>
+          <div className="w-36 text-white font-semibold text-sm text-center pt-2 border-r border-white">FRIDAY</div>
+          <div className="w-36 text-white font-semibold text-sm text-center pt-2 border-r border-white">SATURDAY</div>
+          <div className="w-36 text-white flex-grow font-semibold text-sm pt-2 border-r border-white pl-6 flex flex-row">
             <div className="flex-grow">
             SUMMARY
             </div>

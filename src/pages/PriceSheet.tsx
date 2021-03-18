@@ -1,4 +1,5 @@
 import { createContext, useContext, useRef, useState } from "react"
+import { SvgEdit } from "../assets/Icons"
 import { useConfig } from "../database/types/Configs"
 
 const GlobalEdit = createContext(false)
@@ -30,19 +31,19 @@ export const PriceSheet = () => {
         </div>
         <div className="bg-gray-400 px-1 py-0.5 shadow-sm mb-2 flex flex-row">
           <div className="ml-2 text-gray-700 flex-grow">This page's prices are used to calculate processing invoices</div>
-          <div className="mr-2 text-gray-700 bg-tomato-500" onClick={() => setGlobalEdit(!globalEdit)}>Edit All</div>
+          <div className="mr-2 text-gray-700 hover:text-gray-800 border-none flex flex-row font-semibold" onClick={() => setGlobalEdit(!globalEdit)}><SvgEdit className="h-6 w-6 mr-1" /></div>
         </div>
         <div className="px-4 mt-4 h-full overflow-y-scroll">
 
-        <table className="table-fixed border-collapse border-tomato-600 w-full bg-gray-100">
+        <table className="table-fixed border-collapse w-full bg-gray-100">
             <thead>
-              <tr className="bg-tomato-200 border-tomato-600 border-t border-l border-r rounded-t-md font-bold text-center">
-                <th className="w-1/2 text-left">BEEF</th>
+              <tr className="bg-gray-500 rounded-t-md font-bold text-center">
+                <th className="w-1/2 text-left pl-2 rounded-t-md">BEEF</th>
                 <th className="w-1/8"></th>
                 <th className="w-3/8"></th>
               </tr>
             </thead>
-            <tbody className="border-b border-tomato-600">
+            <tbody>
               <PriceEntry description="Slaughter Fee" currentPrice={beef.slaughter} onChange={thenSave(v => beef.slaughter = v)} unit="per Animal"/>
               <PriceEntry description="Processing Fee" currentPrice={beef.processing} onChange={thenSave(v => beef.processing = v)} unit="per Pound * Dressed Weight"/>
               <PriceEntry description="Make Patties" currentPrice={beef.patties} onChange={thenSave(v => beef.patties = v)} unit="per Pound"/>
@@ -59,15 +60,15 @@ export const PriceSheet = () => {
 
           <br />
 
-          <table className="table-fixed border-collapse border-tomato-600 w-full bg-gray-100">
+          <table className="table-fixed border-collapse w-full bg-gray-100">
             <thead>
-              <tr className="bg-tomato-200 border-tomato-600 border-t border-l border-r rounded-t-md font-bold text-center">
-                <th className="w-1/2 text-left">PORK</th>
+              <tr className="bg-gray-400 rounded-t-md font-bold text-center">
+                <th className="w-1/2 text-left pl-2 rounded-t-md">PORK</th>
                 <th className="w-1/8"></th>
                 <th className="w-3/8"></th>
               </tr>
             </thead>
-            <tbody className="border-b border-tomato-600">
+            <tbody>
               <PriceEntry description="Slaughter Fee < 150lbs" currentPrice={pork.slaughter} onChange={thenSave(v => pork.slaughter = v)} unit="per Animal"/>
               <PriceEntry description="Slaughter Fee > 150lbs" currentPrice={pork.slaughter150lb} onChange={thenSave(v => pork.slaughter150lb = v)} unit="per Animal"/>
               <PriceEntry description="Processing" currentPrice={pork.processing} onChange={thenSave(v => pork.processing = v)} unit="Per Pound * Dressed Weight"/>
@@ -113,8 +114,8 @@ const PriceEntry = ({ description, currentPrice, onChange, unit }: {description:
 
   return (
       <tr>
-        <td className="border-t border-red-600 pl-2 pr-4">{description}</td>
-        <td className="border-t border-red-600 w-20 text-right pr-4">
+        <td className="border-t border-gray-600 pl-2 pr-4">{description}</td>
+        <td className="border-t border-gray-600 w-20 text-right pr-4">
           $
           <span ref={displayRef} className={isEdit?'hidden':''} onDoubleClick={e => {
             if(globalEdit) {
@@ -128,14 +129,14 @@ const PriceEntry = ({ description, currentPrice, onChange, unit }: {description:
           }}>{displayValue}</span>
           <input 
             ref={inputRef}
-            className={(isEdit?'':'hidden ') + " bg-red-100"}
+            className={(isEdit?'':'hidden ') + " bg-tomato-100"}
             value={value} 
             onKeyDown={e => e.key === 'Enter' ? setEditing(false) : false}
             onChange={e => doChange(e.target.value)} 
             onBlur={() => setEditing(false)} 
           />
         </td>
-        <td className="border-t border-red-600 px-4">{unit}</td>
+        <td className="border-t border-gray-600 px-4">{unit}</td>
       </tr>
     )
 }

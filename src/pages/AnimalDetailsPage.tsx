@@ -1,6 +1,6 @@
 import { useHistoryListState } from "../AppHooks";
 import Animal, {  getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState } from "../database/types/Animal";
-import { SvgArrow } from "../assets/Icons";
+import { SvgArrow, SvgCalendar, SvgEdit } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
 import User, { IUser, useUsers } from "../database/types/User";
 import { useEffect, useMemo, useState } from "react";
@@ -57,22 +57,24 @@ export const AnimalDetailsPage = () => {
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Schedule</div>
             </div>
-            <div className="p-4 font-semibold">
-                <span>Kill Date</span>
-                <div className="bg-gray-100 p-2 font-semibold">{animal.killDate.toLocaleDateString()}</div>
-                <div className="font-semibold flex flex-row">
-                  <input className="mt-1 h-4 w-4 mr-2" type="checkbox" checked={animal.called} onChange={e => {
+            <div className="p-4 font-semibold flex flex-row">
+                <div className="w-44">
+                  <span>Kill Date</span>
+                  <div className="bg-gray-100 p-2 font-semibold flex flex-row"><p className="flex-grow">{animal.killDate.toLocaleDateString()}</p> <SvgEdit className="w-6 h-6 hover:text-gray-700 text-gray-600" /></div>
+                </div>
+                <div className="font-semibold mx-2">
+                  <p>Called</p>
+                  <input className="mt-1 h-8 w-8 rounded-md mr-2" type="checkbox" checked={animal.called} onChange={e => {
                     animal.called = e.target.checked
                     animal.save()
                   }}/>
-                  <p>Called</p>
                 </div>
-                <div className="font-semibold flex flex-row">
-                  <input className="mt-1 h-4 w-4 mr-2" type="checkbox" checked={animal.confirmed} onChange={e => {
+                <div className="font-semibold mx-2">
+                  <p>Confirmed</p>
+                  <input className="mt-1 h-8 w-8 rounded-md mr-2" type="checkbox" checked={animal.confirmed} onChange={e => {
                     animal.confirmed = e.target.checked
                     animal.save()
                   }}/>
-                  <p>Confirmed</p>
                 </div>
             </div>
           </div>
@@ -83,21 +85,21 @@ export const AnimalDetailsPage = () => {
             <div className="p-4 flex flex-row">
                 <div className="font-semibold flex flex-col p-1">
                   <span>Live Weight:</span>
-                  <input type="number" disabled={currentState < 1} defaultValue={animal.liveWeight} onChange={e => {
+                  <input className="border-gray-700 border rounded-md px-2" type="number" disabled={currentState < 1} defaultValue={animal.liveWeight} onChange={e => {
                     animal.liveWeight = nanToUndefined(e.target.valueAsNumber)
                     setAnimalArriveDateAndSave()
                   }}/>
                 </div>
                 <div className="font-semibold flex flex-col p-1">
                   <span>Color</span>
-                  <input type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
+                  <input className="border-gray-700 border rounded-md px-2" type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
                     animal.color = e.target.value
                     setAnimalArriveDateAndSave()
                   }}/>
                 </div>
                 <div className="font-semibold flex flex-col p-1">
                   <span>Sex</span>
-                  <select disabled={currentState < 1} defaultValue={animal.sex ?? "__default"} onChange={e => {
+                  <select className="border-gray-700 border rounded-md px-1" disabled={currentState < 1} defaultValue={animal.sex ?? "__default"} onChange={e => {
                     animal.sex = e.target.value as AnimalSexes
                     setAnimalArriveDateAndSave()
                   }}>
@@ -110,14 +112,14 @@ export const AnimalDetailsPage = () => {
                 </div>
                 <div className="font-semibold flex flex-col p-1">
                   <span>Tag Number</span>
-                  <input type="number" disabled={currentState < 1} defaultValue={animal.tagNumber} onChange={e => {
+                  <input className="border-gray-700 border rounded-md px-2" type="number" disabled={currentState < 1} defaultValue={animal.tagNumber} onChange={e => {
                     animal.tagNumber = e.target.valueAsNumber
                     setAnimalArriveDateAndSave()
                   }}/>
                 </div>
                 <div className="font-semibold flex flex-col p-1">
                   <span>Pen Letter</span>
-                  <select disabled={currentState < 1} defaultValue={animal.penLetter ?? "__default"} onChange={e => {
+                  <select className="border-gray-700 border rounded-md px-1" disabled={currentState < 1} defaultValue={animal.penLetter ?? "__default"} onChange={e => {
                     animal.penLetter = e.target.value as PenLetter
                     setAnimalArriveDateAndSave()
                   }}>
@@ -143,7 +145,7 @@ export const AnimalDetailsPage = () => {
             <div className="p-4 flex flex-row">
                 <div className="font-semibold flex flex-col mr-4">
                   <span>Dress Weight</span>
-                  <input type="number" className="w-48" disabled={currentState < 2} defaultValue={animal.dressWeight} onChange={e => {
+                  <input className="border-gray-700 border rounded-md px-2 w-48" type="number" disabled={currentState < 2} defaultValue={animal.dressWeight} onChange={e => {
                     animal.dressWeight = nanToUndefined(e.target.valueAsNumber)
                     animal.save()
                   }}/>
@@ -284,8 +286,8 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
     <div>
       <div className="flex flex-row">
         <div><p className="font-semibold">Eaters:</p></div>
-        <div>
-          <select className="w-36" disabled={currentState < 3} defaultValue={numEaters} onChange={e => {
+        <div className="ml-2">
+          <select className="w-24 ml-2 border-gray-700 border rounded-md px-2" disabled={currentState < 3} defaultValue={numEaters} onChange={e => {
             const value = parseInt(e.target.value)
             setNumEaters(value)
             animal.numEaters = value
@@ -301,8 +303,8 @@ const EaterList = ({animal, currentState}: {animal: IAnimal, currentState: numbe
     <div>
       <div className="flex flex-row font-semibold">
         <p className="w-44">Eater Name</p>
-        <p className="w-36">Identifier</p>
-        <p className="w-36">Record Number</p>
+        <p className="w-36 ml-2">Identifier</p>
+        <p className="w-36 ml-2">Record Number</p>
       </div>
       {eaters && eaters.map(eater =>
         <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState}/>
@@ -324,7 +326,7 @@ const EaterPart = ({save, eater, allUsers, currentState}: {save: () => void, eat
     <div>
       <div className="flex flex-row">
         <EaterSelectPart save={save} part={eater} allUsers={allUsers} currentState={currentState} user={user} setUser={setUser}/>      
-        <select className="w-48" disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
+        <select className="w-48 border-gray-700 border rounded-md ml-2 px-1" disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
           <option hidden disabled value="__default"></option>
           { eater.foundUser && 
             eater.foundUser.cutInstructions.slice()
@@ -367,13 +369,13 @@ const EaterSelectPart = ({save, part, allUsers, currentState, user, setUser}: {
       />
 
       <input 
-        className="w-36 border border-gray-500 border-radius" 
+        className="w-36 border-gray-700 border rounded-md ml-2 px-2" 
         type="text" 
         value={part.tag} 
         disabled={currentState < 3}
         onChange={e => setUserTag(e.target.value)} 
         onBlur={save}
-        placeholder="Tag"
+        placeholder="Identifier"
       />
     </>
   )
@@ -397,6 +399,7 @@ const WrappedAutoSuggest = ({suggestion, disabled, intial, mappingFunc, save, on
   }
   return (
     <Autosuggest 
+    className="border-gray-700 border rounded-md ml-2"
     suggestions={suggestions}
     onSuggestionsFetchRequested={({value}: {value: string}) => {
       const lowerValue = value.toLowerCase().trim()

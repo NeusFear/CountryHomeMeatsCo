@@ -335,10 +335,12 @@ const useCalandarDates = (date: Date) => {
       const arr: HolidayEntry[] = []
 
       json.items.forEach(item => {
-        arr.push({
-          name: item.summary,
-          date: new Date(item.start.date)
-        })
+        if (item.summary !== "First Day of Women's History Month" && item.summary !== "Juneteenth" && item.summary !== "Day off for Christmas Day" && item.summary !== "Day off for New Year's Day" && item.summary !== "First Day of Black History Month" && item.summary !== "Easter Monday" && item.summary !== "Native American Heritage Day") {
+          arr.push({
+            name: item.summary.replace("(regional holiday)", "").replace("Martin Luther King Jr. Day", "MKL Jr. Day").replace("Thanksgiving Day", "Thanksgiving"),
+            date: new Date(item.start.date)
+          })
+        }
       })
 
       promise['resolvedArray'] = arr

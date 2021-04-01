@@ -95,7 +95,7 @@ const ScheduledSlaughterList = () => {
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Scheduled Slaughters</div>
         </div>
-        { scheduledToday.map((a, i) => <SlaughterInfo key={`${i}:${a.eaters?.length}`} animal={a} />) }
+        { scheduledToday.length > 0 ? scheduledToday.map((a, i) => <SlaughterInfo animal={a} />) : <p className="ml-4">No scheduled slaughters for today.</p> }
       </div>
     </div>
   )
@@ -113,14 +113,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   const allUsers = useUsers(User.where('_id').in(allIds), [allIds], ...allIds.map(i => i._id))
   
   const user = allUsers?.find(u => u.id === animal.bringer.toHexString())
-  const sortedEaters = allUsers !== undefined ? undefined : animal.eaters.map(e => {
-    return {
-      name: allUsers.find(user => user.id === e.id.toHexString()).name,
-      card: e.cutInstruction,
-    }
-  })
-
-  const eatersValid = validateEaters(animal)
+  const confirmed = animal.confirmed;
 
   const history = useHistory();
 
@@ -130,8 +123,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   }
   
   return (
-    <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
-      <ReactTooltip delayShow={200} /> 
+    <div className="group bg-gray-100 shadow-sm hover:shadow-lg p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="w-20">
         <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />
       </div>
@@ -139,10 +131,9 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
         <p className="font-semibold">Bringer:</p>
         <UserTag user={user} />
       </div>
-      <div className="flex-grow text-gray-800 group-hover:text-gray-900">
-        <p className="font-semibold">Eaters:</p>
-        {!eatersValid && <span data-tip="Invalid Eaters. Click to fix" onClick={() => history.push(animalDetailsPage, animal.id)} className="px-2 bg-red-200 text-tomato-700">!</span> }
-        {sortedEaters && sortedEaters.map(e => <UserTag user={user} id={e.card}/>)}
+      <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
+        <p className="font-semibold">Confirmed:</p>
+        <p className={`font-semibold ${confirmed ? "text-green-400" : "text-tomato-400"}`}>{confirmed ? "Yes" : "No"}</p>
       </div>
     </div>
   )
@@ -151,7 +142,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
 const UserTag = ({user, id} : {user: IUser, id?: number}) => {
   const history = useHistory();
   return (
-    <div className="flex">
+    <div className="flex flex-row">
       <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={e => {history.push(userDetailsPage, user.id); e.stopPropagation();}}>{user.name}</p>
       {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={() => console.log("go to sub user's individual cut instructions")}>#{id}</p>}
     </div>

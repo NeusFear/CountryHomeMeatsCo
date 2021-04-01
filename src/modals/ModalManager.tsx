@@ -5,7 +5,7 @@ import { EditEmployeeDetailsModal } from './EditEmployeeDetailsModal';
 import { EditUseCutInstructionsModal } from './EditUseCutInstructionsModal';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
-import { HangingAnimalsModal } from './HangingAnimalsModal';
+import { EditCutListModal } from './EditCutListModal';
 import { CalendarDayModal } from './CalendarDayEntryModal';
 import { SchueduleAnimalModal } from './ScheduleAnimalModal';
 import { useHistory } from 'react-router-dom';
@@ -28,7 +28,7 @@ export const calendarDayEntry = "calendar-day-entry"
 const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHanle>) => JSX.Element} = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
   [scheduleAnimal]: (state, ref) => <SchueduleAnimalModal ref={ref} userID={state} />,
-  [hangingAnimals]: () => <HangingAnimalsModal />,
+  [hangingAnimals]: () => <EditCutListModal />,
   [editCutInstructions]: (state, ref) => <EditUseCutInstructionsModal ref={ref} {...state} />,
   [editEmployeeDetails]: (state, ref) => <EditEmployeeDetailsModal ref={ref} objectId={state} />,
   [calendarDayEntry]: (state) => <CalendarDayModal state={state} />

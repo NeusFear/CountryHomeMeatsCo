@@ -17,16 +17,8 @@ export type Eater = {
   cutInstruction: number
 }
 export const validateEaters = (animal: IAnimal): boolean => {
-  if(animal.eaters.length !== Math.round(animal.numEaters/2)) {
-    return false
-  }
-  const eaters = animal.eaters
-  switch(animal.numEaters) {
-    case 1: return eaters[0].halfUser === undefined
-    case 2: return eaters[0].halfUser !== undefined
-    case 3: return eaters[0].halfUser !== undefined && eaters[1].halfUser === undefined
-    case 4: return eaters[0].halfUser !== undefined && eaters[1].halfUser !== undefined
-  }
+  return true;
+  //TODO re-add this to make sure that if there are x specified users that we have information for all said users
 }
 
 const CowSexes = ["Steer", "Heiffer", "Cow", "Bull"] as const

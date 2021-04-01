@@ -33,9 +33,9 @@ export const TodayPage = () => {
 
 const TodaysCutList = () => {
   const animals = useAnimals(Animal
-    .where('processDate').ne(null)
+    .where('processDate').ne(undefined)
     .where('pickedUp', false)
-  )?.filter(validateEaters) //TODO remove this comment when the eaters are added 
+  )
   return (
     <div className="h-5/6 flex-grow pl-4 pr-2 py-4">
       <div className="h-5/6 bg-gray-200 rounded-lg">
@@ -124,7 +124,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="w-20">
-        <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />
+        {animal.animalType === "Cow" ? <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" /> : <SvgPig className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />}
       </div>
       <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>

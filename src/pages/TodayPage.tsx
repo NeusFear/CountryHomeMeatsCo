@@ -1,12 +1,12 @@
 import { ObjectId } from "mongoose"
 import ReactTooltip from "react-tooltip"
 import { useHistory } from 'react-router-dom';
-import { SvgCow, SvgEdit, SvgPig } from "../assets/Icons"
+import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons"
 import Animal, { IAnimal, useAnimals, validateEaters } from "../database/types/Animal"
 import User, { IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
-import { getDayNumber } from "../Util"
+import { getDayNumber, printPage } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
 import { useMemo } from "react";
 
@@ -41,6 +41,7 @@ const TodaysCutList = () => {
       <div className="h-5/6 bg-gray-200 rounded-lg">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
+          <SvgPrint className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => printPage("test.pdf")}/>
           <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(hangingAnimals)}/>
         </div>
         {animals && animals.map(a => <SelectedCutList key={a.id} animal={a} />)}
@@ -113,10 +114,8 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   const allUsers = useUsers(User.where('_id').in(allIds), [allIds], ...allIds.map(i => i._id))
   
   const user = allUsers?.find(u => u.id === animal.bringer.toHexString())
-  const confirmed = animal.confirmed;
 
   const history = useHistory();
-
 
   if(user === undefined) {
     return (<div>Loading...</div>)
@@ -133,7 +132,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Confirmed:</p>
-        <p className={`font-semibold ${confirmed ? "text-green-400" : "text-tomato-400"}`}>{confirmed ? "Yes" : "No"}</p>
+        <p className={`font-semibold ${animal.confirmed ? "text-green-400" : "text-tomato-400"}`}>{animal.confirmed ? "Yes" : "No"}</p>
       </div>
     </div>
   )

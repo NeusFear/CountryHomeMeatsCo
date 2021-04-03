@@ -107,11 +107,11 @@ const CutInstructionEntry = ({id, instructionID, instruction, onDelete}:
   return (
     <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => setModal(editCutInstructions, { id, instructionID })}>
       <div className="flex-grow">{instruction.cutType == "beef" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
-      <div>{instructionID}</div>
+      <div className="mr-4">{instructionID}</div>
       <div className="pl-2" onClick={e => {
         onDelete()
         e.stopPropagation()
-      }}><SvgTrash /></div>
+      }}><SvgTrash className="mt-0.5 h-4 w-4 text-gray-200 hover:text-tomato-400" /></div>
     </div>
   )
 }

@@ -138,7 +138,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Done:</p>
-        <p className={`font-semibold ${state >= 3 ? "text-green-400" : "text-tomato-400"}`}>{state >= 3 ? "Yes" : "No"}</p>
+        <p className={`font-semibold ${state >= 2 ? "text-green-400" : "text-tomato-400"}`}>{state >= 2 ? "Yes" : "No"}</p>
       </div>
     </div>
   )

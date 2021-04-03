@@ -289,12 +289,8 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, arrived, 
     confBg = "bg-tomato-400";
   }
 
-  
-
   let background = '';
-  if(arrived) {
-    background = "bg-green-600 hover:bg-green-500";
-  } else if (isBeforeToday) {
+  if (isBeforeToday) {
     background = "bg-gray-600 hover:bg-gray-500";
   } else if (type === AnimalType.Cow) {
     background = "bg-tomato-200 hover:bg-tomato-100";
@@ -308,7 +304,7 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, arrived, 
     }}>
       <div className={`w-1.5 mr-0.5 rounded-l-sm ${confBg}`}></div>
       <div className="flex-grow flex flex-col">
-        <div className="pl-1 pr-2 text-base flex flex-row">{type === AnimalType.Cow ? <SvgCow /> : <SvgPig />} <p className="text-xs ml-2">{animalIds.length}</p></div>
+        <div className="pl-1 pr-2 text-base flex flex-row">{type === AnimalType.Cow ? <SvgCow /> : <SvgPig />} <p className="text-xs ml-2">{animalIds.length} {arrived ? " Arrived":""}</p></div>
         <div>{name}</div>
       </div>
     </div>

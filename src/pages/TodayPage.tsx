@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose"
 import ReactTooltip from "react-tooltip"
 import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons"
-import Animal, { IAnimal, useAnimals, validateEaters } from "../database/types/Animal"
+import Animal, { IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
 import User, { IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
@@ -117,6 +117,8 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
 
   const history = useHistory();
 
+  const state = useComputedAnimalState(animal);
+
   if(user === undefined) {
     return (<div>Loading...</div>)
   }
@@ -133,6 +135,10 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
       <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Confirmed:</p>
         <p className={`font-semibold ${animal.confirmed ? "text-green-400" : "text-tomato-400"}`}>{animal.confirmed ? "Yes" : "No"}</p>
+      </div>
+      <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
+        <p className="font-semibold">Done:</p>
+        <p className={`font-semibold ${state >= 3 ? "text-green-400" : "text-tomato-400"}`}>{state >= 3 ? "Yes" : "No"}</p>
       </div>
     </div>
   )

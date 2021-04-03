@@ -48,10 +48,10 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
         </div>
         <div className="text-gray-600">{Math.round(employee.hours * 100) / 100} hours this period.</div>
       </span>
-      <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedOut} targetState={ClockInState.ClockedIn} colour="green" text="Clocked In" />
+      <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedOut} targetState={ClockInState.ClockedIn} colour="green" text="Clock In" />
       <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedIn} targetState={ClockInState.OnBreak} colour="blue" text="Start Break" />
       <EmployeeTimeEntry employee={employee} state={ClockInState.OnBreak} targetState={ClockInState.ClockedIn} colour="red" text="End Break" />
-      <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedIn} targetState={ClockInState.ClockedOut} colour="tomato" text="Clocked Out" />
+      <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedIn} targetState={ClockInState.ClockedOut} colour="tomato" text="Clock Out" />
     </div>
   )
 }

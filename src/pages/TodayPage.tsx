@@ -75,7 +75,7 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        {animal.eaters.map((eater, i) => <UserTag key={i} user={allFoundUsers.find(u => u.id === eater.id.toHexString())} id={eater.cutInstruction}/>)}
+        {animal.eaters.length > 0 ? animal.eaters.map((eater, i) => <UserTag key={i} user={allFoundUsers.find(u => u.id === eater.id.toHexString())} id={eater.cutInstruction}/> ) : <p className="font-semibold text-tomato-400">Error</p>}
       </div>
     </div>
   )

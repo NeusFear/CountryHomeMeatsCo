@@ -61,8 +61,8 @@ const EditVendorDetailsModalWithUser = forwardRef<ModalHanler, {vendor: IVendor}
     if(!valid) {
       return
     }
-    vendor.company = vendor.company
-    vendor.primaryContact = vendor.primaryContact
+    vendor.company = companyData.text
+    vendor.primaryContact = primaryContactData.text
     vendor.phoneNumbers = phoneNumbers.map(n => {
       return {
         name: n.name.text,

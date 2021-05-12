@@ -22,6 +22,7 @@ export interface IEmployee extends Document {
   hours: number,
   clockInState: number
   clockInTime: number
+  onBreakTime: number
 }
 
 const employeeSchema = new Schema({
@@ -38,7 +39,8 @@ const employeeSchema = new Schema({
 
   hours: { type: Number, required: true, default: 0 },
   clockInState: { type: Number, default: 3, enum: [1,2,3] },
-  clockInTime: { type: Number, default: 0 }
+  clockInTime: { type: Number, default: 0 },
+  onBreakTime: { type: Number, default: 0 }
 });
 
 const Employee = mongoose.model<IEmployee>(userModelName, employeeSchema)

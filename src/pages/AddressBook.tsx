@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { SvgEdit, SvgNewUser, SvgNotes, SvgSearch, SvgTrash } from "../assets/Icons";
 import Vendor, { IVendor, useVendors } from "../database/types/Vendor";
-import { editUserDetails, editVendorDetails, setModal } from "../modals/ModalManager";
+import { editUserDetails, editVendorDetails, setModal, vendorNotes } from "../modals/ModalManager";
 
 export const AddressBook = () => {
 
@@ -55,7 +55,7 @@ const AddressBookEntry = ({ details, deleteUserDetails }: { details: IVendor, de
       <span onClick={() => setModal(editVendorDetails, details.id)} className="hover:text-tomato-400 text-gray-600 h-6 w-6 mr-1 flex-shrink pt-1">
         <SvgEdit />
       </span>
-      <span className="hover:text-tomato-400 text-gray-600 h-6 w-6 mr-1 flex-shrink pt-1">
+      <span onClick={() => setModal(vendorNotes, { value: details.notes, setValue: (val: string) => { details.notes = val; details.save() } })} className="hover:text-tomato-400 text-gray-600 h-6 w-6 mr-1 flex-shrink pt-1">
         <SvgNotes />
       </span>
       <span className="hover:text-tomato-400 text-gray-600 h-6 w-6 mr-1 flex-shrink pt-1">

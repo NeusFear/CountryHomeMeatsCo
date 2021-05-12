@@ -10,6 +10,7 @@ import { EditCutListModal } from './EditCutListModal';
 import { CalendarDayModal } from './CalendarDayEntryModal';
 import { SchueduleAnimalModal } from './ScheduleAnimalModal';
 import { useHistory } from 'react-router-dom';
+import { VendorNotesModal } from './VendorNotesModal';
 
 Modal.setAppElement("#root")
 const customStyles = {
@@ -26,6 +27,7 @@ export const hangingAnimals = "hanging-animals"
 export const editCutInstructions = "edit-cut-instructions"
 export const editEmployeeDetails = "edit-employee-details"
 export const calendarDayEntry = "calendar-day-entry"
+export const vendorNotes = "vendor-notes"
 
 const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>) => JSX.Element} = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
@@ -34,7 +36,8 @@ const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>)
   [hangingAnimals]: () => <EditCutListModal />,
   [editCutInstructions]: (state, ref) => <EditUseCutInstructionsModal ref={ref} {...state} />,
   [editEmployeeDetails]: (state, ref) => <EditEmployeeDetailsModal ref={ref} objectId={state} />,
-  [calendarDayEntry]: (state) => <CalendarDayModal state={state} />
+  [calendarDayEntry]: (state) => <CalendarDayModal state={state} />,
+  [vendorNotes]: (state, ref) => <VendorNotesModal ref={ref} value={state.value} setValue={state.setValue} />
 }
 
 
@@ -42,7 +45,9 @@ export const ModalManager = () => {
   const [activeModal, setActiveModal] = useState<{type: string, state: any}>(null)
   useEffect(() => {
     setModal = (type, state) => setActiveModal(type === null ? null : {type, state })
-    return () => setModal = () => {}
+    return () => {
+      setModal = () => {}
+    }
   })
   const childRef = useRef<ModalHandler>(null)
 

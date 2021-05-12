@@ -1,9 +1,9 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
 import { EditorValidateInput, ValidatedString } from "../components/EditorValidateInput";
+import Vendor, { IVendor, useVendors } from "../database/types/Vendor";
 
-import User, { IUser, useUsers } from "../database/types/User";
-import { ModalHandler, setModal } from "../modals/ModalManager";
+import { ModalHandler as ModalHanler, setModal } from "./ModalManager";
 
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 const isValidPhoneNum = (text: string) => {
@@ -17,28 +17,31 @@ const isValidPhoneNum = (text: string) => {
 //http://emailregex.com/
 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-export const EditUserDetailsModal = forwardRef<ModalHandler, {objectId: string}>(({objectId}, ref) => {
+export const EditVendorDetailsModal = forwardRef<ModalHanler, {objectId: string}>(({objectId}, ref) => {
   return objectId === undefined ? 
-  (<EditUserDetailsModalWithUser ref={ref} user={new User({
-    name: '',
+  (<EditVendorDetailsModalWithUser ref={ref} vendor={new Vendor({
+    company: '',
+    primaryContact: '',
     phoneNumbers: [{ name: '', number:'' }],
     emails: [''],
     notes: ''
   })}/>) : 
-  (<EditUserDetailsModalWithUserID ref={ref} id={objectId}/>)
+  (<EditVendorDetailsModalWithUserID ref={ref} id={objectId}/>)
 })
 
-const EditUserDetailsModalWithUserID = forwardRef<ModalHandler, {id: string}>(({id}, ref) => {
-  const user = useUsers(User.findById(id), [id], id)
-  return user === undefined ?
-    (<div>Loading User ID {id}</div>) :
-    (<EditUserDetailsModalWithUser ref={ref} user={user}/>)
+const EditVendorDetailsModalWithUserID = forwardRef<ModalHanler, {id: string}>(({id}, ref) => {
+  const vendor = useVendors(Vendor.findById(id), [id], id)
+  return vendor === undefined ?
+    (<div>Loading Vendor ID {id}</div>) :
+    (<EditVendorDetailsModalWithUser ref={ref} vendor={vendor}/>)
 })
 
-const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({user}, ref) => {  
-  const [nameData, setNameData] = useState<ValidatedString>(null) 
+const EditVendorDetailsModalWithUser = forwardRef<ModalHanler, {vendor: IVendor}>(({vendor}, ref) => {  
+
+  const [companyData, setCompanyData] = useState<ValidatedString>(null) 
+  const [primaryContactData, setPrimaryContactData] = useState<ValidatedString>(null) 
   const [phoneNumbers, setPhoneNumbers] = useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
-    [...user.phoneNumbers].map(d => {
+    [...vendor.phoneNumbers].map(d => {
       return {
         name: { text: d.name, valid: false },
         number: { text: d.number, valid: false },
@@ -46,10 +49,11 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
       }
     })
   )
-  const [emails, setEmails] = useState(() => [...user.emails].map(e => { return { text: e, valid: false, _id: Math.random() }}))
+  const [emails, setEmails] = useState(() => [...vendor.emails].map(e => { return { text: e, valid: false, _id: Math.random() }}))
   
   const valid = 
-    (nameData !== null && nameData.valid) && 
+    (companyData !== null && companyData.valid) && 
+    (primaryContactData !== null && primaryContactData.valid) && 
     phoneNumbers.every(d => d.name.valid && d.number.valid) && 
     emails.every(e => e.valid)
   
@@ -57,32 +61,43 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
     if(!valid) {
       return
     }
-    user.name = nameData.text
-    user.phoneNumbers = phoneNumbers.map(n => {
+    vendor.company = vendor.company
+    vendor.primaryContact = vendor.primaryContact
+    vendor.phoneNumbers = phoneNumbers.map(n => {
       return {
         name: n.name.text,
         number: n.number.text
       }
     })
-    user.emails = emails.map(e => e.text)
-    user.save().then(() => setModal(null))
+    vendor.emails = emails.map(e => e.text)
+    vendor.save().then(() => setModal(null))
   }
 
   useImperativeHandle(ref, () => ({ onClose: trySubmitData }))
 
   return (
     <div className="flex flex-col" style={{width:'700px', height:'500px'}}>
+
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
-        { user.isNew ? 
-          <span className="text-gray-300 font-semibold">Create New User</span> :
-          <span className="text-gray-300">Editing User ID: {user.id}</span> 
+        { vendor.isNew ? 
+          <span className="text-gray-300 font-semibold">Create New Vendor</span> :
+          <span className="text-gray-300">Editing Vendor ID: {vendor.id}</span> 
         }
       </div>
+
       <div className="flex-grow overflow-auto">
+
         <div className="pt-4">
-          <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Name:</span>
+          <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Company:</span>
           <div>
-            <EditorValidateInput placeholder="Name" current={user.name} predicate={t => t.length >= 3} onChange={d => setNameData(d)} />
+            <EditorValidateInput placeholder="Company Name" current={vendor.company} predicate={t => t.length >= 3} onChange={d => setCompanyData(d)} />
+          </div>
+        </div>
+
+        <div className="pt-4">
+          <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Primary Contact:</span>
+          <div>
+            <EditorValidateInput placeholder="Contact Name" current={vendor.primaryContact} predicate={t => t.length >= 3} onChange={d => setPrimaryContactData(d)} />
           </div>
         </div>
 

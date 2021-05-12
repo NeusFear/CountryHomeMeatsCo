@@ -1,4 +1,4 @@
-import { ModalHanle, setModal } from "./ModalManager";
+import { ModalHandler, setModal } from "./ModalManager";
 import DayPicker from "react-day-picker"
 import { SvgCow, SvgPig } from "../assets/Icons"
 import Animal, { AnimalType, createEmptyAnimal, IAnimal, useAnimals } from "../database/types/Animal"
@@ -29,7 +29,7 @@ const style = `
   background-color: var(--blue-100) !important
 }
 `
-export const SchueduleAnimalModal = forwardRef<ModalHanle, { userID: string }>(({ userID }, ref) => {
+export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>(({ userID }, ref) => {
   const [ newAnimal ] = useState(() => createEmptyAnimal(userID))
 
   const [ animalType, setAnimalType ] = useState<AnimalType>()

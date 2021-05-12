@@ -5,11 +5,11 @@ import Animal, { AnimalType } from "../database/types/Animal"
 import { useState } from "react";
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
-import { ModalHanle, setModal } from "./ModalManager";
+import { ModalHandler, setModal } from "./ModalManager";
 import { SelectInputType } from "../components/SelectInputType";
 
 
-export const EditUseCutInstructionsModal = forwardRef<ModalHanle, {id: string, instructionID: number}>(({id, instructionID}, ref) => {
+export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string, instructionID: number}>(({id, instructionID}, ref) => {
   const user = useUsers(User.findById(id).select('cutInstructions'), [id], id);
   const dbInstructionIndex = (user != null && instructionID !== undefined) ?
     user.cutInstructions.findIndex(c => c.id === instructionID) :

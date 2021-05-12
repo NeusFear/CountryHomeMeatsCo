@@ -5,6 +5,7 @@ import { EditEmployeeDetailsModal } from './EditEmployeeDetailsModal';
 import { EditUseCutInstructionsModal } from './EditUseCutInstructionsModal';
 
 import { EditUserDetailsModal } from './EditUserDetailsModal'
+import { EditVendorDetailsModal } from './EditVendorDetailsModal'
 import { EditCutListModal } from './EditCutListModal';
 import { CalendarDayModal } from './CalendarDayEntryModal';
 import { SchueduleAnimalModal } from './ScheduleAnimalModal';
@@ -19,14 +20,16 @@ const customStyles = {
 export let setModal: (type: string, state?: any) => void = () => {}
 
 export const editUserDetails = "edit-user-details"
+export const editVendorDetails = "edit-vendor-details"
 export const scheduleAnimal = "schedule-animal"
 export const hangingAnimals = "hanging-animals"
 export const editCutInstructions = "edit-cut-instructions"
 export const editEmployeeDetails = "edit-employee-details"
 export const calendarDayEntry = "calendar-day-entry"
 
-const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHanle>) => JSX.Element} = {
+const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>) => JSX.Element} = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
+  [editVendorDetails]: (state, ref) => <EditVendorDetailsModal ref={ref} objectId={state} />,
   [scheduleAnimal]: (state, ref) => <SchueduleAnimalModal ref={ref} userID={state} />,
   [hangingAnimals]: () => <EditCutListModal />,
   [editCutInstructions]: (state, ref) => <EditUseCutInstructionsModal ref={ref} {...state} />,
@@ -41,7 +44,7 @@ export const ModalManager = () => {
     setModal = (type, state) => setActiveModal(type === null ? null : {type, state })
     return () => setModal = () => {}
   })
-  const childRef = useRef<ModalHanle>(null)
+  const childRef = useRef<ModalHandler>(null)
 
   const close = () => {
     setActiveModal(null)
@@ -70,6 +73,6 @@ export const ModalManager = () => {
   )
 }
 
-export type ModalHanle = {
+export type ModalHandler = {
   onClose?: () => void
 }

@@ -1,6 +1,4 @@
-import { useMemo, DependencyList, useEffect, useState } from 'react'
-import mongoose, { Schema, Document, ObjectId, FilterQuery, Query } from 'mongoose';
-import { ObjectId as BsonObjectId } from 'bson'
+import mongoose, { Schema, Document } from 'mongoose';
 
 import { createResultWatcher } from '../Database';
 import { BeefCutInstructions, BeefCutInstructionsSchema } from './cut_instructions/Beef';
@@ -8,9 +6,7 @@ import { PorkCutInstructions, PorkCutInstructionsSchema } from './cut_instructio
 
 export const userModelName = 'User'
 
-
 export type CutInstructions = (BeefCutInstructions | PorkCutInstructions) & { notes?: string }
-
 
 export interface IUser extends Document {
   name: string

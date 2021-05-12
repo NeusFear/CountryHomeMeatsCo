@@ -3,7 +3,7 @@ import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons"
 import { EditorValidateInput, ValidatedString } from "../components/EditorValidateInput";
 import Employee, { IEmployee, useEmployees } from "../database/types/Employee";
 
-import { ModalHanle, setModal } from "./ModalManager";
+import { ModalHandler, setModal } from "./ModalManager";
 
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 const isValidPhoneNum = (text: string) => {
@@ -15,7 +15,7 @@ const isValidPhoneNum = (text: string) => {
 }
 
 const dateRegex = /^\d\d?\/\d\d?\/\d\d\d\d$/
-export const EditEmployeeDetailsModal = forwardRef<ModalHanle, {objectId: string}>(({objectId}, ref) => {
+export const EditEmployeeDetailsModal = forwardRef<ModalHandler, {objectId: string}>(({objectId}, ref) => {
   return objectId === undefined ? 
   (<EditUserDetailsModalWithUser ref={ref} user={new Employee({
     phoneNumbers: [{ name: '', number:'' }],
@@ -23,14 +23,14 @@ export const EditEmployeeDetailsModal = forwardRef<ModalHanle, {objectId: string
   (<EditUserDetailsModalWithUserID ref={ref} id={objectId}/>)
 })
 
-const EditUserDetailsModalWithUserID = forwardRef<ModalHanle, {id: string}>(({id}, ref) => {
+const EditUserDetailsModalWithUserID = forwardRef<ModalHandler, {id: string}>(({id}, ref) => {
   const user = useEmployees(Employee.findById(id), [id], id)
   return user === undefined ?
     (<div>Loading User ID {id}</div>) :
     (<EditUserDetailsModalWithUser ref={ref} user={user}/>)
 })
 
-const EditUserDetailsModalWithUser = forwardRef<ModalHanle, {user: IEmployee}>(({user}, ref) => {  
+const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>(({user}, ref) => {  
   const [firstName, setFirstName] = useState<ValidatedString>(null) 
   const [middleName, setMiddleName] = useState<ValidatedString>(null) 
   const [lastName, setLastName] = useState<ValidatedString>(null) 

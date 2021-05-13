@@ -40,15 +40,22 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
     stateText = "Clocked Out"
   }
 
-  const [hoursOnBreak, setHoursOnBreak] = useState(() => Date.now() - employee.onBreakTime)
+  
+  const computeMsSinceLastBreak = () => {
+    if(employee.clockInEvents.length !== 0) {
+      return Date.now() - employee.clockInEvents[employee.clockInEvents.length - 1].time
+    }
+    return 0
+  }
+  const [msSinceLastEvent, setMsSinceLastBreak] = useState(computeMsSinceLastBreak)
 
   useEffect(() => {
     let timer: NodeJS.Timeout
-    const perMinuteRun = () => {
-      setHoursOnBreak(Date.now() - employee.onBreakTime)
-      timer = setTimeout(perMinuteRun, 60000)
+    const periodicRun = () => {
+      setMsSinceLastBreak(computeMsSinceLastBreak());
+      timer = setTimeout(periodicRun, 5000)
     }
-    timer = setTimeout(perMinuteRun, 60000)
+    timer = setTimeout(periodicRun, 5000)
     return () => clearTimeout(timer)
   })
 
@@ -58,7 +65,7 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
         <div className="flex flex-row">
           <div className="font-semibold text-xl">{`${employee.firstName} ${employee.lastName}`}</div>
           <div className={stateClasses}> {stateText}
-            {state === ClockInState.OnBreak && <span className="pl-1 text-blue-200">for {Math.round(hoursOnBreak / 60000)} minutes.</span>}
+            {state === ClockInState.OnBreak && <span className="pl-1 text-blue-200">for {Math.floor(msSinceLastEvent / 60000)} minutes.</span>}
           </div>
 
         </div>
@@ -83,15 +90,7 @@ const EmployeeTimeEntry = ({ employee, state, targetState, colour, text }:
   const isActive = (employee.clockInState ?? ClockInState.ClockedOut) === state
   const onClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     employee.clockInState = targetState
-    console.log(employee.onBreakTime)
-    if (targetState === ClockInState.OnBreak) {
-      employee.onBreakTime = Date.now()
-    }
-    if (targetState === ClockInState.ClockedIn) {
-      employee.clockInTime = Date.now()
-    } else {
-      employee.hours += (Date.now() - employee.clockInTime) / (1000 * 60 * 60)
-    }
+    employee.clockInEvents.push({ time: Date.now(), state: targetState })
     employee.save()
     e.stopPropagation()
   }

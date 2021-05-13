@@ -21,26 +21,31 @@ export interface IEmployee extends Document {
 
   hours: number,
   clockInState: number
-  clockInTime: number
-  onBreakTime: number
+  clockInEvents: { time: number, state: number }[]
 }
 
 const employeeSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  middleName: { type: String, default:'' },
-  phoneNumbers: { type: [{ 
-    name: { type: String, required: true }, 
-    number: { type: String, required: true }
-  }], required: true },
+  middleName: { type: String, default: '' },
+  phoneNumbers: {
+    type: [{
+      name: { type: String, required: true },
+      number: { type: String, required: true }
+    }], required: true
+  },
   address: { type: [String], required: true },
   startDate: { type: Schema.Types.Date, required: true },
   birthday: { type: Schema.Types.Date, required: true },
 
   hours: { type: Number, required: true, default: 0 },
-  clockInState: { type: Number, default: 3, enum: [1,2,3] },
-  clockInTime: { type: Number, default: 0 },
-  onBreakTime: { type: Number, default: 0 }
+  clockInState: { type: Number, default: 3, enum: [1, 2, 3] },
+  clockInEvents: {
+    type: [{
+      time: { type: Number, required: true },
+      state: { type: Number, default: 3, enum: [1, 2, 3] }
+    }], required: true, default: []
+  },
 });
 
 const Employee = mongoose.model<IEmployee>(userModelName, employeeSchema)

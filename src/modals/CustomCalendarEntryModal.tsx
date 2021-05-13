@@ -40,7 +40,7 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700">Color:</span>
           <div>
-          <input type="number" defaultValue={entry.eventColor} onChange={e => entry.eventColor = e.currentTarget.value} />
+          <input type="number" defaultValue={entry.eventColor} onChange={e => entry.eventColor = e.currentTarget.valueAsNumber} />
           </div>
         </div>
       </div>

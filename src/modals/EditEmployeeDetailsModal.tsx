@@ -19,6 +19,7 @@ export const EditEmployeeDetailsModal = forwardRef<ModalHandler, {objectId: stri
   return objectId === undefined ? 
   (<EditUserDetailsModalWithUser ref={ref} user={new Employee({
     phoneNumbers: [{ name: '', number:'' }],
+    clockInEvents: []
   })}/>) : 
   (<EditUserDetailsModalWithUserID ref={ref} id={objectId}/>)
 })

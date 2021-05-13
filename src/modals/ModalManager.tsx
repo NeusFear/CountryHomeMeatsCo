@@ -11,6 +11,7 @@ import { CalendarDayModal } from './CalendarDayEntryModal';
 import { SchueduleAnimalModal } from './ScheduleAnimalModal';
 import { useHistory } from 'react-router-dom';
 import { VendorNotesModal } from './VendorNotesModal';
+import { CustomCalendarEntryModal } from './CustomCalendarEntryModal';
 
 Modal.setAppElement("#root")
 const customStyles = {
@@ -28,6 +29,7 @@ export const editCutInstructions = "edit-cut-instructions"
 export const editEmployeeDetails = "edit-employee-details"
 export const calendarDayEntry = "calendar-day-entry"
 export const vendorNotes = "vendor-notes"
+export const customDay = "custom-day"
 
 const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>) => JSX.Element} = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
@@ -37,7 +39,8 @@ const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>)
   [editCutInstructions]: (state, ref) => <EditUseCutInstructionsModal ref={ref} {...state} />,
   [editEmployeeDetails]: (state, ref) => <EditEmployeeDetailsModal ref={ref} objectId={state} />,
   [calendarDayEntry]: (state) => <CalendarDayModal state={state} />,
-  [vendorNotes]: (state, ref) => <VendorNotesModal ref={ref} value={state.value} setValue={state.setValue} />
+  [vendorNotes]: (state, ref) => <VendorNotesModal ref={ref} value={state.value} setValue={state.setValue} />,
+  [customDay]: (state, ref) => <CustomCalendarEntryModal ref={ref} objectId={state.objectId} date={state.date}  />
 }
 
 

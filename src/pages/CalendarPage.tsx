@@ -306,7 +306,7 @@ const CustomDayEntry = ({ event }: { event: ICustomEvent }) => {
   };
 
   return (
-    <div className="flex flex-row cursor-pointer mt-0.5 rounded-sm " style={{
+    <div onClick={() => setModal(customDay, { objectId: event.id })} className="flex flex-row cursor-pointer mt-0.5 rounded-sm " style={{
       backgroundColor: "#" + fullColorHex(event.eventColor)
     }}>
       <div className="w-1.5 mr-0.5 rounded-l-sm bg-gray-600 hover:bg-gray-500"></div>

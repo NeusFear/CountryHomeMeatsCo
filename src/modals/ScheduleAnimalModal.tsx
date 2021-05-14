@@ -8,6 +8,7 @@ import User, { useUsers } from "../database/types/User";
 import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
 import { mongo } from "mongoose";
 import { forwardRef, useImperativeHandle, useState } from "react";
+import { useConfig } from "../database/types/Configs";
 
 const style = `
 .DayPicker-Day {
@@ -30,24 +31,25 @@ const style = `
 }
 `
 export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>(({ userID }, ref) => {
-  const [ newAnimal ] = useState(() => createEmptyAnimal(userID))
+  const [animalType, setAnimalType] = useState<AnimalType>()
+  const [scheduledDate, setScheduledDate] = useState<Date>()
 
-  const [ animalType, setAnimalType ] = useState<AnimalType>()
-  const [ scheduledDate, setScheduledDate ] = useState<Date>()
-
+  const disabledDays = useConfig("FullDays")?.dates
   const dayNumber = getDayNumber()
   const allAnimals = useAnimals(Animal.where('killDate').gte(Date.now()).select('killDate bringer'), [dayNumber])
 
   const allUsers = useUsers(User.find().select('name'))
   const allUserNames = allUsers === undefined ? undefined : allUsers.reduce((map, obj) => map.set(obj.id, obj.name), new Map<string, string>())
-  
+
+  const [quantity, setQuantity] = useState(1)
+
   function isDayAvailable(date: Date) {
-    return getDayNumber(date) >= dayNumber
+    return disabledDays === undefined || !disabledDays.includes(date) || getDayNumber(date) >= dayNumber
   }
-  
+
 
   function getOrdersForDay(date: Date) {
-    if(allAnimals === undefined) {
+    if (allAnimals === undefined) {
       return []
     }
     return allAnimals.filter(a => getDayNumber(a.killDate) == getDayNumber(date))
@@ -55,7 +57,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
   const isOrdersBetween = (date: Date, min: number, max: number): boolean => {
     //Don't look for days on weekends.
-    if(date.getDay() === 0 || date.getDay() === 6) {
+    if (date.getDay() === 0 || date.getDay() === 6) {
       return false
     }
     const num = getOrdersForDay(date).length
@@ -64,9 +66,13 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
   const valid = animalType !== undefined && scheduledDate !== null
   const trySubmitData = () => {
-    newAnimal.animalType = animalType
-    newAnimal.killDate = normalizeDay(scheduledDate)
-    newAnimal.save().then(() => setModal(null))
+    for (let i = 0; i < quantity; i++) {
+      const newAnimal = createEmptyAnimal(userID)
+      newAnimal.animalType = animalType
+      newAnimal.killDate = normalizeDay(scheduledDate)
+      newAnimal.save().then(() => setModal(null))
+    }
+
   }
 
   useImperativeHandle(ref, () => ({ onClose: () => valid ? trySubmitData() : false }))
@@ -74,7 +80,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   const [selectedMonth, setSelectedMonth] = useState(new Date())
 
   return (
-    <div style={{width: '450px', height:'400px'}}>
+    <div style={{ width: '450px', height: '400px' }}>
       <div className="bg-gray-800 w-full rounded-t-sm text-white p-2 font-semibold">
         Schedule a New Animal
       </div>
@@ -87,11 +93,15 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
               <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType(AnimalType.Pig)} isSelected={animalType === AnimalType.Pig} />
             </div>
           </div>
-          <button onClick={valid?trySubmitData:undefined} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
+          <div className="flex flex-row">
+            <span>Quantity: </span>
+            <input className="flex-grow mx-3 w-10 bg-gray-500" type="number" value={quantity} onChange={e => setQuantity(e.currentTarget.valueAsNumber)} />
+          </div>
+          <button onClick={valid ? trySubmitData : undefined} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
         </div>
         <div>
           <style>{style}</style>
-          <DayPicker 
+          <DayPicker
             onDayClick={setScheduledDate}
             modifiers={{
               isSelected: date => date.getTime() === scheduledDate?.getTime(),
@@ -100,8 +110,8 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
               isBusyDay: date => isOrdersBetween(date, 7, 9),
             }}
             month={selectedMonth}
-            captionElement={({ date, localeUtils }) => 
-              <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth}/>
+            captionElement={({ date, localeUtils }) =>
+              <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth} />
             }
             fromMonth={fromMonth}
             toMonth={toMonth}
@@ -110,12 +120,12 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
               const orders = getOrdersForDay(day)
               const orderMap = new Map<string, number>()
               orders.forEach(order => {
-                if(allUserNames === undefined) {
+                if (allUserNames === undefined) {
                   return
                 }
                 const key = allUserNames.get(order.bringer.toHexString())
-                if(orderMap.has(key)) {
-                  orderMap.set(key, orderMap.get(key) + 1)  
+                if (orderMap.has(key)) {
+                  orderMap.set(key, orderMap.get(key) + 1)
                 } else {
                   orderMap.set(key, 1)
                 }
@@ -123,9 +133,9 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
               return (
                 <div data-tip={Array.from(orderMap).map(o => `${o[1]}x ${o[0]}`).join("<br>")}
-                //Below is some hacks to make this div take up the entire parent area.
-                //This is to have the data-tip take up the whole area
-                style={{ margin: '-8px', padding: '8px'}}>
+                  //Below is some hacks to make this div take up the entire parent area.
+                  //This is to have the data-tip take up the whole area
+                  style={{ margin: '-8px', padding: '8px' }}>
                   {day.getDate()}
                 </div>
               )
@@ -137,10 +147,10 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   )
 })
 
-const AnimalTypeSelect = ({Icon, onSelected, isSelected}: {Icon: any, onSelected:()=>void, isSelected:boolean}) => {
+const AnimalTypeSelect = ({ Icon, onSelected, isSelected }: { Icon: any, onSelected: () => void, isSelected: boolean }) => {
   return (
-    <button className={"w-full flex flex-row rounded-md p-1" + (isSelected?" bg-blue-100":"")} name="animal" onClick={() => onSelected() }>
-      <Icon className="w-8 h-8 transform translate-x-1/2"/>
+    <button className={"w-full flex flex-row rounded-md p-1" + (isSelected ? " bg-blue-100" : "")} name="animal" onClick={() => onSelected()}>
+      <Icon className="w-8 h-8 transform translate-x-1/2" />
     </button>
   )
 }

@@ -73,7 +73,7 @@ const ConfigModel = mongoose.model<AllConfigs>('Configs', configSchema)
 
 const useConfigs = createResultWatcher(ConfigModel)
 
-export const useConfig = <T extends typeof Configs[number]>(_: T): ConfigTypes<T> =>  {
+export const useConfig = <T extends typeof Configs[number]>(_: T): ConfigTypes<T> | undefined =>  {
   const configs = useConfigs(ConfigModel.find())
   if(configs === undefined) {
     return undefined

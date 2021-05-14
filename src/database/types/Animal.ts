@@ -10,8 +10,8 @@ export enum AnimalType {
   Pig = "Pig"
 }
 
-export type Eater = { 
-  id: ObjectId, 
+export type Eater = {
+  id: ObjectId,
   tag: string,
   halfUser?: { id: ObjectId, tag: string }
   cutInstruction: number
@@ -42,7 +42,7 @@ export interface IAnimal extends Document {
   confirmed: boolean,
 
   arriveDate: Date,
-  
+
   liveWeight: number,
   dressWeight: number,
   color: string,
@@ -59,26 +59,30 @@ const animalSchmea = new Schema({
   animalType: { type: String, enum: Object.keys(AnimalType), required: true },
   bringer: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
   numEaters: { type: Number, default: 1 },
-  eaters: { type: [{
-    id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
-    tag: { type: String },
-    halfUser: { type: {
+  eaters: {
+    type: [{
       id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
       tag: { type: String },
-    }},
-    cutInstruction: { type: Number, required: true }
-  }], default: [] },
+      halfUser: {
+        type: {
+          id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
+          tag: { type: String },
+        }
+      },
+      cutInstruction: { type: Number, required: true }
+    }], default: []
+  },
   killDate: { type: Schema.Types.Date, required: true },
-  called: { type: Boolean, default: false},
+  called: { type: Boolean, default: false },
   confirmed: { type: Boolean, default: false },
 
   arriveDate: { type: Schema.Types.Date },
-  
+
   liveWeight: { type: Number },
   dressWeight: { type: Number },
   color: { type: String },
   sex: { type: String },
-  penLetter: { type: String, uppercase: true, enum: ['A','B','C','D','E','F','G','H','I','J']},
+  penLetter: { type: String, uppercase: true, enum: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] },
   processDate: { type: Schema.Types.Date },
   tagNumber: { type: Number },
   pigTatooNumber: { type: Number },
@@ -95,17 +99,19 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
-export const useComputedAnimalState = (animal: IAnimal | undefined) => 
-  useMemo(() => {
-    if(!animal || !animal.confirmed) return 0
-    if([ animal.liveWeight, animal.color, animal.sex, 
-        animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
-    if(animal.dressWeight === undefined) return 2
-    if(!validateEaters(animal)) return 3
-    if(animal.processDate === undefined) return 4
-    if(animal.pickedUp) return 5
-    return 6
-  }, [
+export const computeAnimalState = (animal: IAnimal | undefined) => {
+  if (!animal || !animal.confirmed) return 0
+  if ([animal.liveWeight, animal.color, animal.sex,
+  animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
+  if (animal.dressWeight === undefined) return 2
+  if (!validateEaters(animal)) return 3
+  if (animal.processDate === undefined) return 4
+  if (animal.pickedUp) return 5
+  return 6
+}
+
+export const useComputedAnimalState = (animal: IAnimal | undefined) =>
+  useMemo(() => computeAnimalState(animal), [
     //To get from scheduled to confirmed
     animal?.confirmed,
 

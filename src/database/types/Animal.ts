@@ -110,6 +110,25 @@ export const computeAnimalState = (animal: IAnimal | undefined) => {
   return 6
 }
 
+export const useAnimalStateText = (state: number) => useMemo(() => {
+  switch (state) {
+    case 0:
+      return "Scheduled"
+    case 1:
+      return "Confirmed"
+    case 2:
+      return "Arrived"
+    case 3:
+      return "Hanging"
+    case 4:
+      return "Ready to Cut"
+    case 5:
+      return "Ready to Pickup"
+    case 6:
+      return "Delivered"
+  }
+}, [state])
+
 export const useComputedAnimalState = (animal: IAnimal | undefined) =>
   useMemo(() => computeAnimalState(animal), [
     //To get from scheduled to confirmed

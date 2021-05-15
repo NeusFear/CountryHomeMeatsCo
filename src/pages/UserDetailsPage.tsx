@@ -5,8 +5,8 @@ import { useMemo } from "react";
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash } from "../assets/Icons";
 import User, { CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
-import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
-import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType } from "../database/types/Animal";
+import { editCutInstructions, editMultipleAnimals, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
+import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText } from "../database/types/Animal";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
@@ -34,6 +34,8 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
       type: arr[0].animalType,
       state: computeAnimalState(arr[0]),
       amount: arr.length,
+      ids: arr.map(a => a.id as string),
+      singleEntry: arr.length === 1 ? arr[0] : null
     }
   })
 
@@ -133,35 +135,34 @@ const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
   )
 }
 
-const BroughtInAnimalEntry = ({ animal: { date, type, state, amount } }: {
+const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, singleEntry } }: {
   animal: {
     date: Date;
     type: AnimalType;
     state: number;
     amount: number;
+    ids: string[];
+    singleEntry: IAnimal | null
   }
 }) => {
   const history = useHistory();
-  const stateText = useMemo(() => {
-    switch (state) {
-      case 0:
-        return "Scheduled"
-      case 1:
-        return "Confirmed"
-      case 2:
-        return "Arrived"
-      case 3:
-        return "Hanging"
-      case 4:
-        return "Ready to Cut"
-      case 5:
-        return "Ready to Pickup"
-      case 6:
-        return "Delivered"
+  let stateText = useAnimalStateText(state)
+
+  if(singleEntry !== null && singleEntry.tagNumber !== undefined) {
+    stateText += " #" + singleEntry.tagNumber
+  }
+
+
+  const onClick = () => {
+    if(amount === 1) {
+      history.push(animalDetailsPage, ids[0])
+    } else {
+      setModal(editMultipleAnimals, ids)
     }
-  }, [state])
+  }
+
   return (
-    <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md">{/* onClick={() => history.push(animalDetailsPage, animal.id)} */}
+    <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={onClick} >
       <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
       {amount !== 1 && <div>x {amount}</div> }
       <div className="flex-grow text-xs text-gray-600 mt-2 font-semibold ml-2">{stateText}</div>

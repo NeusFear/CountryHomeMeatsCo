@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import ReactTooltip from 'react-tooltip';
 import { EditEmployeeDetailsModal } from './EditEmployeeDetailsModal';
 import { EditUseCutInstructionsModal } from './EditUseCutInstructionsModal';
-
+import { EditMultipleAnimals } from './EditMultipleAnimals'
 import { EditUserDetailsModal } from './EditUserDetailsModal'
 import { EditVendorDetailsModal } from './EditVendorDetailsModal'
 import { EditCutListModal } from './EditCutListModal';
@@ -30,6 +30,7 @@ export const editEmployeeDetails = "edit-employee-details"
 export const calendarDayEntry = "calendar-day-entry"
 export const vendorNotes = "vendor-notes"
 export const customDay = "custom-day"
+export const editMultipleAnimals = "edit-multiple-animals"
 
 const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>) => JSX.Element} = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
@@ -40,7 +41,8 @@ const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>)
   [editEmployeeDetails]: (state, ref) => <EditEmployeeDetailsModal ref={ref} objectId={state} />,
   [calendarDayEntry]: (state) => <CalendarDayModal state={state} />,
   [vendorNotes]: (state, ref) => <VendorNotesModal ref={ref} value={state.value} setValue={state.setValue} />,
-  [customDay]: (state, ref) => <CustomCalendarEntryModal ref={ref} objectId={state.objectId} date={state.date}  />
+  [customDay]: (state, ref) => <CustomCalendarEntryModal ref={ref} objectId={state.objectId} date={state.date}  />,
+  [editMultipleAnimals]: (state) => <EditMultipleAnimals ids={state}  />
 }
 
 

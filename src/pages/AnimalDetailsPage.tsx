@@ -263,12 +263,12 @@ const EaterList = ({ animal, currentState }: { animal: IAnimal, currentState: nu
 
   useEffect(() => {
     const eaters = []
-    eaters.length = Math.round(numEaters / 2)
+    eaters.length = numEaters === 2 ? 2 : Math.round(numEaters / 2)
     for (let i = 0; i < eaters.length; i++) {
       if (eaters[i] === undefined) {
         eaters[i] = { _rand: Math.random() }
       }
-      if (i * 2 !== numEaters - 1) {
+      if (i * 2 !== numEaters - 1 && numEaters !== 2) {
         eaters[i].halfUser = {}
       } else {
         eaters[i].halfUser = undefined

@@ -460,8 +460,8 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
               <div className="flex flex-col">
                 <div className="flex flex-row mb-1">
                   <SelectInputType
-                    initial={instructions.round.type}
-                    onChange={v => instructions.round.type=v}
+                    initial={instructions.round.amount}
+                    onChange={v => instructions.round.amount=v}
                     values={["25%", "50%", "75%", "100%"]} 
                     width={50}
                   />
@@ -481,8 +481,8 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                     width={100} 
                   />
                   <SelectInputType 
-                    initial={instructions.round.amount}
-                    onChange={v => instructions.round.amount=v}
+                    initial={instructions.round.perPackage}
+                    onChange={v => instructions.round.perPackage=v}
                     values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']} 
                     width={60} 
                   />
@@ -535,6 +535,12 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                     
             <div className="pt-4 flex flex-row">
               <span className="ml-2 pr-2 text-gray-700 w-1/4">T-Bone:</span>
+              <SelectInputType
+                initial={instructions.tbone.bone}
+                onChange={v => instructions.tbone.bone=v}
+                values={['Bone Out', 'Bone In']} 
+                width={65} 
+              />
               <SelectInputType
                 initial={instructions.tbone.size}
                 onChange={v => instructions.tbone.size=v}
@@ -632,8 +638,8 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
             <div className="pt-4 flex flex-row">
               <span className="ml-2 pr-2 text-gray-700 w-1/4">Club:</span>
               <SelectInputType
-                initial={instructions.club.type}
-                onChange={v => instructions.club.type=v}
+                initial={instructions.club.bone}
+                onChange={v => instructions.club.bone=v}
                 values={['Ribeye', 'Bone In']}
                 width={65}
               />

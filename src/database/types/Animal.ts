@@ -50,6 +50,8 @@ export interface IAnimal extends Document {
   penLetter: PenLetter
   processDate: Date,
   tagNumber: number,
+  liverGood: boolean,
+  older30Months: boolean
   pigTatooNumber?: number,
 
   pickedUp: boolean
@@ -85,6 +87,8 @@ const animalSchmea = new Schema({
   penLetter: { type: String, uppercase: true, enum: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] },
   processDate: { type: Schema.Types.Date },
   tagNumber: { type: Number },
+  liverGood: { type: Boolean },
+  older30Months: { type: Boolean },
   pigTatooNumber: { type: Number },
 
   pickedUp: { type: Boolean, default: false },

@@ -88,7 +88,7 @@ export const useConfig = <T extends typeof Configs[number]>(_: T): ConfigTypes<T
           extraBoning: 0.2, cutStewMeat: 0.5, boneAndTenderizeRoundSteaks: 3, 
           makeCubedSteaks: 3, boneOrPrimeRib: 5, boneOutLoin: 10
         },
-        pork: { slaughter: 50, slaughter150lb: 60, processing: 1, cure: 1, sausage: 1 }
+        pork: { slaughter: 50, slaughter150lb: 60, processing: 1, cure: 1, sausage: 0.25 }
       }
     } as AllConfigs) as ConfigTypes<T>
   }

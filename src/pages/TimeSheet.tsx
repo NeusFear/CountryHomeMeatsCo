@@ -5,8 +5,7 @@ import { editEmployeeDetails, setModal } from "../modals/ModalManager";
 import { normalizeDay } from "../Util";
 
 export const TimeSheet = () => {
-  const allEmployees = useEmployees(Employee.find())
-
+  const allEmployees = useEmployees(Employee.find().select("clockInEvents firstName lastName"))
   return (
     <div className="w-full h-screen flex flex-col">
       <div className="flex flex-row h-14 bg-gray-800 pt-1">

@@ -19,9 +19,7 @@ export interface IEmployee extends Document {
   startDate: Date,
   birthday: Date,
 
-  hours: number,
-  clockInState: number
-  clockInEvents: { time: number, state: number }[]
+  clockInEvents: { day: Date, events: { time: number, state: number }[] }[]
 }
 
 const employeeSchema = new Schema({
@@ -39,14 +37,26 @@ const employeeSchema = new Schema({
   birthday: { type: Schema.Types.Date, required: true },
 
   hours: { type: Number, required: true, default: 0 },
-  clockInState: { type: Number, default: 3, enum: [1, 2, 3] },
   clockInEvents: {
     type: [{
-      time: { type: Number, required: true },
-      state: { type: Number, default: 3, enum: [1, 2, 3] }
+      day: { type: Schema.Types.Date, required: true },
+      events: {
+        type: [{
+          time: { type: Number, required: true },
+          state: { type: Number, default: 3, enum: [1, 2, 3] }
+        }], required: true, default: []
+      }
     }], required: true, default: []
   },
 });
+
+export const computeEmployeeDay = (events: { time: number; state: number; }[]) => {
+  let hours = 0;
+  for(let i = 0; i < events.length-1; i+=2) {
+    hours += events[i+1].time - events[i].time
+  }
+  return hours
+}
 
 const Employee = mongoose.model<IEmployee>(userModelName, employeeSchema)
 

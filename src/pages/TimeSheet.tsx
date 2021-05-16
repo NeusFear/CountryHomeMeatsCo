@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SvgNewUser, SvgTimesheets } from "../assets/Icons";
-import Employee, { useEmployees, ClockInState, IEmployee } from "../database/types/Employee";
+import Employee, { useEmployees, ClockInState, IEmployee, computeEmployeeDay } from "../database/types/Employee";
 import { editEmployeeDetails, setModal } from "../modals/ModalManager";
+import { normalizeDay } from "../Util";
 
 export const TimeSheet = () => {
   const allEmployees = useEmployees(Employee.find())
@@ -11,7 +12,7 @@ export const TimeSheet = () => {
       <div className="flex flex-row h-14 bg-gray-800 pt-1">
         <div className="text-white text-4xl font-bold ml-4 flex-grow">TIME SHEETS</div>
         <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-1 mt-1" onClick={() => setModal(editEmployeeDetails)}><SvgNewUser /></div>
-        <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-2 mt-1"><SvgTimesheets /></div>
+        <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-2 mt-1" onClick={() => { }}><SvgTimesheets /></div>
       </div>
       <div className="bg-gray-400 px-1 py-0.5 shadow-sm mb-2">
         <span className="ml-2 text-gray-700">This page is used to keep track of employee hours</span>
@@ -27,7 +28,18 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
   let stateClasses = "";
   let stateText = "invalid state";
 
-  const state = employee.clockInState ?? ClockInState.ClockedOut
+  const eventList = useMemo(() => {
+    const day = normalizeDay()
+    const found = employee.clockInEvents.find(e => e.day.getTime() === day.getTime())
+    if (found === undefined) {
+      const events: { time: number; state: number; }[] = []
+      employee.clockInEvents.push({ day, events })
+      return events
+    }
+    return found.events
+  }, [employee])
+
+  const state = eventList.length === 0 ? ClockInState.ClockedOut : eventList[eventList.length - 1].state
 
   if (state === ClockInState.ClockedIn) {
     stateClasses = "ml-1 mt-1 text-green-500"
@@ -40,14 +52,17 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
     stateText = "Clocked Out"
   }
 
-  
   const computeMsSinceLastBreak = () => {
-    if(employee.clockInEvents.length !== 0) {
-      return Date.now() - employee.clockInEvents[employee.clockInEvents.length - 1].time
+    if (eventList.length !== 0) {
+      return Date.now() - eventList[eventList.length - 1].time
     }
     return 0
   }
   const [msSinceLastEvent, setMsSinceLastBreak] = useState(computeMsSinceLastBreak)
+  let timeWorked = useMemo(() => computeEmployeeDay(eventList), [eventList])
+  if(state == ClockInState.ClockedIn) {
+    timeWorked += msSinceLastEvent
+  }
 
   useEffect(() => {
     let timer: NodeJS.Timeout
@@ -59,6 +74,12 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
     return () => clearTimeout(timer)
   })
 
+
+  const hours = Math.round(timeWorked / 3600000)
+  const minutes = Math.round(timeWorked / 60000) % 60
+
+  const getIfS = (num: number) => num === 1 ? "" : "s"
+
   return (
     <div className="bg-gray-200 hover:shadow-md rounded-lg px-2 py-2 shadow-sm flex flex-row mb-2">
       <span className="flex-1 flex flex-col ml-6">
@@ -67,31 +88,65 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
           <div className={stateClasses}> {stateText}
             {state === ClockInState.OnBreak && <span className="pl-1 text-blue-200">for {Math.floor(msSinceLastEvent / 60000)} minutes.</span>}
           </div>
-
         </div>
-        <div className="text-gray-600">{Math.round(employee.hours * 100) / 100} hours this period.</div>
+        <div className="text-gray-600">{hours} hour{getIfS(hours)} {minutes} minute{getIfS(minutes)} today.</div>
       </span>
-      <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedOut} targetState={ClockInState.ClockedIn} colour="green" text="Clock In" />
-      <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedIn} targetState={ClockInState.OnBreak} colour="blue" text="Start Break" />
-      <EmployeeTimeEntry employee={employee} state={ClockInState.OnBreak} targetState={ClockInState.ClockedIn} colour="red" text="End Break" />
-      <EmployeeTimeEntry employee={employee} state={ClockInState.ClockedIn} targetState={ClockInState.ClockedOut} colour="tomato" text="Clock Out" />
+      <EmployeeTimeEntry
+        employee={employee}
+        eventList={eventList}
+        currentState={state}
+        state={ClockInState.ClockedOut}
+        targetState={ClockInState.ClockedIn}
+        colour="green"
+        text="Clock In"
+      />
+      <EmployeeTimeEntry
+        employee={employee}
+        eventList={eventList}
+        currentState={state}
+        state={ClockInState.ClockedIn}
+        targetState={ClockInState.OnBreak}
+        colour="blue"
+        text="Start Break"
+      />
+      <EmployeeTimeEntry
+        employee={employee}
+        eventList={eventList}
+        currentState={state}
+        state={ClockInState.OnBreak}
+        targetState={ClockInState.ClockedIn}
+        colour="red"
+        text="End Break"
+      />
+      <EmployeeTimeEntry
+        employee={employee}
+        eventList={eventList}
+        currentState={state}
+        state={ClockInState.ClockedIn}
+        targetState={ClockInState.ClockedOut}
+        colour="tomato"
+        text="Clock Out"
+      />
     </div>
   )
 }
 
-const EmployeeTimeEntry = ({ employee, state, targetState, colour, text }:
+const EmployeeTimeEntry = ({ employee, currentState, eventList, state, targetState, colour, text }:
   {
     employee: IEmployee,
+    eventList: { time: number; state: number; }[],
+    currentState: number
     state: number,
     targetState: number,
     colour: string,
     text: string
   }) => {
-  const isActive = (employee.clockInState ?? ClockInState.ClockedOut) === state
+  const isActive = currentState === state
   const onClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    employee.clockInState = targetState
-    employee.clockInEvents.push({ time: Date.now(), state: targetState })
-    employee.save()
+    if (isActive) {
+      eventList.push({ time: Date.now(), state: targetState })
+      employee.save()
+    }
     e.stopPropagation()
   }
   return (

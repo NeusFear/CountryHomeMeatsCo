@@ -12,30 +12,30 @@ let connected = false
 
 type ConnectState = { details: string, connected: boolean }
 export const connectToDB = (ip: string): ConnectState => {
-  let [ connectState,  setConnectState ] = useState<ConnectState>({
+  let [connectState, setConnectState] = useState<ConnectState>({
     details: "Connecting to database...",
     connected: false
   })
 
-  if(!connected) {
+  if (!connected) {
     connected = true
-    mongoose.connect(`mongodb://${ip}:27017/`, {useNewUrlParser: true, useUnifiedTopology: true})
+    mongoose.connect(`mongodb://${ip}:27017/`, { useNewUrlParser: true, useUnifiedTopology: true })
 
     const db = mongoose.connection;
     db.on('error', err => setConnectState({ details: `Error: ${err}`, connected: false }));
-    db.on('disconnected', () => setConnectState({details: `Connection Closed`, connected: false }));
-    db.on('connecting', () => setConnectState({details: `Trying to establish a connection...`, connected: false }));
-    db.on('open', () => setConnectState({details: `Connected`, connected: true }));
+    db.on('disconnected', () => setConnectState({ details: `Connection Closed`, connected: false }));
+    db.on('connecting', () => setConnectState({ details: `Trying to establish a connection...`, connected: false }));
+    db.on('open', () => setConnectState({ details: `Connected`, connected: true }));
   }
 
   return connectState
 }
 
-export const createResultWatcher = <DocType extends Document,> (model: Model<DocType>):
-<T,>(
-  query: Query<T, DocType>, 
-  deps?: DependencyList | undefined, 
-  ...ids: (string | ObjectId | BsonObjectId)[]) => T => {
+export const createResultWatcher = <DocType extends Document,>(model: Model<DocType>):
+  <T, >(
+    query: Query<T, DocType>,
+    deps?: DependencyList | undefined,
+    ...ids: (string | ObjectId | BsonObjectId)[]) => T => {
   const listeners: ((event: ChangeEvent<any>) => void)[] = []
   model.watch().on('change', event => listeners.forEach(l => l(event)))
 
@@ -45,15 +45,21 @@ export const createResultWatcher = <DocType extends Document,> (model: Model<Doc
     return () => listeners.splice(listeners.indexOf(listener), 1)
   }
 
-  return <T,> (
-    query: Query<T, DocType>, 
-    deps: DependencyList, 
+  return <T,>(
+    query: Query<T, DocType>,
+    deps: DependencyList,
     ...ids: (string | ObjectId | BsonObjectId)[]
   ) => {
+    
+    const projection = query['_fields']
+    if(projection === undefined || Object.keys(projection).length === 0) {
+      console.warn("Query had no projection. Please call select to select the fields you need.")
+    }
+
     const [state, setState] = useState<T>()
     useEffect(() => subscribeListener(evt => {
       const any: any = evt
-      if(
+      if (
         ids.length &&
         any &&
         any.documentKey &&

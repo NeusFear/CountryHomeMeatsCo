@@ -19,7 +19,7 @@ export interface IEmployee extends Document {
   startDate: Date,
   birthday: Date,
 
-  clockInEvents: { day: Date, events: { time: number, state: number }[] }[]
+  clockInEvents: { day: Date, events: { time: Date, state: number }[] }[]
 }
 
 const employeeSchema = new Schema({
@@ -42,7 +42,7 @@ const employeeSchema = new Schema({
       day: { type: Schema.Types.Date, required: true },
       events: {
         type: [{
-          time: { type: Number, required: true },
+          time: { type: Schema.Types.Date, required: true },
           state: { type: Number, default: 3, enum: [1, 2, 3] }
         }], required: true, default: []
       }
@@ -50,10 +50,10 @@ const employeeSchema = new Schema({
   },
 });
 
-export const computeEmployeeDay = (events: { time: number; state: number; }[]) => {
+export const computeEmployeeDay = (events: { time: Date; state: number; }[]) => {
   let hours = 0;
   for(let i = 0; i < events.length-1; i+=2) {
-    hours += events[i+1].time - events[i].time
+    hours += events[i+1].time.getTime() - events[i].time.getTime()
   }
   return hours
 }

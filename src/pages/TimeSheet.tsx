@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SvgNewUser, SvgTimesheets } from "../assets/Icons";
 import Employee, { useEmployees, ClockInState, IEmployee, computeEmployeeDay } from "../database/types/Employee";
-import { editEmployeeDetails, setModal } from "../modals/ModalManager";
+import { editEmployeeDetails, printTimeSheet, setModal } from "../modals/ModalManager";
 import { normalizeDay } from "../Util";
 
 export const TimeSheet = () => {
@@ -11,7 +11,7 @@ export const TimeSheet = () => {
       <div className="flex flex-row h-14 bg-gray-800 pt-1">
         <div className="text-white text-4xl font-bold ml-4 flex-grow">TIME SHEETS</div>
         <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-1 mt-1" onClick={() => setModal(editEmployeeDetails)}><SvgNewUser /></div>
-        <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-2 mt-1" onClick={() => { }}><SvgTimesheets /></div>
+        <div className="hover:text-gray-100 hover:shadow-md cursor-pointer text-4xl w-16 h-11 text-center text-gray-300 bg-tomato-700 rounded-md py-1 px-4 mr-2 mt-1" onClick={() => setModal(printTimeSheet)}><SvgTimesheets /></div>
       </div>
       <div className="bg-gray-400 px-1 py-0.5 shadow-sm mb-2">
         <span className="ml-2 text-gray-700">This page is used to keep track of employee hours</span>
@@ -31,7 +31,7 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
     const day = normalizeDay()
     const found = employee.clockInEvents.find(e => e.day.getTime() === day.getTime())
     if (found === undefined) {
-      const events: { time: number; state: number; }[] = []
+      const events: { time: Date; state: number; }[] = []
       employee.clockInEvents.push({ day, events })
       return events
     }
@@ -53,17 +53,23 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
 
   const computeMsSinceLastBreak = () => {
     if (eventList.length !== 0) {
-      return Date.now() - eventList[eventList.length - 1].time
+      return Date.now() - eventList[eventList.length - 1].time.getTime()
     }
     return 0
   }
   const [msSinceLastEvent, setMsSinceLastBreak] = useState(computeMsSinceLastBreak)
+  const previousState = useRef(state)
   let timeWorked = useMemo(() => computeEmployeeDay(eventList), [eventList])
-  if(state == ClockInState.ClockedIn) {
+  if (state == ClockInState.ClockedIn) {
     timeWorked += msSinceLastEvent
   }
 
   useEffect(() => {
+    if (previousState.current !== state) {
+      setMsSinceLastBreak(computeMsSinceLastBreak())
+      previousState.current = state
+    }
+
     let timer: NodeJS.Timeout
     const periodicRun = () => {
       setMsSinceLastBreak(computeMsSinceLastBreak());
@@ -74,8 +80,8 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
   })
 
 
-  const hours = Math.round(timeWorked / 3600000)
-  const minutes = Math.round(timeWorked / 60000) % 60
+  const hours = Math.floor(timeWorked / 3600000)
+  const minutes = Math.floor(timeWorked / 60000) % 60
 
   const getIfS = (num: number) => num === 1 ? "" : "s"
 
@@ -133,7 +139,7 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
 const EmployeeTimeEntry = ({ employee, currentState, eventList, state, targetState, colour, text }:
   {
     employee: IEmployee,
-    eventList: { time: number; state: number; }[],
+    eventList: { time: Date; state: number; }[],
     currentState: number
     state: number,
     targetState: number,
@@ -143,7 +149,7 @@ const EmployeeTimeEntry = ({ employee, currentState, eventList, state, targetSta
   const isActive = currentState === state
   const onClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     if (isActive) {
-      eventList.push({ time: Date.now(), state: targetState })
+      eventList.push({ time: new Date(), state: targetState })
       employee.save()
     }
     e.stopPropagation()

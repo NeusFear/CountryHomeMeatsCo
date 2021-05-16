@@ -4,6 +4,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = false;
 const { ipcMain } = require('electron');
+const { PosPrinter } = require("electron-pos-printer");
 
 let mainWindow;
 function createWindow() {
@@ -33,3 +34,14 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+ipcMain.on("get-printers", (evnt) => {
+  evnt.returnValue = mainWindow.webContents.getPrinters()
+})
+ipcMain.on("do-print", (_, args) => {
+  PosPrinter.print(args[0], args[1])
+  .then(() => {})
+  .catch(e => console.error(e))
+})
+
+

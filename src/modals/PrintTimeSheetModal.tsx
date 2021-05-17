@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { normalizeDay } from "../Util";
 import DayPicker from "react-day-picker"
 import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
-import Employee, { ClockInState, IEmployee, useEmployees } from "../database/types/Employee";
+import Employee, { ClockInState, computeEmployeeDay, IEmployee, useEmployees } from "../database/types/Employee";
 import { ipcRenderer, webContents } from "electron";
 import { PosPrintData, PosPrintOptions } from "electron-pos-printer";
 import { PrinterInfo } from "electron/main";
@@ -93,14 +93,14 @@ const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Da
 
   const data: PosPrintData[] = [{
     type: "text",
-    value: "<style>td { border: 0.5px solid #ddd; }</style>"
+    value: "<style>td { border: 0.5px solid #ddd; height: 1px; }</style>"
   } as PosPrintData]
     .concat(Array.from({ length: numberOfBlocks }).flatMap((_, i) => {
       const ret: PosPrintData[] = []
       if (i !== 0) {
         ret.push({
           type: "text",
-          value: `<div style="width: 100%; height: 2px; background-color: black; margin-top: 10px; margin-bottom: 10px" />`
+          value: `<div style="width: 100%; height: 2px; background-color: #ddd; margin-top: 10px; margin-bottom: 10px" />`
         })
       }
 
@@ -125,11 +125,11 @@ const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Da
     }))
 
   const options: PosPrintOptions = {
+    // preview: true,
     width: "775px",
     printerName,
     silent: true
   }
-  console.log(printerName)
   ipcRenderer.send("do-print", [data, options])
 }
 
@@ -140,7 +140,7 @@ const genEmployeeData = (employees: IEmployee[], days: Date[]) => {
       const found = employee.clockInEvents.find(evt => evt.day.getTime() === day.getTime())
       if (found !== undefined) {
         let previousEvent: { time: Date; state: number; } = null
-        const getTime = (date: Date) => date.getHours() + ":" + date.getMinutes()
+        const getTime = (date: Date) => String(date.getHours()).padStart(2, "0") + ":" + String(date.getMinutes()).padStart(2, "0")
         for (let event of found.events) {
           let entry: string | null = null
           if (event.state === ClockInState.ClockedIn) {
@@ -155,15 +155,28 @@ const genEmployeeData = (employees: IEmployee[], days: Date[]) => {
           }
 
           if (entry !== null) {
-            if (previousEvent !== null) {
-              out += "<br>"
-            }
-            out += entry
+            out += `<div>${entry}</div>`
           }
           previousEvent = event
         }
+
+        const timeWorked = computeEmployeeDay(found.events)
+        const hours = String(Math.floor(timeWorked / 3600000))
+        const minutes = String(Math.floor(timeWorked / 60000) % 60)
+
+        out += "<br><br><br>"
+        out += `<span style="position: absolute; bottom: 0; width: max-content; padding: 0 10px">Time Worked: ${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}</span>`
       }
-      return `<span>${out}</span>`
+
+
+      return `<span style="
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        min-width: 130px;"
+      >${out}</span>`
     }))
   )
 }

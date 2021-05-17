@@ -31,9 +31,9 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
     const day = normalizeDay()
     const found = employee.clockInEvents.find(e => e.day.getTime() === day.getTime())
     if (found === undefined) {
-      const events: { time: Date; state: number; }[] = []
-      employee.clockInEvents.push({ day, events })
-      return events
+      employee.clockInEvents.push({ day, events: [] })
+      employee.save()
+      return []
     }
     return found.events
   }, [employee])
@@ -150,6 +150,7 @@ const EmployeeTimeEntry = ({ employee, currentState, eventList, state, targetSta
   const onClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     if (isActive) {
       eventList.push({ time: new Date(), state: targetState })
+      console.log(employee)
       employee.save()
     }
     e.stopPropagation()

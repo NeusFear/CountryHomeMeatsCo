@@ -77,7 +77,11 @@ const PrinterDropdownBox = ({ setPrinter }: { setPrinter: (p: PrinterInfo) => vo
   })
 
   const defaultPrinterIndex = printers.findIndex(p => p.isDefault)
-  useEffect(() => setPrinter(printers[defaultPrinterIndex]), [])
+  useEffect(() => {
+    if(defaultPrinterIndex !== -1) {
+      setPrinter(printers[defaultPrinterIndex])
+    }
+  }, [])
 
   return (
     <select defaultValue={defaultPrinterIndex} onChange={e => setPrinter(printers[e.currentTarget.value])} className="bg-gray-200">

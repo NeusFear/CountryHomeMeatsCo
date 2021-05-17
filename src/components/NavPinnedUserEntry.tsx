@@ -2,7 +2,7 @@ import { SvgUser, SvgCross } from "../assets/Icons"
 import User, { useUsers } from '../database/types/User'
 
 export const NavPinnedUserEntry = ({id, onClick, onRemove, selected} : {id: string, onClick: any, onRemove: any, selected: boolean}) => {
-  const details = useUsers(User.findById(id), [id], id)
+  const details = useUsers(User.findById(id).select("name"), [id], id)
   if(details === undefined) {
     return (<div>Loading Info...</div>)
   }

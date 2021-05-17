@@ -26,7 +26,7 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
 export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const [search, setSearch] = useState<string>('')
   const regExp = useMemo(() => new RegExp(search.split(' ').filter(s => s.trim().length !== 0).map(s => `(${s})`).join('|'), 'i'), [search])
-  const users = useUsers(User.where('name').regex(regExp), [search])
+  const users = useUsers(User.where('name').regex(regExp).select("name phoneNumbers emails"), [search])
 
   const deleteEntry = (user: IUser) => {
     user.delete()

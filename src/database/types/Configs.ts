@@ -69,12 +69,18 @@ const configSchema = new Schema({
   
 })
 
+
 const ConfigModel = mongoose.model<AllConfigs>('Configs', configSchema)
+
+const TypeToKey: { [path in typeof Configs[number]]: keyof Omit<ConfigTypes<path>, keyof Document> } = {
+  "FullDays": "dates",
+  "PriceData": "currentPrices"
+}
 
 const useConfigs = createResultWatcher(ConfigModel)
 
-export const useConfig = <T extends typeof Configs[number]>(_: T): ConfigTypes<T> | undefined =>  {
-  const configs = useConfigs(ConfigModel.find())
+export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigTypes<T> | undefined =>  {
+  const configs = useConfigs(ConfigModel.find().select(TypeToKey[type]))
   if(configs === undefined) {
     return undefined
   }

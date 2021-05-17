@@ -7,7 +7,7 @@ export const AddressBook = () => {
 
   const [search, setSearch] = useState<string>('')
   const regExp = useMemo(() => new RegExp(search.split(' ').filter(s => s.trim().length !== 0).map(s => `(${s})`).join('|'), 'i'), [search])
-  const vendors = useVendors(Vendor.find().or([{ company: regExp }, { primaryContact: regExp }]), [search])
+  const vendors = useVendors(Vendor.find().or([{ company: regExp }, { primaryContact: regExp }]).select("company primaryContact phoneNumbers emails notes"), [search])
 
   const deleteEntry = (vendor: IVendor) => {
     vendor.delete()

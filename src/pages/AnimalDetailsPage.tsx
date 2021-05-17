@@ -14,7 +14,7 @@ import { editUserDetails } from "../modals/ModalManager";
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
-  const animal = useAnimals(Animal.findById(id), [id], id)
+  const animal = useAnimals(Animal.findById(id).select(""), [id], id)
   const animalSexes = useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
 
   const currentState = useComputedAnimalState(animal)
@@ -440,7 +440,7 @@ const WrappedAutoSuggest = ({ suggestion, disabled, intial, mappingFunc, save, o
 
 
 const HeaderUserId = ({id}: {id: ObjectId}) => {
-  const user = useUsers(User.findById(id), [id], id)
+  const user = useUsers(User.findById(id).select("name"), [id], id)
   const history = useHistory()
   if(user === undefined || user === null) {
     return <></>

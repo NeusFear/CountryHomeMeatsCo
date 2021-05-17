@@ -4,12 +4,12 @@ import Animal, { IAnimal, useAnimals, useAnimalStateText, useComputedAnimalState
 import { animalDetailsPage } from "../NavBar";
 
 export const EditMultipleAnimals = ({ ids }: { ids: string[] }) => {
-  const animals = useAnimals(Animal.where("_id").in(ids), [ids])
+  const animals = useAnimals(Animal.where("_id").in(ids).select("tagNumber animalType"), [ids])
   return (
     <div>
       Edit Multiple Animals
       <div style={{ width: '450px', height: '400px' }}>
-        {animals && animals.map(a => <AnimalEntry animal={a} />)}
+        {animals && animals.map(a => <AnimalEntry key={a.id} animal={a} />)}
       </div>
     </div>
   )

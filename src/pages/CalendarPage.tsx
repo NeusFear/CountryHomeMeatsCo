@@ -111,7 +111,9 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
     start: Date,
     config: IFullDaysConfig,
     getUsername: (id: string) => string
-  }>(({ getUsername, weekEntry, start, config }, todayRef) => {
+  }
+>
+  (({ getUsername, weekEntry, start, config }, todayRef) => {
     const addDay = (day: number) => {
       const date = new Date(start)
       date.setDate(date.getDate() + day)
@@ -242,7 +244,7 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername }: { entry: number, w
   })
 
 
-  const customDays = useDayEvents(DayEvents.where('date', day), [day.getTime()])
+  const customDays = useDayEvents(DayEvents.where('date', day).select("eventName eventColor"), [day.getTime()])
 
   const [hovering, setHovering] = useState(false)
 

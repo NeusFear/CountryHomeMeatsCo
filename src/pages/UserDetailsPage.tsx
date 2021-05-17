@@ -6,13 +6,13 @@ import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, 
 import User, { CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editMultipleAnimals, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
-import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText } from "../database/types/Animal";
+import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields } from "../database/types/Animal";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
-  const user = useUsers(User.findById(id), [id], id)
+  const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions"), [id], id)
 
-  const usersAnimals = useAnimals(Animal.where('bringer', user?.id ?? null), [user, id])
+  const usersAnimals = useAnimals(Animal.where('bringer', user?.id ?? null).select("killDate animalType tagNumber " + AnimalStateFields), [user, id])
   if (user === undefined || usersAnimals === undefined) {
     return (<div>Loading Info for user id {id}</div>)
   }

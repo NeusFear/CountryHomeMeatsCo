@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose"
 import ReactTooltip from "react-tooltip"
 import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons"
-import Animal, { IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
+import Animal, { AnimalStateFields, IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
 import User, { IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
@@ -35,6 +35,7 @@ const TodaysCutList = () => {
   const animals = useAnimals(Animal
     .where('processDate').ne(undefined)
     .where('pickedUp', false)
+    .select("bringer animalType eaters")
   )
   return (
     <div className="h-5/6 flex-grow pl-4 pr-2 py-4">
@@ -52,7 +53,7 @@ const TodaysCutList = () => {
 
 const SelectedCutList = ({animal}: {animal: IAnimal}) => {
   const allUsers = useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
-  const allFoundUsers = useUsers(User.where('_id').in(allUsers))
+  const allFoundUsers = useUsers(User.where('_id').in(allUsers).select("name"))
 
   const mainUser = allFoundUsers === undefined ? undefined :allFoundUsers.find(u => u.id === animal.bringer.toHexString())
 
@@ -84,7 +85,7 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
 const ScheduledSlaughterList = () => {
   const now = new Date()
   now.setHours(12, 0, 0, 0)
-  const scheduledToday = useAnimals(Animal.where('killDate', now), [ getDayNumber(now) ])
+  const scheduledToday = useAnimals(Animal.where('killDate', now).select("bringer eaters animalType confirmed " + AnimalStateFields), [ getDayNumber(now) ])
 
   if(scheduledToday === undefined) {
     return (<div>Loading...</div>)
@@ -111,7 +112,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
     animal.eaters.forEach(eater => arr.push(eater.id))
     return arr.map(e => { return { _id: e }})
   }, [animal])
-  const allUsers = useUsers(User.where('_id').in(allIds), [allIds], ...allIds.map(i => i._id))
+  const allUsers = useUsers(User.where('_id').in(allIds).select("name"), [allIds], ...allIds.map(i => i._id))
   
   const user = allUsers?.find(u => u.id === animal.bringer.toHexString())
 

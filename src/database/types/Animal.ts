@@ -16,6 +16,8 @@ export type Eater = {
   halfUser?: { id: ObjectId, tag: string }
   cutInstruction: number
 }
+
+export const ValidateEatersFields = ""
 export const validateEaters = (animal: IAnimal): boolean => {
   return true;
   //TODO re-add this to make sure that if there are x specified users that we have information for all said users
@@ -103,6 +105,7 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
+export const AnimalStateFields = "confirmed liveWeight color sex tagNumber penLetter dressWeight processDate pickedUp " + ValidateEatersFields
 export const computeAnimalState = (animal: IAnimal | undefined) => {
   if (!animal || !animal.confirmed) return 0
   if ([animal.liveWeight, animal.color, animal.sex,

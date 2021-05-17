@@ -8,7 +8,7 @@ import { PosPrintData, PosPrintOptions } from "electron-pos-printer";
 import { PrinterInfo } from "electron/main";
 
 export const PrintTimeSheetModal = () => {
-  const employees = useEmployees(Employee.find())
+  const employees = useEmployees(Employee.find().select("firstName lastName clockInEvents"))
   const [printer, setPrinter] = useState<PrinterInfo>(null)
   const [toDate, setToDate] = useState(normalizeDay())
   const [fromDate, setFromDate] = useState(() => {

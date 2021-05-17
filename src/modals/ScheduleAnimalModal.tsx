@@ -34,7 +34,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   const [animalType, setAnimalType] = useState<AnimalType>()
   const [scheduledDate, setScheduledDate] = useState<Date>()
 
-  const disabledDays = useConfig("FullDays")?.dates
+  const disabledDays = useConfig("FullDays")?.dates?.map(d => d.getTime())
   const dayNumber = getDayNumber()
   const allAnimals = useAnimals(Animal.where('killDate').gte(Date.now()).select('killDate bringer'), [dayNumber])
 
@@ -44,9 +44,10 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   const [quantity, setQuantity] = useState(1)
 
   function isDayAvailable(date: Date) {
-    return disabledDays === undefined || !disabledDays.includes(date) || getDayNumber(date) >= dayNumber
+    const normalizedDay = normalizeDay(date)
+    normalizedDay.setDate(normalizedDay.getDate() - normalizedDay.getDay())
+    return (disabledDays === undefined || !disabledDays.includes(normalizedDay.getTime())) && getDayNumber(date) >= dayNumber
   }
-
 
   function getOrdersForDay(date: Date) {
     if (allAnimals === undefined) {

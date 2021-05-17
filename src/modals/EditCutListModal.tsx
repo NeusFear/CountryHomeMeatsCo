@@ -10,6 +10,7 @@ export const EditCutListModal = () => {
   const animalsToCut = useAnimals(Animal
     .where('processDate').ne(null)
     .where('pickedUp', false)
+    .select("bringer processDate animalType killDate")
   )
 
   return (
@@ -29,7 +30,7 @@ export const EditCutListModal = () => {
 }
 
 const HangingAnimalEntry = ({animal}: {animal: IAnimal}) => {
-  const user = useUsers(User.findById(animal.bringer), [animal.bringer], animal.bringer)
+  const user = useUsers(User.findById(animal.bringer).select("name"), [animal.bringer], animal.bringer)
   const eatersValid = validateEaters(animal);
   const processAnimalToday = () => {
     if (eatersValid) {
@@ -50,7 +51,7 @@ const HangingAnimalEntry = ({animal}: {animal: IAnimal}) => {
 }
 
 const CutAnimalEntry = ({animal}: {animal: IAnimal}) => {
-  const user = useUsers(User.findById(animal.bringer), [animal.bringer], animal.bringer)
+  const user = useUsers(User.findById(animal.bringer).select("name"), [animal.bringer], animal.bringer)
   const processAnimalToday = () => {
     animal.processDate = undefined
     animal.save().then(() => setModal(hangingAnimals))

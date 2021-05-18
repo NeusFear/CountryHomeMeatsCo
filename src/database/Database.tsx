@@ -35,7 +35,7 @@ export const createResultWatcher = <DocType extends Document,>(model: Model<DocT
   <T, >(
     query: Query<T, DocType>,
     deps?: DependencyList | undefined,
-    ...ids: (string | ObjectId | BsonObjectId)[]) => T => {
+    ...ids: (string | ObjectId | BsonObjectId)[]) => T | undefined => {
   const listeners: ((event: ChangeEvent<any>) => void)[] = []
   model.watch().on('change', event => listeners.forEach(l => l(event)))
 

@@ -446,7 +446,7 @@ const HeaderUserId = ({id}: {id: ObjectId}) => {
     return <></>
   }
   return (
-    <span className="text-tomato-200 text-xs text-base">
+    <span className="text-tomato-200 text-xs">
       Brought By <span className="hover:text-tomato-500 cursor-pointer" onClick={() => history.push(userDetailsPage, String(id))}>
         {user.name}
       </span>

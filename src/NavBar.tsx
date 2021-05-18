@@ -12,7 +12,7 @@ import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
 import { NavPageButton } from './components/NavPageButton';
 import { useHistoryListState } from "./AppHooks";
 
-import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgArrow, SvgTack } from './assets/Icons';
+import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgArrow, SvgSnowman } from './assets/Icons';
 import { UserPinnedList } from './App';
 import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
 import { useEffect, useState } from 'react';
@@ -65,7 +65,7 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
         <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>
         <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
-        <li><Link to="/incooler"><NavPageButton Page="Cooler" Icon={SvgTack} /></Link></li>
+        <li><Link to="/incooler"><NavPageButton Page="Cooler" Icon={SvgSnowman} /></Link></li>
       </ul>
       <Switch>
         {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} /> ))}

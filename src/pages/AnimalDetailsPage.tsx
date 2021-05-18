@@ -15,6 +15,7 @@ import { editUserDetails } from "../modals/ModalManager";
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(Animal.findById(id).select(""), [id], id)
+  const user = useUsers(User.findById(animal?.bringer).select("name"), [animal?.bringer], animal?.bringer)
   const animalSexes = useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
 
   const currentState = useComputedAnimalState(animal)
@@ -24,6 +25,13 @@ export const AnimalDetailsPage = () => {
   }
   if (animal === null) {
     return (<div>Error finding Info for animal id {id}</div>)
+  }
+
+  if(user === undefined) {
+    return <p>Loading user...</p>
+  }
+  if(user === null) {
+    return <p>Error loading user.</p>
   }
 
   const nanToUndefined = (num: number) => isNaN(num) ? undefined : num
@@ -38,7 +46,7 @@ export const AnimalDetailsPage = () => {
   return (
     <div className="w-full h-screen flex flex-col">
       <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
-        <div className="text-white text-4xl font-bold ml-4">ANIMAL INFO <HeaderUserId id={animal.bringer} /></div>
+        <div className="text-white text-4xl font-bold ml-4">ANIMAL INFO</div>
       </div>
       <div className="flex flex-row w-full mt-4 font-bold text-center">
         <div className={`flex-grow p-2 rounded-md shadow-md my-1 mr-1 ml-4 border-4 ${currentState >= 0 ? "border-green-500" : "border-gray-600"}`}>Scheduled</div>
@@ -62,6 +70,10 @@ export const AnimalDetailsPage = () => {
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Schedule</div>
             </div>
             <div className="p-4 font-semibold flex flex-row">
+              <div className="mr-2">
+                <span>Bringer</span>
+                <div className="bg-gray-100 p-2 font-semibold flex flex-row">{user.name}</div>
+              </div>
               <div className="w-44">
                 <span>Kill Date</span>
                 <div className="bg-gray-100 p-2 font-semibold flex flex-row"><p className="flex-grow">{animal.killDate.toLocaleDateString()}</p> <SvgEdit className="w-6 h-6 hover:text-gray-700 text-gray-600" /></div>
@@ -435,21 +447,5 @@ const WrappedAutoSuggest = ({ suggestion, disabled, intial, mappingFunc, save, o
         onBlur: save,
       }}
     />
-  )
-}
-
-
-const HeaderUserId = ({id}: {id: ObjectId}) => {
-  const user = useUsers(User.findById(id).select("name"), [id], id)
-  const history = useHistory()
-  if(user === undefined || user === null) {
-    return <></>
-  }
-  return (
-    <span className="text-tomato-200 text-xs">
-      Brought By <span className="hover:text-tomato-500 cursor-pointer" onClick={() => history.push(userDetailsPage, String(id))}>
-        {user.name}
-      </span>
-    </span>
   )
 }

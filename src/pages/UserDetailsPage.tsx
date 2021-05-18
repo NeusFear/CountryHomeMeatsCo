@@ -152,7 +152,6 @@ const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, single
     stateText += " #" + singleEntry.tagNumber
   }
 
-
   const onClick = () => {
     if(amount === 1) {
       history.push(animalDetailsPage, ids[0])
@@ -162,11 +161,13 @@ const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, single
   }
 
   return (
-    <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={onClick} >
-      <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
-      {amount !== 1 && <div>x {amount}</div> }
-      <div className="flex-grow text-xs text-gray-600 mt-2 font-semibold ml-2">{stateText}</div>
-      <div>{date.toLocaleDateString()}</div>
+    <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={onClick}>
+      <div className="flex flex-row">
+        <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+        {amount !== 1 && <div>x {amount}</div> }
+        <div className="flex-grow text-xs text-gray-600 mt-2 font-semibold ml-2">{stateText}</div>
+        <div>{date.toLocaleDateString()}</div>
+      </div>
     </div>
   )
 }

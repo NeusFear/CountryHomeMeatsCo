@@ -35,7 +35,8 @@ export type AnimalSexes = typeof CowSexes[number] | typeof PigSexes[number]
 export type PenLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
 
 export interface IAnimal extends Document {
-  animalType: AnimalType
+  animalType: AnimalType,
+  animalId: number,
   bringer: ObjectId,
   numEaters: number
   eaters: Eater[],
@@ -61,6 +62,7 @@ export interface IAnimal extends Document {
 
 const animalSchmea = new Schema({
   animalType: { type: String, enum: Object.keys(AnimalType), required: true },
+  animalId: { type: Number, required: true },
   bringer: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
   numEaters: { type: Number, default: 1 },
   eaters: {
@@ -116,6 +118,8 @@ export const computeAnimalState = (animal: IAnimal | undefined) => {
   if (animal.pickedUp) return 5
   return 6
 }
+
+export const paddedAnimalId = (animal: IAnimal) => String(animal.animalId).padStart(5, "0")
 
 export const useAnimalStateText = (state: number) => useMemo(() => {
   switch (state) {

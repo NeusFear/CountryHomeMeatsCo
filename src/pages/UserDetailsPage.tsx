@@ -5,15 +5,15 @@ import { useMemo } from "react";
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash } from "../assets/Icons";
 import User, { CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
-import { editCutInstructions, editMultipleAnimals, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
-import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields } from "../database/types/Animal";
+import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
+import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields, paddedAnimalId } from "../database/types/Animal";
 import { DatabaseWait } from "../database/Database";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
   const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions"), [id], id)
 
-  const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user.id : null).select("killDate animalType tagNumber " + AnimalStateFields), [user, id])
+  const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user.id : null).select("killDate animalType tagNumber animalId " + AnimalStateFields), [user, id])
   if (user === DatabaseWait || usersAnimals === DatabaseWait) {
     return (<div>Loading Info for user id {id}</div>)
   }
@@ -23,7 +23,8 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
 
   const groupedAnimals = Array.from(
     usersAnimals.reduce((map, a) => {
-      const key = a.killDate + "@" + a.animalType + "#" + computeAnimalState(a)
+      const animalState = computeAnimalState(a)
+      const key = animalState <= 1 ? (a.killDate + "@" + a.animalType + "#" + animalState) : a.id
       const arr = map.get(key) ?? []
       arr.push(a)
       map.set(key, arr)
@@ -148,21 +149,18 @@ const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, single
 }) => {
   const history = useHistory();
   let stateText = useAnimalStateText(state)
-
-  const onClick = () => {
-    if(amount === 1) {
-      history.push(animalDetailsPage, ids[0])
-    } else {
-      setModal(editMultipleAnimals, ids)
-    }
-  }
-
   return (
-    <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={onClick}>
+    <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={() => history.push(animalDetailsPage, ids[0])}>
       <div className="flex flex-row">
         <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
-        {amount !== 1 && <div>x {amount}</div> }
-        <div className="flex-grow text-xs text-blue-600 mt-2 font-semibold ml-2">{stateText}</div>
+        {amount !== 1 && <div>x {amount}</div>}
+        <div className="flex-grow text-xs text-blue-600 mt-2 font-semibold ml-2">
+          {stateText}
+          {singleEntry !== null &&
+            <span className="text-gray-700 ml-1">#{paddedAnimalId(singleEntry)}</span>
+          }
+
+        </div>
         <div>{date.toLocaleDateString()}</div>
       </div>
       {
@@ -179,8 +177,8 @@ const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, single
   )
 }
 
-const InfoTag = ({value}: {value: string}) => {
-  return(
+const InfoTag = ({ value }: { value: string }) => {
+  return (
     <div className="bg-gray-200 rounded text-xs py-0.5 px-1 mx-1">{value}</div>
   )
 }

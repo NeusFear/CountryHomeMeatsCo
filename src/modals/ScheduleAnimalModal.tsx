@@ -43,6 +43,8 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   const allUsers = useUsers(User.find().select('name'))
   const allUserNames = allUsers === DatabaseWait ? undefined : allUsers.reduce((map, obj) => map.set(obj.id, obj.name), new Map<string, string>())
 
+  const databaseLength = useAnimals(Animal.count())
+
   const [quantity, setQuantity] = useState(1)
 
   function isDayAvailable(date: Date) {
@@ -69,8 +71,12 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
   const valid = animalType !== undefined && scheduledDate !== null
   const trySubmitData = () => {
+    if(databaseLength === DatabaseWait) {
+      return
+    }
     for (let i = 0; i < quantity; i++) {
       const newAnimal = createEmptyAnimal(userID)
+      newAnimal.animalId = databaseLength + i
       newAnimal.animalType = animalType
       newAnimal.killDate = normalizeDay(scheduledDate)
       newAnimal.save().then(() => setModal(null))

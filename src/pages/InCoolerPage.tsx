@@ -48,7 +48,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
   return (
     <div className="bg-gray-200 rounded-md p-2 flex flex-row text-xs m-0.5 hover:bg-gray-300" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <p>{user.name}</p>
-      <p>#{animal.tagNumber}</p>
+      <p>#{animal.animalId}</p>
     </div>
   )
 }

@@ -164,7 +164,7 @@ const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, single
         <div>{date.toLocaleDateString()}</div>
       </div>
       {
-        !singleEntry ||
+        singleEntry &&
         <div className="flex flex-row">
           {singleEntry.liveWeight ? <InfoTag value={singleEntry?.liveWeight + "lbs"} /> : <InfoTag value={"? lbs"} />}
           {singleEntry.color ? <InfoTag value={singleEntry?.color} /> : <InfoTag value={"? col"} />}

@@ -1,4 +1,4 @@
-import { createResultWatcher } from './../Database';
+import { createResultWatcher, DatabaseWait, DatabaseWaitType } from './../Database';
 import mongoose, { Schema, Document } from 'mongoose';
 
 const Configs = ["FullDays", "PriceData"] as const
@@ -79,10 +79,10 @@ const TypeToKey: { [path in typeof Configs[number]]: keyof Omit<ConfigTypes<path
 
 const useConfigs = createResultWatcher(ConfigModel)
 
-export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigTypes<T> | undefined =>  {
+export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigTypes<T> | DatabaseWaitType =>  {
   const configs = useConfigs(ConfigModel.find().select(TypeToKey[type]))
-  if(configs === undefined) {
-    return undefined
+  if(configs === DatabaseWait) {
+    return DatabaseWait
   }
   if(configs.length === 0) {
     return new ConfigModel({

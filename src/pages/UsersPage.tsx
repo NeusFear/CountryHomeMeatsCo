@@ -5,6 +5,7 @@ import { SvgNewUser, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
 import User, { IUser, useUsers } from "../database/types/User";
 import { editUserDetails, setModal } from "../modals/ModalManager";
 import { useMemo, useState } from "react";
+import { DatabaseWait } from "../database/Database";
 
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void, deleteUserDetails: () => void}) => {
   const history = useHistory()
@@ -54,7 +55,7 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <span className="w-24"></span>
       </div>
       <div className="px-4 mt-4 h-full overflow-y-scroll">
-        { users !== undefined && users.map(d => <UserEntry key={d.id} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={() => deleteEntry(d)} />)}
+        { users !== DatabaseWait && users.map(d => <UserEntry key={d.id} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={() => deleteEntry(d)} />)}
       </div>
     </div>
   )

@@ -2,13 +2,16 @@ import Animal, { IAnimal, useAnimals } from "../database/types/Animal"
 import { useHistory } from 'react-router-dom';
 import User, { useUsers } from "../database/types/User"
 import { animalDetailsPage } from "../NavBar"
+import { DatabaseWait } from "../database/Database";
 
 export const InCoolerPage = () => {
   const animals = useAnimals(Animal.where("pickedUp", false).where("liveWeight").ne(null))
 
   const cows: (IAnimal)[] = []
   const pigs = []
-  animals?.forEach(a => (a.animalType === "Cow" ? cows : pigs).push(a))
+  if (animals !== DatabaseWait) {
+    animals.forEach(a => (a.animalType === "Cow" ? cows : pigs).push(a))
+  }
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -34,11 +37,11 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
   const user = useUsers(User.findById(animal.bringer).select("name"), [animal.bringer], animal.bringer)
   const history = useHistory()
 
-  if(user === undefined) {
+  if (user === DatabaseWait) {
     return <p>Loading users...</p>
   }
 
-  if(user === null) {
+  if (user === null) {
     return <p>Error loading user.</p>
   }
 

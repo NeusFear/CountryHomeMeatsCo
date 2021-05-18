@@ -1,5 +1,6 @@
 import { createContext, useContext, useRef, useState } from "react"
 import { SvgEdit } from "../assets/Icons"
+import { DatabaseWait } from "../database/Database"
 import { useConfig } from "../database/types/Configs"
 
 const GlobalEdit = createContext(false)
@@ -7,6 +8,10 @@ const GlobalEdit = createContext(false)
 export const PriceSheet = () => {
   const priceData = useConfig('PriceData')
   const [globalEdit, setGlobalEdit] = useState(false)
+
+  if(priceData === DatabaseWait) {
+    return (<div>Loading Price List...</div>)
+  }
 
   const thenSave = (setter: (val: number) => void) => {
     return (val: number) => {
@@ -18,9 +23,7 @@ export const PriceSheet = () => {
       priceData.save()
     }
   }
-  if(priceData === undefined) {
-    return (<div>Loading Price List...</div>)
-  }
+
   const { beef, pork } = priceData.currentPrices
 
   return (

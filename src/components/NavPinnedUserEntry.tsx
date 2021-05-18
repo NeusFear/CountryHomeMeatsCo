@@ -1,9 +1,10 @@
 import { SvgUser, SvgCross } from "../assets/Icons"
+import { DatabaseWait } from "../database/Database"
 import User, { useUsers } from '../database/types/User'
 
 export const NavPinnedUserEntry = ({id, onClick, onRemove, selected} : {id: string, onClick: any, onRemove: any, selected: boolean}) => {
   const details = useUsers(User.findById(id).select("name"), [id], id)
-  if(details === undefined) {
+  if(details === DatabaseWait) {
     return (<div>Loading Info...</div>)
   }
   return (

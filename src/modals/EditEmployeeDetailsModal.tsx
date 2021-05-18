@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
 import { EditorValidateInput, ValidatedString } from "../components/EditorValidateInput";
+import { DatabaseWait } from "../database/Database";
 import Employee, { IEmployee, useEmployees } from "../database/types/Employee";
 
 import { ModalHandler, setModal } from "./ModalManager";
@@ -26,7 +27,7 @@ export const EditEmployeeDetailsModal = forwardRef<ModalHandler, {objectId: stri
 
 const EditUserDetailsModalWithUserID = forwardRef<ModalHandler, {id: string}>(({id}, ref) => {
   const user = useEmployees(Employee.findById(id), [id], id)
-  return user === undefined ?
+  return user === DatabaseWait ?
     (<div>Loading User ID {id}</div>) :
     (<EditUserDetailsModalWithUser ref={ref} user={user}/>)
 })

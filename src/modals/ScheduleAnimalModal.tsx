@@ -9,6 +9,7 @@ import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCap
 import { mongo } from "mongoose";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { useConfig } from "../database/types/Configs";
+import { DatabaseWait } from "../database/Database";
 
 const style = `
 .DayPicker-Day {
@@ -34,23 +35,24 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   const [animalType, setAnimalType] = useState<AnimalType>()
   const [scheduledDate, setScheduledDate] = useState<Date>()
 
-  const disabledDays = useConfig("FullDays")?.dates?.map(d => d.getTime())
+  const fullDays = useConfig("FullDays")
+  const disabledDays = fullDays === DatabaseWait ? DatabaseWait : fullDays.dates.map(d => d.getTime())
   const dayNumber = getDayNumber()
   const allAnimals = useAnimals(Animal.where('killDate').gte(Date.now()).select('killDate bringer'), [dayNumber])
 
   const allUsers = useUsers(User.find().select('name'))
-  const allUserNames = allUsers === undefined ? undefined : allUsers.reduce((map, obj) => map.set(obj.id, obj.name), new Map<string, string>())
+  const allUserNames = allUsers === DatabaseWait ? undefined : allUsers.reduce((map, obj) => map.set(obj.id, obj.name), new Map<string, string>())
 
   const [quantity, setQuantity] = useState(1)
 
   function isDayAvailable(date: Date) {
     const normalizedDay = normalizeDay(date)
     normalizedDay.setDate(normalizedDay.getDate() - normalizedDay.getDay())
-    return (disabledDays === undefined || !disabledDays.includes(normalizedDay.getTime())) && getDayNumber(date) >= dayNumber
+    return (disabledDays === DatabaseWait || !disabledDays.includes(normalizedDay.getTime())) && getDayNumber(date) >= dayNumber
   }
 
   function getOrdersForDay(date: Date) {
-    if (allAnimals === undefined) {
+    if (allAnimals === DatabaseWait) {
       return []
     }
     return allAnimals.filter(a => getDayNumber(a.killDate) == getDayNumber(date))

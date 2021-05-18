@@ -31,11 +31,15 @@ export const connectToDB = (ip: string): ConnectState => {
   return connectState
 }
 
+export const DatabaseWait = "DatabaseHoldValue"
+
+export type DatabaseWaitType = typeof DatabaseWait
+
 export const createResultWatcher = <DocType extends Document,>(model: Model<DocType>):
   <T, >(
     query: Query<T, DocType>,
     deps?: DependencyList | undefined,
-    ...ids: (string | ObjectId | BsonObjectId)[]) => T | undefined => {
+    ...ids: (string | ObjectId | BsonObjectId)[]) => T | DatabaseWaitType => {
   const listeners: ((event: ChangeEvent<any>) => void)[] = []
   model.watch().on('change', event => listeners.forEach(l => l(event)))
 
@@ -56,7 +60,7 @@ export const createResultWatcher = <DocType extends Document,>(model: Model<DocT
       console.warn("Query had no projection. Please call select to select the fields you need.")
     }
 
-    const [state, setState] = useState<T>()
+    const [state, setState] = useState<DatabaseWaitType|T>(DatabaseWait)
     useEffect(() => subscribeListener(evt => {
       const any: any = evt
       if (

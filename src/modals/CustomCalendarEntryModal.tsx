@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { EditorValidateInput } from "../components/EditorValidateInput";
+import { DatabaseWait } from "../database/Database";
 import DayEvents, { ICustomEvent, useDayEvents } from "../database/types/DayEvents";
 import { ModalHandler } from "./ModalManager";
 
@@ -12,7 +13,7 @@ export const CustomCalendarEntryModal = forwardRef<ModalHandler, { date?: Date, 
 
 const CustomCalendarEntryModalWithID = forwardRef<ModalHandler, { id: string }>(({ id }, ref) => {
   const entry = useDayEvents(DayEvents.findById(id), [id], id)
-  return entry === undefined ?
+  return entry === DatabaseWait ?
     (<div>Loading User ID {id}</div>) :
     (<CustomCalendarEntryModalWithEntry ref={ref} entry={entry} />)
 })

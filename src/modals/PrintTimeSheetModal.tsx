@@ -6,6 +6,7 @@ import Employee, { ClockInState, computeEmployeeDay, IEmployee, useEmployees } f
 import { ipcRenderer, webContents } from "electron";
 import { PosPrintData, PosPrintOptions } from "electron-pos-printer";
 import { PrinterInfo } from "electron/main";
+import { DatabaseWait } from "../database/Database";
 
 export const PrintTimeSheetModal = () => {
   const employees = useEmployees(Employee.find().select("firstName lastName clockInEvents"))
@@ -35,7 +36,11 @@ export const PrintTimeSheetModal = () => {
       </div>
       <button
         disabled={printer === null}
-        onClick={() => doPrint(printer.name, employees, fromDate, toDate)}
+        onClick={() => {
+          if (employees !== DatabaseWait) {
+            doPrint(printer.name, employees, fromDate, toDate)
+          }
+        }}
         className={printer === null ? "bg-tomato-500" : "bg-green-200"}
       >
         Print
@@ -78,7 +83,7 @@ const PrinterDropdownBox = ({ setPrinter }: { setPrinter: (p: PrinterInfo) => vo
 
   const defaultPrinterIndex = printers.findIndex(p => p.isDefault)
   useEffect(() => {
-    if(defaultPrinterIndex !== -1) {
+    if (defaultPrinterIndex !== -1) {
       setPrinter(printers[defaultPrinterIndex])
     }
   }, [])

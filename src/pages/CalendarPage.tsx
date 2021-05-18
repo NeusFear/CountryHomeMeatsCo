@@ -12,6 +12,7 @@ import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from '../NavBar';
 import { calendarDayEntry, customDay, setModal } from '../modals/ModalManager';
 import DayEvents, { useDayEvents, ICustomEvent } from '../database/types/DayEvents';
+import { DatabaseWait } from '../database/Database';
 
 
 const daysEqual = (d1: Date, d2: Date) => {
@@ -35,13 +36,22 @@ const daysBefore = (d1: Date, d2: Date) => {
 
 export const CalendarPage = () => {
 
-  const allUser = useUsers(User.find().select("name"))?.reduce((map, u) => map.set(u.id, u.name), new Map<string, string>())
-  const getUsername = (id: string) => allUser.get(id) ?? '???'
+  const users = useUsers(User.find().select("name"))
+  const allUser = users === DatabaseWait ? DatabaseWait : users.reduce((map, u) => map.set(u.id, u.name), new Map<string, string>())
+  const getUsername = (id: string) => allUser === DatabaseWait ? 'Loading' : allUser.get(id) ?? '???'
 
   const [items, setItems] = useState<(() => JSX.Element)[]>([])
   const config = useConfig("FullDays")
 
   const todayElement = useRef<HTMLDivElement>()
+  const scrollParent = useRef<HTMLDivElement>()
+
+  if (allUser === DatabaseWait) {
+    return (<div>Loading User Info</div>)
+  }
+  if (config === DatabaseWait) {
+    return (<div>Loading Config</div>)
+  }
 
   const loadMore = (num: number) => {
     const date = normalizeDay(new Date())
@@ -51,15 +61,6 @@ export const CalendarPage = () => {
       () => <GridWeekEntry ref={todayElement} key={len} weekEntry={len} start={date} config={config} getUsername={getUsername} />
     )
     setItems([...items])
-  }
-
-  const scrollParent = useRef<HTMLDivElement>()
-
-  if (allUser === undefined) {
-    return (<div>Loading User Info</div>)
-  }
-  if (config === undefined) {
-    return (<div>Loading Config</div>)
   }
 
   return (
@@ -200,36 +201,35 @@ export type AnimalEntriesType = {
 const GridDayEntry = ({ entry, weekEntry, day, getUsername }: { entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string }) => {
   const holidays = useCalandarDates(day)
 
-  const sortedNamedEntries =
-    Array.from(
-      //Get the animals killed today
-      useAnimals(
-        Animal.where('killDate', day).select('animalType bringer confirmed'),
-        [day.getTime()]
-      )
-        //Create a map that essentially filters by id and type
-        ?.reduce((map, animal) => {
-          const str = animal.bringer.toHexString()
-          const key = str + '#' + animal.animalType
-          const old = map.get(key)
-          const arr = old?.animalIds ?? []
-          arr.push(animal.id)
-          map.set(key, {
-            id: str,
-            animalIds: arr,
-            allConfirmed: (old?.allConfirmed ?? true) && animal.confirmed,
-            arrived: animal.arriveDate !== undefined,
-            type: animal.animalType
-          }
-          )
-          return map
-        }, new Map<string, SingleEntry>())
-        //Convert that to entries or get an empty array
-        ?.values() ?? [],
+  const animals = useAnimals(
+    Animal.where('killDate', day).select('animalType bringer confirmed'),
+    [day.getTime()]
+  )
 
-      //Convert the map entries to a { name id count type } object
-      v => { return { name: getUsername(v.id), ...v } }
+  const sortedNamedEntries = animals === DatabaseWait ? [] :
+    Array.from(animals
+      //Create a map that essentially filters by id and type
+      .reduce((map, animal) => {
+        const str = animal.bringer.toHexString()
+        const key = str + '#' + animal.animalType
+        const old = map.get(key)
+        const arr = old?.animalIds ?? []
+        arr.push(animal.id)
+        map.set(key, {
+          id: str,
+          animalIds: arr,
+          allConfirmed: (old?.allConfirmed ?? true) && animal.confirmed,
+          arrived: animal.arriveDate !== undefined,
+          type: animal.animalType
+        }
+        )
+        return map
+      }, new Map<string, SingleEntry>())
+      //Convert that to entries or get an empty array
+      .values()
     )
+      //Convert the map entries to a { name id count type } object
+      .map(v => { return { name: getUsername(v.id), ...v } })
       //Sort by count
       .sort((a, b) => b.animalIds.length - a.animalIds.length)
       //Get the first 5 elements
@@ -279,7 +279,7 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername }: { entry: number, w
       <div onPointerEnter={() => setHovering(true)} onPointerLeave={() => setHovering(false)} className={`${isToday ? 'border-2 border-solid border-blue-500' : ''} ${isBeforeToday ? 'bg-gray-400' : 'bg-gray-200'} text-gray-900 flex-grow relative`}>
         <div className="flex flex-col p-1">
           {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} dayData={allUserAnimalEntries} {...e} />)}
-          {customDays && customDays.map((e, i) => <CustomDayEntry key={i} event={e} />)}
+          {customDays !== DatabaseWait && customDays.map((e, i) => <CustomDayEntry key={i} event={e} />)}
           {holidays.map((e, i) => <GridHolidayEntry key={i} holiday={e} />)}
         </div>
         <div className="absolute bottom-0 right-1">

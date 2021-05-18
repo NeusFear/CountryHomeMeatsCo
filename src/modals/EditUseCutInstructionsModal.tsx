@@ -7,15 +7,16 @@ import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
 import { ModalHandler, setModal } from "./ModalManager";
 import { SelectInputType } from "../components/SelectInputType";
+import { DatabaseWait } from "../database/Database";
 
 
 export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string, instructionID: number}>(({id, instructionID}, ref) => {
   const user = useUsers(User.findById(id).select('cutInstructions'), [id], id);
-  const dbInstructionIndex = (user != null && instructionID !== undefined) ?
+  const dbInstructionIndex = (user !== DatabaseWait && instructionID !== undefined) ?
     user.cutInstructions.findIndex(c => c.id === instructionID) :
     undefined
 
-  const dbInstrucionObject = dbInstructionIndex !== undefined ? user.cutInstructions[dbInstructionIndex] : undefined
+  const dbInstrucionObject = user !== DatabaseWait ? user.cutInstructions[dbInstructionIndex] : undefined
   const dbInstructions = dbInstrucionObject?.instructions
 
   const [ animalType, setAnimalType ] = useState<"Cow"|"Pig">(instructionID === undefined ? "Cow" : undefined)
@@ -52,9 +53,12 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
       }
     }
     return dbInstructions
-  }, [instructionID, id, animalType, user !== undefined])
+  }, [instructionID, id, animalType, user !== DatabaseWait])
 
   const submit = () => {
+    if(user === DatabaseWait) {
+      return
+    }
     if(dbInstructions === undefined) {
       const ids = user.cutInstructions.map(i => i.id)
       let id = ids.length
@@ -83,7 +87,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
     return (<div>Loading Cut Instructions...</div>)
   }
 
-  if(user === undefined) {
+  if(user === DatabaseWait) {
     return (<div>Loading User...</div>)
   }
   

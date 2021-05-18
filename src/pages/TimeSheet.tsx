@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SvgNewUser, SvgTimesheets } from "../assets/Icons";
+import { DatabaseWait } from "../database/Database";
 import Employee, { useEmployees, ClockInState, IEmployee, computeEmployeeDay } from "../database/types/Employee";
 import { editEmployeeDetails, printTimeSheet, setModal } from "../modals/ModalManager";
 import { normalizeDay } from "../Util";
@@ -17,7 +18,7 @@ export const TimeSheet = () => {
         <span className="ml-2 text-gray-700">This page is used to keep track of employee hours</span>
       </div>
       <div className="px-4 mt-4 h-full overflow-y-scroll">
-        {allEmployees && allEmployees.map(e => <EmployeeEntry key={e.id} employee={e} />)}
+        {allEmployees !== DatabaseWait && allEmployees.map(e => <EmployeeEntry key={e.id} employee={e} />)}
       </div>
     </div>
   )

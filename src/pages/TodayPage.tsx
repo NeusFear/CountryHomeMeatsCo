@@ -9,6 +9,7 @@ import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
 import { getDayNumber, printPage } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
 import { useMemo } from "react";
+import { DatabaseWait } from "../database/Database";
 
 export const TodayPage = () => {
   const today = useMemo(() => new Date(), [])
@@ -45,7 +46,7 @@ const TodaysCutList = () => {
           <SvgPrint className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => printPage("test.pdf")}/>
           <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(hangingAnimals)}/>
         </div>
-        {animals && animals.map(a => <SelectedCutList key={a.id} animal={a} />)}
+        {animals !== DatabaseWait && animals.map(a => <SelectedCutList key={a.id} animal={a} />)}
       </div>
     </div>
   )
@@ -55,9 +56,9 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
   const allUsers = useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
   const allFoundUsers = useUsers(User.where('_id').in(allUsers).select("name"))
 
-  const mainUser = allFoundUsers === undefined ? undefined :allFoundUsers.find(u => u.id === animal.bringer.toHexString())
+  const mainUser = allFoundUsers === DatabaseWait ? DatabaseWait : allFoundUsers.find(u => u.id === animal.bringer.toHexString())
 
-  if(mainUser === undefined) {
+  if(mainUser === DatabaseWait || allFoundUsers === DatabaseWait) {
     return (<div>Loading...</div>)
   }
   if(mainUser === null) {
@@ -87,7 +88,7 @@ const ScheduledSlaughterList = () => {
   now.setHours(12, 0, 0, 0)
   const scheduledToday = useAnimals(Animal.where('killDate', now).select("bringer eaters animalType confirmed " + AnimalStateFields), [ getDayNumber(now) ])
 
-  if(scheduledToday === undefined) {
+  if(scheduledToday === DatabaseWait) {
     return (<div>Loading...</div>)
   }
 
@@ -114,13 +115,13 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   }, [animal])
   const allUsers = useUsers(User.where('_id').in(allIds).select("name"), [allIds], ...allIds.map(i => i._id))
   
-  const user = allUsers?.find(u => u.id === animal.bringer.toHexString())
+  const user = allUsers === DatabaseWait ? DatabaseWait : allUsers.find(u => u.id === animal.bringer.toHexString())
 
   const history = useHistory();
 
   const state = useComputedAnimalState(animal);
 
-  if(user === undefined) {
+  if(user === DatabaseWait) {
     return (<div>Loading...</div>)
   }
   

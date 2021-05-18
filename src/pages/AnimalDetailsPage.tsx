@@ -10,24 +10,26 @@ import { normalizeDay } from "../Util";
 import { ObjectId } from 'bson'
 import { useHistory } from 'react-router-dom';
 import { editUserDetails } from "../modals/ModalManager";
+import { DatabaseWait } from "../database/Database";
 
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(Animal.findById(id).select(""), [id], id)
-  const user = useUsers(User.findById(animal?.bringer).select("name"), [animal?.bringer], animal?.bringer)
-  const animalSexes = useMemo(() => animal === undefined ? [] : getSexes(animal), [animal])
+  const bringer = animal === DatabaseWait ? null : animal.bringer
+  const user = useUsers(User.findById(bringer).select("name"), [bringer], bringer)
+  const animalSexes = useMemo(() => animal === DatabaseWait ? [] : getSexes(animal), [animal])
 
   const currentState = useComputedAnimalState(animal)
 
-  if (animal === undefined) {
+  if (animal === DatabaseWait) {
     return (<div>Loading Info for animal id {id}</div>)
   }
   if (animal === null) {
     return (<div>Error finding Info for animal id {id}</div>)
   }
 
-  if(user === undefined) {
+  if(user === DatabaseWait) {
     return <p>Loading user...</p>
   }
   if(user === null) {
@@ -251,7 +253,8 @@ const EaterList = ({ animal, currentState }: { animal: IAnimal, currentState: nu
   const [eaters, setEaters] = useState<DummyEater[]>()
   const [numEaters, setNumEaters] = useState(animal.numEaters ?? 1)
 
-  const allUsers = useUsers(User.find().select('name cutInstructions'))?.sort((a, b) => a.name.localeCompare(b.name))
+  const users = useUsers(User.find().select('name cutInstructions'))
+  const allUsers = users === DatabaseWait ? DatabaseWait : users.sort((a, b) => a.name.localeCompare(b.name))
 
   const saveDummyEaters = () => {
     animal.eaters =
@@ -287,7 +290,7 @@ const EaterList = ({ animal, currentState }: { animal: IAnimal, currentState: nu
       }
     }
 
-    if (allUsers !== undefined) {
+    if (allUsers !== DatabaseWait) {
       animal.eaters.forEach((e, i) => {
         const eat = eaters[i]
         if (eat !== undefined) {
@@ -309,7 +312,7 @@ const EaterList = ({ animal, currentState }: { animal: IAnimal, currentState: nu
     return (<div>Loading eaters...</div>)
   }
 
-  if (allUsers === undefined) {
+  if (allUsers === DatabaseWait) {
     return (<div>Loading Users...</div>)
   }
 

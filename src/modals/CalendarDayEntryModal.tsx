@@ -6,6 +6,7 @@ import { animalDetailsPage } from "../NavBar";
 import User, { IUser, useUsers } from "../database/types/User";
 import { useMemo, useState } from "react";
 import { AnimalEntriesType } from "../pages/CalendarPage";
+import { DatabaseWait } from "../database/Database";
 
 export const CalendarDayModal = ({ state }:
 { 
@@ -26,7 +27,7 @@ export const CalendarDayModal = ({ state }:
   const animals = useAnimals(Animal.where('_id').in(animalIds).select('confirmed'), [animalIds])
   const allUsers = useUsers(User.where('_id').in(users).select('name phoneNumbers'), [users])
 
-  if(allUsers === undefined || animals === undefined) {
+  if(allUsers === DatabaseWait || animals === DatabaseWait) {
     return (<div>Loading users...</div>)
   }
 

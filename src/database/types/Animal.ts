@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import mongoose, { Schema, Document, Types, mongo, FilterQuery } from 'mongoose';
 import { ObjectId } from 'bson'
-import { createResultWatcher } from '../Database';
+import { createResultWatcher, DatabaseWait, DatabaseWaitType } from '../Database';
 import { userModelName } from './User';
 import { unstable_batchedUpdates } from 'react-dom';
 
@@ -136,8 +136,15 @@ export const useAnimalStateText = (state: number) => useMemo(() => {
   }
 }, [state])
 
-export const useComputedAnimalState = (animal: IAnimal | undefined) =>
-  useMemo(() => computeAnimalState(animal), [
+export const useComputedAnimalState = (animalWithWait: IAnimal | undefined | DatabaseWaitType) => {
+  let animal: IAnimal | undefined
+  if(animalWithWait === DatabaseWait) {
+    animal = undefined
+  } else {
+    animal = animalWithWait
+  }
+  
+  return useMemo(() => computeAnimalState(animal), [
     //To get from scheduled to confirmed
     animal?.confirmed,
 
@@ -157,6 +164,7 @@ export const useComputedAnimalState = (animal: IAnimal | undefined) =>
     //To get from ready-for-pickup to archived
     animal?.pickedUp
   ])
+}
 
 
 

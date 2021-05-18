@@ -7,13 +7,14 @@ import User, { CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editMultipleAnimals, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
 import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields } from "../database/types/Animal";
+import { DatabaseWait } from "../database/Database";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState()
   const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions"), [id], id)
 
-  const usersAnimals = useAnimals(Animal.where('bringer', user?.id ?? null).select("killDate animalType tagNumber " + AnimalStateFields), [user, id])
-  if (user === undefined || usersAnimals === undefined) {
+  const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user.id : null).select("killDate animalType tagNumber " + AnimalStateFields), [user, id])
+  if (user === DatabaseWait || usersAnimals === DatabaseWait) {
     return (<div>Loading Info for user id {id}</div>)
   }
   if (user === null) {

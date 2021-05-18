@@ -2,6 +2,7 @@ import { SvgCow, SvgPig } from "../assets/Icons"
 import { useHistory } from 'react-router-dom';
 import Animal, { AnimalType, IAnimal, useAnimals, useAnimalStateText, useComputedAnimalState } from "../database/types/Animal"
 import { animalDetailsPage } from "../NavBar";
+import { DatabaseWait } from "../database/Database";
 
 export const EditMultipleAnimals = ({ ids }: { ids: string[] }) => {
   const animals = useAnimals(Animal.where("_id").in(ids).select("tagNumber animalType"), [ids])
@@ -9,7 +10,7 @@ export const EditMultipleAnimals = ({ ids }: { ids: string[] }) => {
     <div>
       Edit Multiple Animals
       <div style={{ width: '450px', height: '400px' }}>
-        {animals && animals.map(a => <AnimalEntry key={a.id} animal={a} />)}
+        {animals !== DatabaseWait && animals.map(a => <AnimalEntry key={a.id} animal={a} />)}
       </div>
     </div>
   )

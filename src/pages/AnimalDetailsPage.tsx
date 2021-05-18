@@ -16,6 +16,7 @@ import { DatabaseWait } from "../database/Database";
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(Animal.findById(id).select(""), [id], id)
+  console.log(animal)
   const bringer = animal === DatabaseWait ? null : animal.bringer
   const user = useUsers(User.findById(bringer).select("name"), [bringer], bringer)
   const animalSexes = useMemo(() => animal === DatabaseWait ? [] : getSexes(animal), [animal])
@@ -23,10 +24,10 @@ export const AnimalDetailsPage = () => {
   const currentState = useComputedAnimalState(animal)
 
   if (animal === DatabaseWait) {
-    return (<div>Loading Info for animal id {id}</div>)
+    return (<div>Loading Info for animal id {String(id)}</div>)
   }
   if (animal === null) {
-    return (<div>Error finding Info for animal id {id}</div>)
+    return (<div>Error finding Info for animal id {String(id)}</div>)
   }
 
   if(user === DatabaseWait) {

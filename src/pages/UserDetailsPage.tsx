@@ -30,16 +30,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
       map.set(key, arr)
       return map
     }, new Map<string, IAnimal[]>()).values()
-  ).map(arr => {
-    return {
-      date: arr[0].killDate,
-      type: arr[0].animalType,
-      state: computeAnimalState(arr[0]),
-      amount: arr.length,
-      ids: arr.map(a => a.id as string),
-      singleEntry: arr.length === 1 ? arr[0] : null
-    }
-  })
+  )
 
   const PhoneNumber = ({ name, number }: { name: string, number: string }) => (<div>{name}: {number}</div>)
   const Email = ({ email }: { email: string }) => (<div>{email}</div>)
@@ -102,7 +93,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
               <SvgNew className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(scheduleAnimal, id)} />
             </div>
             <div className="ml-2 mb-2 flex flex-col">
-              {groupedAnimals.map((a, id) => <BroughtInAnimalEntry key={id} animal={a} />)}
+              {groupedAnimals.map((a, id) => <BroughtInAnimalEntry key={id} animals={a} />)}
             </div>
           </div>
 
@@ -137,40 +128,49 @@ const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
   )
 }
 
-const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, singleEntry } }: {
-  animal: {
-    date: Date;
-    type: AnimalType;
-    state: number;
-    amount: number;
-    ids: string[];
-    singleEntry: IAnimal | null
-  }
+const BroughtInAnimalEntry = ({ animals }: {
+  animals: IAnimal[]
 }) => {
   const history = useHistory();
-  let stateText = useAnimalStateText(state)
+
+  const amount = animals.length
+  const firstEntry = animals[0]
+  const date = firstEntry.killDate
+  const type = firstEntry.animalType
+  const state = computeAnimalState(firstEntry)
+  const stateText = useAnimalStateText(state)
+
+
   return (
-    <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={() => history.push(animalDetailsPage, ids[0])}>
+    <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={() => history.push(animalDetailsPage, firstEntry)}>
       <div className="flex flex-row">
         <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
         {amount !== 1 && <div>x {amount}</div>}
         <div className="flex-grow text-xs text-blue-600 mt-2 font-semibold ml-2">
           {stateText}
-          {singleEntry !== null &&
-            <span className="text-gray-700 ml-1">#{paddedAnimalId(singleEntry)}</span>
+          {amount === 1 &&
+            <span className="text-gray-700 ml-1">#{paddedAnimalId(firstEntry)}</span>
           }
 
         </div>
+        {state === 0 && <div className=" mt-2 bg-green-200 text-xs cursor-pointer" onClick={e => {
+          animals.forEach(a => {
+            a.confirmed = true
+            a.save()
+          })
+          e.stopPropagation()
+          e.preventDefault()
+        }}>C</div>}
         <div>{date.toLocaleDateString()}</div>
       </div>
       {
-        singleEntry &&
+        amount === 1 &&
         <div className="flex flex-row">
-          {singleEntry.liveWeight ? <InfoTag value={singleEntry?.liveWeight + "lbs"} /> : <InfoTag value={"? lbs"} />}
-          {singleEntry.color ? <InfoTag value={singleEntry?.color} /> : <InfoTag value={"? col"} />}
-          {singleEntry.sex ? <InfoTag value={singleEntry?.sex} /> : <InfoTag value={"? sex"} />}
-          {singleEntry.tagNumber ? <InfoTag value={"Tag #" + singleEntry?.tagNumber} /> : <InfoTag value={"? tag"} />}
-          {singleEntry.penLetter ? <InfoTag value={"Pen " + singleEntry?.penLetter} /> : <InfoTag value={"? pen"} />}
+          <InfoTag value={"ID #" + paddedAnimalId(firstEntry)} />
+          <InfoTag value={(firstEntry.liveWeight ?? "?") + " lbs"} />
+          <InfoTag value={(firstEntry.color ?? "?") + " col"} />
+          <InfoTag value={(firstEntry.sex ?? "?") + " sex"} />
+          <InfoTag value={"Pen " + (firstEntry.penLetter ?? "?")} />
         </div>
       }
     </div>

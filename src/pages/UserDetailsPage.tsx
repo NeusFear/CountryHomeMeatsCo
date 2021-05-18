@@ -148,10 +148,6 @@ const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, single
   const history = useHistory();
   let stateText = useAnimalStateText(state)
 
-  if(singleEntry !== null && singleEntry.tagNumber !== undefined) {
-    stateText += " #" + singleEntry.tagNumber
-  }
-
   const onClick = () => {
     if(amount === 1) {
       history.push(animalDetailsPage, ids[0])
@@ -165,9 +161,25 @@ const BroughtInAnimalEntry = ({ animal: { date, type, state, amount, ids, single
       <div className="flex flex-row">
         <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
         {amount !== 1 && <div>x {amount}</div> }
-        <div className="flex-grow text-xs text-gray-600 mt-2 font-semibold ml-2">{stateText}</div>
+        <div className="flex-grow text-xs text-blue-600 mt-2 font-semibold ml-2">{stateText}</div>
         <div>{date.toLocaleDateString()}</div>
       </div>
+      {
+        !singleEntry ||
+        <div className="flex flex-row">
+          {singleEntry.liveWeight ? <InfoTag value={singleEntry?.liveWeight + "lbs"} /> : <InfoTag value={"? lbs"} />}
+          {singleEntry.color ? <InfoTag value={singleEntry?.color} /> : <InfoTag value={"? col"} />}
+          {singleEntry.sex ? <InfoTag value={singleEntry?.sex} /> : <InfoTag value={"? sex"} />}
+          {singleEntry.tagNumber ? <InfoTag value={"Tag #" + singleEntry?.tagNumber} /> : <InfoTag value={"? tag"} />}
+          {singleEntry.penLetter ? <InfoTag value={"Pen " + singleEntry?.penLetter} /> : <InfoTag value={"? pen"} />}
+        </div>
+      }
     </div>
+  )
+}
+
+const InfoTag = ({value}: {value: string}) => {
+  return(
+    <div className="bg-gray-200 rounded text-xs py-0.5 px-1 mx-1">{value}</div>
   )
 }

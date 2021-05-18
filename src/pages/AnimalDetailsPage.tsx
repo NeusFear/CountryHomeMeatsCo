@@ -1,5 +1,5 @@
 import { useHistoryListState } from "../AppHooks";
-import Animal, { getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState, AnimalType } from "../database/types/Animal";
+import Animal, { getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState, AnimalType, paddedAnimalId } from "../database/types/Animal";
 import { SvgArrow, SvgCalendar, SvgEdit } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
 import User, { IUser, useUsers } from "../database/types/User";
@@ -48,7 +48,7 @@ export const AnimalDetailsPage = () => {
   return (
     <div className="w-full h-screen flex flex-col">
       <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
-        <div className="text-white text-4xl font-bold ml-4">{(animal.animalType === AnimalType.Cow ? "BEEF" : "PORK") + " #" + animal.animalId}</div>
+        <div className="text-white text-4xl font-bold ml-4">{(animal.animalType === AnimalType.Cow ? "BEEF" : "PORK") + " #" + paddedAnimalId(animal)}</div>
       </div>
       <div className="flex flex-row w-full mt-4 font-bold text-center">
         <div className={`flex-grow p-2 rounded-md shadow-md my-1 mr-1 ml-4 border-4 ${currentState >= 0 ? "border-green-500" : "border-gray-600"}`}>Scheduled</div>

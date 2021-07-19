@@ -2,7 +2,7 @@ import { useHistoryListState } from "../AppHooks";
 import Animal, { getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState, AnimalType, paddedAnimalId } from "../database/types/Animal";
 import { SvgArrow, SvgCalendar, SvgEdit } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
-import User, { IUser, useUsers } from "../database/types/User";
+import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
 import { useEffect, useMemo, useState } from "react";
 import { invoiceDetails, userDetailsPage } from "../NavBar";
 import { Link } from 'react-router-dom';
@@ -11,17 +11,39 @@ import { ObjectId } from 'bson'
 import { useHistory } from 'react-router-dom';
 import { editUserDetails } from "../modals/ModalManager";
 import { DatabaseWait } from "../database/Database";
+import Invoice, { generateInvoice, IInvoice, useInvoice } from "../database/types/Invoices";
+import { useConfig } from "../database/types/Configs";
 
+type DummyEater = {
+  _rand: number
+  foundUser?: IUser,
+  tag?: string
+  halfUser?: {
+    foundUser?: IUser
+    tag?: string
+  }
+  cutInstruction?: number
+  foundCutInstruction?: CutInstructions
+}
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(Animal.findById(id).select(""), [id], id)
-  console.log(animal)
   const bringer = animal === DatabaseWait ? null : animal.bringer
   const user = useUsers(User.findById(bringer).select("name"), [bringer], bringer)
   const animalSexes = useMemo(() => animal === DatabaseWait ? [] : getSexes(animal), [animal])
+  const users = useUsers(User.find().select('name cutInstructions invoices'))
+
+  const priceData = useConfig("PriceData")
 
   const currentState = useComputedAnimalState(animal)
+
+  const [eaters, setEaters] = useState<DummyEater[]>()
+  const databaseLength = useInvoice(Invoice.countDocuments())
+
+  if(priceData === DatabaseWait) {
+    return <div>Loading Price Data</div>
+  }
 
   if (animal === DatabaseWait) {
     return (<div>Loading Info for animal id {String(id)}</div>)
@@ -32,6 +54,9 @@ export const AnimalDetailsPage = () => {
 
   if(user === DatabaseWait) {
     return <p>Loading user...</p>
+  }
+  if(users === DatabaseWait || databaseLength == DatabaseWait) {
+    return <p>Loading users...</p>
   }
   if(user === null) {
     return <p>Error loading user.</p>
@@ -185,7 +210,7 @@ export const AnimalDetailsPage = () => {
                   animal.save()
                 }} />
               </div>
-              <EaterList animal={animal} currentState={currentState} />
+              <EaterList eaters={eaters} setEaters={setEaters} users={users} animal={animal} currentState={currentState} />
             </div>
           </div>
         </div>
@@ -193,10 +218,22 @@ export const AnimalDetailsPage = () => {
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Related Invoices</div>
+              { <button className="bg-blue-200 rounded" disabled={currentState < 4} onClick={() => {
+                if(animal.invoices.length === 0 || confirm("This will remove all current invoices.")) {
+                  const toRemove = animal.invoices.map(i => String(i))
+                  animal.invoices = []
+                  eaters.forEach(e => {
+                    e.foundUser.invoices = e.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
+                    if(e.halfUser) {
+                      e.halfUser.foundUser.invoices = e.halfUser.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
+                    }
+                    generateInvoice(animal, e.foundUser, e.halfUser?.foundUser, priceData.currentPrices, e.cutInstruction, e.foundCutInstruction, databaseLength + 1, eaters.length > 1)
+                  })
+                }
+              }}>Generate</button> }
             </div>
             <div className="py-4">
-              <InvoiceListItem delivered={false} name="Jerry Henderson" id={1238293} />
-              <InvoiceListItem delivered={true} name="Guy Guuyerson" id={1442343} />
+              <InvoiceList animal={animal}/>
             </div>
           </div>
         </div>
@@ -205,25 +242,52 @@ export const AnimalDetailsPage = () => {
   )
 }
 
-const InvoiceListItem = ({ delivered, name, id }: { delivered: boolean, name: string, id?: number }) => {
+const InvoiceList = ({animal}: {animal: IAnimal}) => {
+  const invoices = useInvoice(Invoice.where("_id").in(animal.invoices.map(i => i.toHexString())), [animal.invoices, String(animal.invoices)], ...animal.invoices)
+  if(invoices === DatabaseWait) {
+    return <p>Loading...</p>
+  }
+  return (<> 
+    { invoices.map(i => <InvoiceListItem key={i.id} invoice={i} />) }  
+  </>)
+}
+
+const InvoiceListItem = ({invoice}: {invoice: IInvoice}) => {
+  const mainUser = useUsers(User.findById(invoice.user), [invoice.user], invoice.user)
+  const secondaryUser = useUsers(User.findById(invoice.secondaryUser), [invoice.secondaryUser], invoice.secondaryUser)
+ 
+  if(mainUser === DatabaseWait || secondaryUser == DatabaseWait) {
+    return <div>Loading Users...</div>
+  }
+
   return (
-    <Link to={invoiceDetails} className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row">
+    <Link to={{
+      pathname: invoiceDetails,
+      state: invoice.id
+    }} className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row">
       <div className="w-1/6 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Invoice:</p>
-        <StringUserTag name={id.toString()} />
+        <StringUserTag name={String(invoice.invoiceId)} />
       </div>
       <div className="w-1/5 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Status:</p>
-        <p className={`${delivered ? "bg-green-100 hover:bg-green-200" : "bg-tomato-100 hover:bg-tomato-200"} px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{delivered ? "Paid" : "Pending"}</p>
+        <p className={`${invoice.dateTimePaid ? "bg-green-100 hover:bg-green-200" : "bg-tomato-100 hover:bg-tomato-200"} px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{invoice.dateTimePaid ? "Paid" : "Pending"}</p>
       </div>
       <div className="w-1/6 mx-4 text-gray-800 group-hover:text-gray-900">
-        <p className="font-semibold">Portion:</p>
-        <StringUserTag name="Half" />
-      </div>
+          <p className="font-semibold">Portion:</p>
+          <StringUserTag name={invoice.half ? "Half" : "Whole"} />
+        </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Cut List:</p>
-        <StringUserTag name={name} id={4} />
+        <StringUserTag name={mainUser.name} id={invoice.cutInstructionId} />
       </div>
+      {
+        secondaryUser && 
+        <div className="flex-grow text-gray-800 group-hover:text-gray-900">
+          <p className="font-semibold">Secondary User:</p>
+          <StringUserTag name={secondaryUser.name} />
+        </div>
+      }
     </Link>
   )
 }
@@ -239,23 +303,10 @@ const StringUserTag = ({ name, id }: { name: string, id?: number }) => {
 }
 
 
-type DummyEater = {
-  _rand: number
-  foundUser?: IUser,
-  tag?: string
-  halfUser?: {
-    foundUser?: IUser
-    tag?: string
-  }
-  cutInstruction?: number
-}
-
-const EaterList = ({ animal, currentState }: { animal: IAnimal, currentState: number }) => {
-  const [eaters, setEaters] = useState<DummyEater[]>()
+const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters: DummyEater[], setEaters: (e: DummyEater[]) => void, users: IUser[], animal: IAnimal, currentState: number }) => {
   const [numEaters, setNumEaters] = useState(animal.numEaters ?? 1)
 
-  const users = useUsers(User.find().select('name cutInstructions'))
-  const allUsers = users === DatabaseWait ? DatabaseWait : users.sort((a, b) => a.name.localeCompare(b.name))
+  const allUsers = users.sort((a, b) => a.name.localeCompare(b.name))
 
   const saveDummyEaters = () => {
     animal.eaters =
@@ -278,43 +329,38 @@ const EaterList = ({ animal, currentState }: { animal: IAnimal, currentState: nu
   }
 
   useEffect(() => {
-    const eaters = []
+    const eaters: DummyEater[] = []
     eaters.length = numEaters === 2 ? 2 : Math.round(numEaters / 2)
     for (let i = 0; i < eaters.length; i++) {
-      if (eaters[i] === undefined) {
-        eaters[i] = { _rand: Math.random() }
-      }
-      if (i * 2 !== numEaters - 1 && numEaters !== 2) {
-        eaters[i].halfUser = {}
-      } else {
-        eaters[i].halfUser = undefined
-      }
-    }
-
-    if (allUsers !== DatabaseWait) {
-      animal.eaters.forEach((e, i) => {
-        const eat = eaters[i]
-        if (eat !== undefined) {
-          eat.foundUser = allUsers.find(u => u.id == e.id.toHexString())
-          eat.tag = e.tag
-          eat.cutInstruction = e.cutInstruction
-
-          if (e.halfUser !== undefined && eat.halfUser !== undefined) {
-            eat.halfUser.foundUser = allUsers.find(u => u.id == e.halfUser.id.toHexString())
-            eat.halfUser.tag = e.halfUser.tag
-          }
+        if (eaters[i] === undefined) {
+            eaters[i] = { _rand: Math.random() }
         }
-      })
+        if (i * 2 !== numEaters - 1 && numEaters !== 2) {
+            eaters[i].halfUser = {}
+        } else {
+            eaters[i].halfUser = undefined
+        }
     }
+
+    animal.eaters.forEach((e, i) => {
+      const eat = eaters[i]
+      if (eat !== undefined) {
+        eat.foundUser = allUsers.find(u => u.id == e.id.toHexString())
+        eat.tag = e.tag
+        eat.cutInstruction = e.cutInstruction
+        eat.foundCutInstruction = eat.foundUser?.cutInstructions?.find(c => c.id === e.cutInstruction)?.instructions
+
+        if (e.halfUser !== undefined && eat.halfUser !== undefined) {
+          eat.halfUser.foundUser = allUsers.find(u => u.id == e.halfUser.id.toHexString())
+          eat.halfUser.tag = e.halfUser.tag
+        }
+      }
+    })
     setEaters(eaters)
   }, [numEaters, allUsers])
 
   if (eaters === undefined) {
     return (<div>Loading eaters...</div>)
-  }
-
-  if (allUsers === DatabaseWait) {
-    return (<div>Loading Users...</div>)
   }
 
   return (
@@ -342,20 +388,22 @@ const EaterList = ({ animal, currentState }: { animal: IAnimal, currentState: nu
           <p className="w-36 ml-2">Record Number</p>
         </div>
         {eaters && eaters.map(eater =>
-          <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState} />
+          <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState} animalType={animal.animalType} />
         )}
       </div>
     </div>
   )
 }
 
-const EaterPart = ({ save, eater, allUsers, currentState }: { save: () => void, eater: DummyEater, allUsers: IUser[], currentState: number }) => {
+const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: () => void, eater: DummyEater, allUsers: IUser[], currentState: number, animalType: AnimalType }) => {
   const [user, setUser] = useState<IUser>(eater.foundUser)
   eater.foundUser = user
   const [halfUser, setHalfUser] = useState<IUser>(eater.halfUser?.foundUser)
   if (eater.halfUser !== undefined) {
     eater.halfUser.foundUser = halfUser
   }
+
+  const cutInstructionType = animalType === AnimalType.Cow ? "beef" : "pork"
 
   return (
     <div>
@@ -366,6 +414,7 @@ const EaterPart = ({ save, eater, allUsers, currentState }: { save: () => void, 
           {eater.foundUser &&
             eater.foundUser.cutInstructions.slice()
               .sort((a, b) => a.id - b.id)
+              .filter(a => a.instructions.cutType === cutInstructionType)
               .map(c => <option key={c.id} value={c.id}>{c.id}</option>)
           }
         </select>

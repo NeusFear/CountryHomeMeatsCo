@@ -1,8 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 import { createResultWatcher } from '../Database';
-
-export const userModelName = 'Employee'
+import { employeeDatabaseName } from '../DatabaseNames';
 
 export const ClockInState = {
   ClockedIn: 1,
@@ -58,7 +57,7 @@ export const computeEmployeeDay = (events: { time: Date; state: number; }[]) => 
   return hours
 }
 
-const Employee = mongoose.model<IEmployee>(userModelName, employeeSchema)
+const Employee = mongoose.model<IEmployee>(employeeDatabaseName, employeeSchema)
 
 export const useEmployees = createResultWatcher(Employee)
 export default Employee

@@ -7,6 +7,7 @@
   "dependencies": {
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.8.5",
+    "@types/react-router-dom": "^5.1.8",
     "autoprefixer": "^10.2.1",
     "electron": "^11.2.0",
     "electron-pos-printer": "^1.2.4",
@@ -28,7 +29,7 @@
   "scripts": {
     "dev": "parcel ./index.html",
     "app": "electron electron-start.js",
-    "mongodb-start-internal": "powershell -command \"Start-Process cmd -ArgumentList '/c cd /d %CD% && cross-env MONGODB_VERSION=4.2.3 mongodb-runner start --topology=replicaset' -Verb runas\"",
+    "mongodb-start-internal": "powershell -command \"Start-Process cmd -ArgumentList '/c cd /d %CD% && cross-env MONGODB_VERSION=4.2.3 mongodb-runner start --topology=replicaset --logpath ./cache/mongodb.log' -Verb runas\"",
     "mongodb": "mongodb.bat",
     "dist": "parcel build ./index.html",
     "watch": "parcel watch ./index.html --public-url ./ --target=electron-renderer"

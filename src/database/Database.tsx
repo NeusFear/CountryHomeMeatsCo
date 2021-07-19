@@ -54,7 +54,17 @@ export const createResultWatcher = <DocType extends Document,>(model: Model<DocT
     deps: DependencyList,
     ...ids: (string | ObjectId | BsonObjectId)[]
   ) => {
-    
+    ids = ids.filter(id => {
+      if(id == null) {
+        return false
+      }
+      const str = String(id)
+      if(str.length != 24 || str.match(/^[0-9a-f]{24}$/) == null) {
+        console.error(str + " is not a valid id. Removing...")
+        return false
+      }
+      return true;
+    })
     const projection = query['_fields']
     if(projection === undefined || Object.keys(projection).length === 0) {
       console.warn("Query had no projection. Please call select to select the fields you need.")

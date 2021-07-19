@@ -1,31 +1,58 @@
 import { createResultWatcher, DatabaseWait, DatabaseWaitType } from './../Database';
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, SchemaDefinition, DocumentDefinition } from 'mongoose';
+import { animalDatabaseName, configDatabaseName } from '../DatabaseNames';
 
 const Configs = ["FullDays", "PriceData"] as const
 
+
+export type PriceDataNumbers = {
+  beef: {
+    slaughter: number;
+    processing: number;
+    patties: number;
+    halves: number;
+    halvesToQuaters: number;
+    extraBoning: number;
+    cutStewMeat: number;
+    boneAndTenderizeRoundSteaks: number;
+    makeCubedSteaks: number;
+    boneOrPrimeRib: number;
+    boneOutLoin: number;
+  };
+  pork: {
+      slaughter: number;
+      slaughter150lb: number;
+      processing: number;
+      cure: number;
+      sausage: number;
+  };
+}
+
+export const PriceDataSchema: SchemaDefinition<DocumentDefinition<any>> = {
+  beef: { type: {
+    slaughter: { type: Number, required: true },
+    processing: { type: Number, required: true },
+    patties: { type: Number, required: true },
+    halves: { type: Number, required: true },
+    halvesToQuaters: { type: Number, required: true },
+    extraBoning: { type: Number, required: true },
+    cutStewMeat: { type: Number, required: true },
+    boneAndTenderizeRoundSteaks: { type: Number, required: true },
+    makeCubedSteaks: { type: Number, required: true },
+    boneOrPrimeRib: { type: Number, required: true },
+    boneOutLoin: { type: Number, required: true },
+  }, required: true },
+  pork: { type: {
+    slaughter: { type: Number, required: true },
+    slaughter150lb: { type: Number, required: true },
+    processing: { type: Number, required: true },
+    cure: { type: Number, required: true },
+    sausage: { type: Number, required: true },
+  }, required: true }
+}
+
 export interface PriceData extends Document {
-  currentPrices: {
-    beef: {
-      slaughter: number
-      processing: number
-      patties: number
-      halves: number
-      halvesToQuaters: number
-      extraBoning: number
-      cutStewMeat: number
-      boneAndTenderizeRoundSteaks: number
-      makeCubedSteaks: number
-      boneOrPrimeRib: number
-      boneOutLoin: number
-    },
-    pork: {
-      slaughter: number,
-      slaughter150lb: number,
-      processing: number,
-      cure: number,
-      sausage: number
-    }
-  }
+  currentPrices: PriceDataNumbers
 }
 
 export interface IFullDaysConfig extends Document {
@@ -44,33 +71,12 @@ const configSchema = new Schema({
   dates: { type: [Schema.Types.Date], required: true },
 
   //Price: data
-  currentPrices: { type: {
-    beef: { type: {
-      slaughter: { type: Number, required: true },
-      processing: { type: Number, required: true },
-      patties: { type: Number, required: true },
-      halves: { type: Number, required: true },
-      halvesToQuaters: { type: Number, required: true },
-      extraBoning: { type: Number, required: true },
-      cutStewMeat: { type: Number, required: true },
-      boneAndTenderizeRoundSteaks: { type: Number, required: true },
-      makeCubedSteaks: { type: Number, required: true },
-      boneOrPrimeRib: { type: Number, required: true },
-      boneOutLoin: { type: Number, required: true },
-    }, required: true },
-    pork: { type: {
-      slaughter: { type: Number, required: true },
-      slaughter150lb: { type: Number, required: true },
-      processing: { type: Number, required: true },
-      cure: { type: Number, required: true },
-      sausage: { type: Number, required: true },
-    }, required: true }
-  }, required: true },
+  currentPrices: { type: PriceDataSchema, required: true },
   
 })
 
 
-const ConfigModel = mongoose.model<AllConfigs>('Configs', configSchema)
+const ConfigModel = mongoose.model<AllConfigs>(configDatabaseName, configSchema)
 
 const TypeToKey: { [path in typeof Configs[number]]: keyof Omit<ConfigTypes<path>, keyof Document> } = {
   "FullDays": "dates",

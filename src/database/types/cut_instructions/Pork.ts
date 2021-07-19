@@ -73,3 +73,21 @@ export const PorkCutInstructionsSchema: SchemaDefinition = {
   heart: String,
   fat: String,
 }
+
+export const clonePorkCutInstructions = (instructions: PorkCutInstructions): PorkCutInstructions => {
+  return {
+    cutType: "pork",
+    ham: instructions.ham,
+    bacon: instructions.bacon,
+    jowl: instructions.jowl,
+    loin: instructions.loin,
+    butt: instructions.butt,
+    picnic: instructions.picnic,
+    rib: instructions.rib,
+    sausage: instructions.sausage,
+    head: instructions.head,
+    feet: instructions.feet,
+    heart: instructions.heart,
+    fat: instructions.fat
+  }
+}

@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 import { createResultWatcher } from '../Database';
+import { vendorDatabaseName } from '../DatabaseNames';
 
-export const vendorModelName = 'Vendor'
 
 export interface IVendor extends Document {
   company: string,
@@ -23,7 +23,7 @@ const vendorSchema = new Schema({
   notes: { type: String, default: '' }
 });
 
-const Vendor = mongoose.model<IVendor>(vendorModelName, vendorSchema)
+const Vendor = mongoose.model<IVendor>(vendorDatabaseName, vendorSchema)
 
 export const useVendors = createResultWatcher(Vendor)
 export default Vendor

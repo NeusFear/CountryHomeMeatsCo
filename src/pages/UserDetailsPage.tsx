@@ -142,7 +142,7 @@ const BroughtInAnimalEntry = ({ animals }: {
 
 
   return (
-    <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={() => history.push(animalDetailsPage, firstEntry)}>
+    <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={() => history.push(animalDetailsPage, firstEntry.id)}>
       <div className="flex flex-row">
         <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
         {amount !== 1 && <div>x {amount}</div>}

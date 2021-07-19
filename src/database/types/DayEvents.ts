@@ -1,8 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 import { createResultWatcher } from '../Database';
-
-export const customEventsModelName = 'CustomEvents'
+import { customEventsDatabaseName } from '../DatabaseNames';
 
 export interface ICustomEvent extends Document {
   date: Date
@@ -16,7 +15,7 @@ const customEventsSchema = new Schema({
   eventColor: { type: Number, default: 0 }
 });
 
-const DayEvents = mongoose.model<ICustomEvent>(customEventsModelName, customEventsSchema)
+const DayEvents = mongoose.model<ICustomEvent>(customEventsDatabaseName, customEventsSchema)
 
 export const useDayEvents = createResultWatcher(DayEvents)
 export default DayEvents

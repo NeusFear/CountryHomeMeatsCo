@@ -1,15 +1,15 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, ObjectId, SchemaDefinition, DocumentDefinition } from 'mongoose';
 
 import { createResultWatcher } from '../Database';
+import { invoiceDatabaseName, userDatabaseName } from '../DatabaseNames';
 import { BeefCutInstructions, BeefCutInstructionsSchema } from './cut_instructions/Beef';
 import { PorkCutInstructions, PorkCutInstructionsSchema } from './cut_instructions/Pork';
-
-export const userModelName = 'User'
 
 export type CutInstructions = (BeefCutInstructions | PorkCutInstructions) & { notes?: string }
 
 export interface IUser extends Document {
   name: string
+  invoices: ObjectId[],
   phoneNumbers: { name: string, number: string }[]
   emails: string[],
   cutInstructions: {
@@ -19,8 +19,16 @@ export interface IUser extends Document {
   notes: string
 }
 
+export const CutInstructionsSchema: SchemaDefinition<DocumentDefinition<any>> = {
+  cutType: { type: String, enum: ["beef", "pork"], required: true },
+  ...BeefCutInstructionsSchema, 
+  ...PorkCutInstructionsSchema,
+  notes: { type: String, default: '' },
+}
+
 const userSchmea = new Schema({
   name: { type: String, required: true },
+  invoices: [{ type: Schema.Types.ObjectId, ref: invoiceDatabaseName, required: true, default: [] }],
   phoneNumbers: { type: [{ 
     name: { type: String, required: true }, 
     number: { type: String, required: true }
@@ -28,17 +36,12 @@ const userSchmea = new Schema({
   emails: {type: [String], required: true },
   cutInstructions: { type: [{ 
     id: { type: Number, required: true },
-    instructions: { type: {
-      cutType: { type: String, enum: ["beef", "pork"], required: true },
-      ...BeefCutInstructionsSchema, 
-      ...PorkCutInstructionsSchema,
-      notes: { type: String, default: '' },
-    }, required: true }
+    instructions: { type: CutInstructionsSchema, required: true }
    }], required: true},
    notes: { type: String, default: '' },
 });
 
-const User = mongoose.model<IUser>(userModelName, userSchmea)
+const User = mongoose.model<IUser>(userDatabaseName, userSchmea)
 
 export const useUsers = createResultWatcher(User)
 export default User

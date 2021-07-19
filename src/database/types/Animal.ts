@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import mongoose, { Schema, Document, Types, mongo, FilterQuery } from 'mongoose';
 import { ObjectId } from 'bson'
 import { createResultWatcher, DatabaseWait, DatabaseWaitType } from '../Database';
-import { userModelName } from './User';
-import { unstable_batchedUpdates } from 'react-dom';
+import { animalDatabaseName, invoiceDatabaseName, userDatabaseName } from '../DatabaseNames';
+
 
 export enum AnimalType {
   Cow = "Cow",
@@ -38,6 +38,7 @@ export interface IAnimal extends Document {
   animalType: AnimalType,
   animalId: number,
   bringer: ObjectId,
+  invoices: ObjectId[],
   numEaters: number
   eaters: Eater[],
   killDate: Date,
@@ -63,15 +64,16 @@ export interface IAnimal extends Document {
 const animalSchmea = new Schema({
   animalType: { type: String, enum: Object.keys(AnimalType), required: true },
   animalId: { type: Number, required: true },
-  bringer: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
+  bringer: { type: Schema.Types.ObjectId, ref: userDatabaseName, required: true },
+  invoices: [{ type: Schema.Types.ObjectId, ref: invoiceDatabaseName, required: true, default: [] }],
   numEaters: { type: Number, default: 1 },
   eaters: {
     type: [{
-      id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
+      id: { type: Schema.Types.ObjectId, ref: userDatabaseName, required: true },
       tag: { type: String },
       halfUser: {
         type: {
-          id: { type: Schema.Types.ObjectId, ref: userModelName, required: true },
+          id: { type: Schema.Types.ObjectId, ref: userDatabaseName, required: true },
           tag: { type: String },
         }
       },
@@ -98,7 +100,7 @@ const animalSchmea = new Schema({
   pickedUp: { type: Boolean, default: false },
 });
 
-const Animal = mongoose.model<IAnimal>('Animal', animalSchmea)
+const Animal = mongoose.model<IAnimal>(animalDatabaseName, animalSchmea)
 
 export const createEmptyAnimal = (userID: string): IAnimal => {
   return new Animal({

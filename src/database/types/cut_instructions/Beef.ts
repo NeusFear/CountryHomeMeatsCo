@@ -2,7 +2,7 @@ import { SchemaDefinition } from 'mongoose';
 
 export type BeefCutInstructions = {
   cutType: "beef"
-  round: { amount: string, tenderized: string, size: string, perPackage: string }
+  round: { tenderizedAmount: string, size: string, perPackage: string }
   sirlointip: { size: string, amount: string }
   flank: string
   sirloin: { size: string, amount: string }
@@ -21,7 +21,7 @@ export type BeefCutInstructions = {
 }
 
 export const BeefCutInstructionsSchema: SchemaDefinition = {
-  round: { amount: String, tenderized: String, size: String, perPackage: String },
+  round: { tenderizedAmount: String, size: String, perPackage: String },
   sirlointip: { size: String, amount: String },
   flank: String,
   sirloin: { size: String, amount: String },

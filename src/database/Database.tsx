@@ -65,10 +65,11 @@ export const createResultWatcher = <DocType extends Document,>(model: Model<DocT
       }
       return true;
     })
-    const projection = query['_fields']
-    if(projection === undefined || Object.keys(projection).length === 0) {
-      console.warn("Query had no projection. Please call select to select the fields you need.")
-    }
+
+    // const projection = query['_fields']
+    // if(projection === undefined || Object.keys(projection).length === 0) {
+    //   console.warn("Query had no projection. Please call select to select the fields you need.")
+    // }
 
     const [state, setState] = useState<DatabaseWaitType|T>(DatabaseWait)
     useEffect(() => subscribeListener(evt => {

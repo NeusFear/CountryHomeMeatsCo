@@ -464,16 +464,10 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
               <div className="flex flex-col">
                 <div className="flex flex-row mb-1">
                   <SelectInputType
-                    initial={instructions.round.amount}
-                    onChange={v => instructions.round.amount=v}
-                    values={["25%", "50%", "75%", "100%"]} 
-                    width={50}
-                  />
-                  <SelectInputType 
-                    initial={instructions.round.tenderized}
-                    onChange={v => instructions.round.tenderized=v}
-                    values={["Not Tenderized", "Tenderized"]} 
-                    width={150} 
+                    initial={instructions.round.tenderizedAmount}
+                    onChange={v => instructions.round.tenderizedAmount=v}
+                    values={["Not Tenderized", "25%", "50%", "75%", "100%"]} 
+                    width={150}
                   />
                 </div>
                 <br />
@@ -531,7 +525,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
               />
               <SelectInputType
                 initial={instructions.sirloin.amount}
-                onChange={v => instructions.sirloin.amount}
+                onChange={v => instructions.sirloin.amount=v}
                 values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']}
                 width={65} 
               />

@@ -29,7 +29,7 @@
   "scripts": {
     "dev": "parcel ./index.html",
     "app": "electron electron-start.js",
-    "mongodb-start-internal": "powershell -command \"Start-Process cmd -ArgumentList '/c cd /d %CD% && cross-env MONGODB_VERSION=4.2.3 mongodb-runner start --topology=replicaset --logpath ./cache/mongodb.log' -Verb runas\"",
+    "mongodb-start-internal": "powershell -command \"Start-Process cmd -ArgumentList '/c cd /d %CD% && cross-env MONGODB_VERSION=4.2.3 mongodb-runner start --topology=replicaset --logpath ./mongodblog/' -Verb runas\"",
     "mongodb": "mongodb.bat",
     "dist": "parcel build ./index.html",
     "watch": "parcel watch ./index.html --public-url ./ --target=electron-renderer"

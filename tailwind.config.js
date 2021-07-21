@@ -137,5 +137,10 @@ module.exports = {
         900: 'var(--gray-900)'
       }
     }
-  }
+  },
+  variants: {
+    extend: {
+      textAlign: ['focus'],
+    }
+  },
 }

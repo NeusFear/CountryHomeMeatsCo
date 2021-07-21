@@ -28,7 +28,7 @@ type DummyEater = {
 
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
-  const animal = useAnimals(Animal.findById(id).select(""), [id], id)
+  const animal = useAnimals(Animal.findById(id).select(""), [id], id as ObjectId)
   const bringer = animal === DatabaseWait ? null : animal.bringer
   const user = useUsers(User.findById(bringer).select("name"), [bringer], bringer)
   const animalSexes = useMemo(() => animal === DatabaseWait ? [] : getSexes(animal), [animal])
@@ -329,6 +329,7 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
   }
 
   useEffect(() => {
+    console.log("eaters changed")
     const eaters: DummyEater[] = []
     eaters.length = numEaters === 2 ? 2 : Math.round(numEaters / 2)
     for (let i = 0; i < eaters.length; i++) {
@@ -357,7 +358,7 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
       }
     })
     setEaters(eaters)
-  }, [numEaters, allUsers])
+  }, [numEaters, allUsers, String(eaters?.map(e => e.cutInstruction))])
 
   if (eaters === undefined) {
     return (<div>Loading eaters...</div>)
@@ -387,8 +388,8 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
           <p className="w-36 ml-2">Identifier</p>
           <p className="w-36 ml-2">Record Number</p>
         </div>
-        {eaters && eaters.map(eater =>
-          <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState} animalType={animal.animalType} />
+        {eaters && eaters.map((eater, i) =>
+          <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState} animalType={animal.animalType}/>
         )}
       </div>
     </div>
@@ -409,7 +410,9 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
     <div>
       <div className="flex flex-row">
         <EaterSelectPart save={save} part={eater} allUsers={allUsers} currentState={currentState} user={user} setUser={setUser} />
-        <select className="w-48 border-gray-700 border rounded-md ml-2 px-1" disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
+        <select className="w-48 border-gray-700 border rounded-md ml-2 px-1" 
+        disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} 
+        onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
           <option hidden disabled value="__default"></option>
           {eater.foundUser &&
             eater.foundUser.cutInstructions.slice()

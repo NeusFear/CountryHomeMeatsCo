@@ -8,9 +8,10 @@ import { UserPinnedList } from "../App";
 import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
 import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields, paddedAnimalId } from "../database/types/Animal";
 import { DatabaseWait } from "../database/Database";
+import { ObjectId } from "bson";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
-  const id = useHistoryListState()
+  const id = useHistoryListState() as ObjectId
   const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions"), [id], id)
 
   const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user.id : null).select("killDate animalType tagNumber animalId " + AnimalStateFields), [user, id])
@@ -48,7 +49,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Contact Information</div>
-              <SvgTack className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => pinnedList.updatePinned(id, true)} />
+              <SvgTack className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => pinnedList.updatePinned(id.toHexString(), true)} />
               <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(editUserDetails, id)} />
             </div>
             <div className="bg-white rounded-md p-2 mx-4 mb-1 mt-4 flex flex-row"><SvgUser className="mt-1 mr-1 text-gray-400" />{user.name}</div>
@@ -111,7 +112,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
 
 const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
   {
-    id: number,
+    id: ObjectId,
     instructionID: number,
     instruction: CutInstructions,
     onDelete: () => void,

@@ -85,7 +85,7 @@ export const CalendarDayModal = ({ state }:
 }
 
 const UserListItem = ({user, amount, type, selected, onClick}: {user: IUser, amount: number, type: AnimalType, selected: boolean, onClick: ()=>void}) => {
-  const Icon = type === AnimalType.Cow ? SvgCow : SvgPig
+  const Icon = type === AnimalType.Beef ? SvgCow : SvgPig
   return (
     <div onClick={onClick} className={`group bg-${selected?'blue':'gray'}-100 shadow-sm hover:shadow-lg hover:border-transparent rounded-lg flex flex-row mb-2`}>
       <div className="w-10">

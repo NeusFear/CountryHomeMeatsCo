@@ -11,7 +11,6 @@ import './styles/autosuggest.css'
 import { NavBar, routes } from './NavBar';
 import { connectToDB } from './database/Database';
 import { ModalManager } from './modals/ModalManager';
-import ReactTooltip from 'react-tooltip';
 import { ConnectingPage } from './pages/ConnectingPage';
 
 export const AppContainer = () => {

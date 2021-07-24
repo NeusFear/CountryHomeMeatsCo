@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
-import mongoose, { Schema, Document, Types, mongo, FilterQuery } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import { ObjectId } from 'bson'
 import { createResultWatcher, DatabaseWait, DatabaseWaitType } from '../Database';
 import { animalDatabaseName, invoiceDatabaseName, userDatabaseName } from '../DatabaseNames';
 
 
 export enum AnimalType {
-  Cow = "Cow",
-  Pig = "Pig"
+  Beef = "Beef",
+  Pork = "Pork"
 }
 
 export type Eater = {
@@ -27,7 +27,7 @@ const CowSexes = ["Steer", "Heiffer", "Cow", "Bull"] as const
 const PigSexes = ["Barrow", "Gilt", "Sow", "Boar"] as const
 
 export const getSexes = (animal: IAnimal): AnimalSexes[] => {
-  return [...animal.animalType === "Cow" ? CowSexes : PigSexes]
+  return [...animal.animalType === AnimalType.Beef ? CowSexes : PigSexes]
 }
 
 export type AnimalSexes = typeof CowSexes[number] | typeof PigSexes[number]

@@ -1,7 +1,6 @@
 import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from "../NavBar";
-import { useMemo } from "react";
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash } from "../assets/Icons";
 import User, { CutInstructions, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
@@ -145,7 +144,7 @@ const BroughtInAnimalEntry = ({ animals }: {
   return (
     <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={() => history.push(animalDetailsPage, firstEntry.id)}>
       <div className="flex flex-row">
-        <div>{type == "Cow" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+        <div>{type == AnimalType.Beef ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
         {amount !== 1 && <div>x {amount}</div>}
         <div className="flex-grow text-xs text-blue-600 mt-2 font-semibold ml-2">
           {stateText}
@@ -171,7 +170,7 @@ const BroughtInAnimalEntry = ({ animals }: {
           <InfoTag missingInfo={!firstEntry.liveWeight} value={(firstEntry.liveWeight ?? "?") + " lbs"} />
           <InfoTag missingInfo={!firstEntry.color} value={(firstEntry.color ?? "Color?")} />
           <InfoTag missingInfo={!firstEntry.sex} value={(firstEntry.sex ?? "Sex?")} />
-          <InfoTag missingInfo={!firstEntry.penLetter} value={"Pen " + (firstEntry.penLetter ? "pen ?")} />
+          <InfoTag missingInfo={!firstEntry.penLetter} value={"Pen " + (firstEntry.penLetter ?? "pen ?")} />
         </div>
       }
     </div>

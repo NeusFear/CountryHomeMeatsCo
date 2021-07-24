@@ -98,8 +98,8 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
           <div className="flex-grow">
             Animal Type:
             <div>
-              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType(AnimalType.Cow)} isSelected={animalType === AnimalType.Cow} />
-              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType(AnimalType.Pig)} isSelected={animalType === AnimalType.Pig} />
+              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType(AnimalType.Beef)} isSelected={animalType === AnimalType.Beef} />
+              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType(AnimalType.Pork)} isSelected={animalType === AnimalType.Pork} />
             </div>
           </div>
           <div className="flex flex-row">

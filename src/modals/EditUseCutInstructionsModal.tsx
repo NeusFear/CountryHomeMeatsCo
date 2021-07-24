@@ -106,8 +106,8 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
             <div></div>
             <div></div>
             <div className="flex flex-row">
-              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Cow} />
-              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pig} />
+              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Beef} />
+              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pork} />
             </div>
           </>
         }
@@ -115,7 +115,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
         <div></div>
       </div>
       <div className="p-4 overflow-y-scroll h-full flex flex-col">
-        { animalType === AnimalType.Pig ? 
+        { animalType === AnimalType.Pork ? 
           <PorkInstructions instructions={cutInstruction as PorkCutInstructions} /> : 
           <BeefInstructions instructions={cutInstruction as BeefCutInstructions}/> }
         <div className="flex flex-col mt-5">

@@ -121,7 +121,7 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
               _id: Math.random()
             })
             setPhoneNumbers([...phoneNumbers])
-          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add New Phone</div>
+          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add Another Phone</div>
         </div>
 
         <div className="pt-5">
@@ -148,7 +148,7 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
           <div className="bg-gray-200 p-1, rounded-sm ml-2 w-60 text-gray-700 mt-0.5 hover:bg-gray-300" onClick={() => {
             emails.push({ text: '', valid: false, _id: Math.random() })
             setEmails([...emails])
-          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add New Email</div>
+          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add Anothyer Email</div>
         </div>
 
         <button onClick={trySubmitData} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>

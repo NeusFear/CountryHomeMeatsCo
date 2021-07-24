@@ -8,6 +8,7 @@ import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "
 import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields, paddedAnimalId } from "../database/types/Animal";
 import { DatabaseWait } from "../database/Database";
 import { ObjectId } from "bson";
+import { formatPhoneNumber } from "../Util";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState() as ObjectId
@@ -32,7 +33,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
     }, new Map<string, IAnimal[]>()).values()
   )
 
-  const PhoneNumber = ({ name, number }: { name: string, number: string }) => (<div>{name}: {number}</div>)
+  const PhoneNumber = ({ name, number }: { name: string, number: string }) => (<div>{name}: {formatPhoneNumber(number)}</div>)
   const Email = ({ email }: { email: string }) => (<div>{email}</div>)
 
   return (

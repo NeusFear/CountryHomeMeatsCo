@@ -8,6 +8,7 @@ import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
 import Invoice, { IInvoice, useInvoice } from "../database/types/Invoices"
 import User, { useUsers } from "../database/types/User"
+import { formatPhoneNumber } from "../Util"
 
 export const InvoiceDetailsPage = () => {
     const id = useHistoryListState()
@@ -69,7 +70,7 @@ export const InvoiceDetailsPage = () => {
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Phone Number:</p>
-                        { user.phoneNumbers.map((num, i) => <div key={i} className="text-right">{num.number}</div> ) }
+                        { user.phoneNumbers.map((num, i) => <div key={i} className="text-right">{formatPhoneNumber(num.number)}</div> ) }
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Email:</p>

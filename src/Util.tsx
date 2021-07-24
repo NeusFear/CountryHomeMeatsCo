@@ -5,6 +5,10 @@ export function getDayNumber(date = new Date()) {
 export const normalizeDay = (date: Date = new Date()) => 
   new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0)
 
+export const formatPhoneNumber = (numStr: String) => {
+    return "(" + numStr.substr(0, 3) + ") " + numStr.substr(3, 3) + "-" + numStr.substr(6);
+}
+
   //This doesn't work, but we need something like this that does.
 export const printPage = (name: String) => {
   

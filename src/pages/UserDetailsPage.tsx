@@ -154,32 +154,32 @@ const BroughtInAnimalEntry = ({ animals }: {
           }
 
         </div>
-        {state === 0 && <div className=" mt-2 bg-green-200 text-xs cursor-pointer" onClick={e => {
+        {state === 0 && <div className=" mt-1 pt-0.5 bg-green-200 text-xs cursor-pointer px-2 rounded-sm text-white mr-2 truncate" onClick={e => {
           animals.forEach(a => {
             a.confirmed = true
             a.save()
           })
           e.stopPropagation()
           e.preventDefault()
-        }}>C</div>}
+        }}>Click to Confirm</div>}
         <div>{date.toLocaleDateString()}</div>
       </div>
       {
         amount === 1 &&
         <div className="flex flex-row">
-          <InfoTag value={"ID #" + paddedAnimalId(firstEntry)} />
-          <InfoTag value={(firstEntry.liveWeight ?? "?") + " lbs"} />
-          <InfoTag value={(firstEntry.color ?? "?") + " col"} />
-          <InfoTag value={(firstEntry.sex ?? "?") + " sex"} />
-          <InfoTag value={"Pen " + (firstEntry.penLetter ?? "?")} />
+          <InfoTag missingInfo={false} value={"ID #" + paddedAnimalId(firstEntry)} />
+          <InfoTag missingInfo={!firstEntry.liveWeight} value={(firstEntry.liveWeight ?? "?") + " lbs"} />
+          <InfoTag missingInfo={!firstEntry.color} value={(firstEntry.color ?? "Color?")} />
+          <InfoTag missingInfo={!firstEntry.sex} value={(firstEntry.sex ?? "Sex?")} />
+          <InfoTag missingInfo={!firstEntry.penLetter} value={"Pen " + (firstEntry.penLetter ? "pen ?")} />
         </div>
       }
     </div>
   )
 }
 
-const InfoTag = ({ value }: { value: string }) => {
+const InfoTag = ({ missingInfo, value }: { missingInfo: boolean, value: string }) => {
   return (
-    <div className="bg-gray-200 rounded text-xs py-0.5 px-1 mx-1">{value}</div>
+    <div className={(missingInfo ? "bg-tomato-100" : "bg-gray-200") + " rounded text-xs py-0.5 px-1 mx-1"}>{value}</div>
   )
 }

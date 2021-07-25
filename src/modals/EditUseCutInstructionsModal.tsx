@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react"
 import User, { CutInstructions, useUsers } from "../database/types/User"
-import { SvgCow, SvgPig } from "../assets/Icons"
+import { SvgCow, SvgCross, SvgPig, SvgPlus } from "../assets/Icons"
 import Animal, { AnimalType } from "../database/types/Animal"
 import { useState } from "react";
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
@@ -8,6 +8,7 @@ import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
 import { ModalHandler, setModal } from "./ModalManager";
 import { SelectInputType } from "../components/SelectInputType";
 import { DatabaseWait } from "../database/Database";
+import ReactTooltip from "react-tooltip";
 
 
 export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string, instructionID: number}>(({id, instructionID}, ref) => {
@@ -19,18 +20,28 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   const dbInstrucionObject = user !== DatabaseWait ? user.cutInstructions[dbInstructionIndex] : undefined
   const dbInstructions = dbInstrucionObject?.instructions
 
-  const [ animalType, setAnimalType ] = useState<"Cow"|"Pig">(instructionID === undefined ? "Cow" : undefined)
+  const [ animalType, setAnimalType ] = useState<AnimalType>(instructionID === undefined ? AnimalType.Beef : undefined)
 
   if(dbInstructions !== undefined && animalType === undefined) {
-    setAnimalType(dbInstructions.cutType === "beef" ? "Cow" : "Pig")
+    setAnimalType(dbInstructions.cutType)
   }
+
+  const testFreshCured = (ins: { fresh: { amount: number }, cured: { amount: number } }) => ins.fresh.amount + ins.cured.amount === 2
+  const testPigFreshCured = (ins: PorkCutInstructions) => 
+    testFreshCured(ins.ham) && testFreshCured(ins.bacon) && testFreshCured(ins.jowl) && 
+    testFreshCured(ins.loin) && testFreshCured(ins.butt) && testFreshCured(ins.picnic)
+  
+  const genIfCanSubmit = () => animalType !== undefined && (animalType === AnimalType.Beef || testPigFreshCured(cutInstruction as PorkCutInstructions))
+
+  const [canSubmit, setCanSubmit] = useState(genIfCanSubmit)
+  const refreshCanSubmit = () => setCanSubmit(genIfCanSubmit())
 
   //Can be undefined if is a new instruction
   const cutInstruction: CutInstructions = useMemo(() => {
     if(instructionID === undefined) {
-      if(animalType === "Cow") {
+      if(animalType === AnimalType.Beef) {
         return {
-          cutType: "beef",
+          cutType: AnimalType.Beef,
           round: {},
           sirlointip: {},
           sirloin: {},
@@ -42,7 +53,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
       } else {
         const freshCuredObj = () => { return { fresh: { amount: 0 }, cured: { amount: 0 } } }
         return {
-          cutType: "pork",
+          cutType: AnimalType.Pork,
           ham: freshCuredObj(),
           bacon: freshCuredObj(),
           jowl: freshCuredObj(),
@@ -56,7 +67,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   }, [instructionID, id, animalType, user !== DatabaseWait])
 
   const submit = () => {
-    if(user === DatabaseWait) {
+    if(user === DatabaseWait || !canSubmit) {
       return
     }
     if(dbInstructions === undefined) {
@@ -68,7 +79,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
           break
         }
       }
-      cutInstruction.cutType = animalType === "Cow" ? "beef" : "pork"
+      cutInstruction.cutType = animalType
       user.cutInstructions.push({ id, instructions: cutInstruction })
     } else {
       //We need to update the field so it's actually synced
@@ -106,8 +117,8 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
             <div></div>
             <div></div>
             <div className="flex flex-row">
-              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType("Cow")} isSelected={animalType === AnimalType.Beef} />
-              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType("Pig")} isSelected={animalType === AnimalType.Pork} />
+              <AnimalTypeSelect Icon={SvgCow} onSelected={() => setAnimalType(AnimalType.Beef)} isSelected={animalType === AnimalType.Beef} />
+              <AnimalTypeSelect Icon={SvgPig} onSelected={() => setAnimalType(AnimalType.Pork)} isSelected={animalType === AnimalType.Pork} />
             </div>
           </>
         }
@@ -116,7 +127,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
       </div>
       <div className="p-4 overflow-y-scroll h-full flex flex-col">
         { animalType === AnimalType.Pork ? 
-          <PorkInstructions instructions={cutInstruction as PorkCutInstructions} /> : 
+          <PorkInstructions instructions={cutInstruction as PorkCutInstructions} refreshCanSubmit={refreshCanSubmit} /> : 
           <BeefInstructions instructions={cutInstruction as BeefCutInstructions}/> }
         <div className="flex flex-col mt-5">
           Notes:
@@ -129,25 +140,24 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
             }
           }></textarea>
         </div>
-        <button onClick={submit} className="bg-blue-100 hover:bg-blue-200 cursor-pointer py-1 mt-5 rounded-sm mb-2 px-4 w-32">Submit</button>
+        <button disabled={!canSubmit} onClick={submit} className={(canSubmit ? "bg-blue-100 hover:bg-blue-200" : "bg-gray-100 hover:bg-gray-200") + " cursor-pointer py-1 mt-5 rounded-sm mb-2 px-4 w-32"}>Submit</button>
       </div>
     </div>
   )
 })
 
-const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) => {
+const PorkInstructions = ({instructions, refreshCanSubmit}: {instructions: PorkCutInstructions, refreshCanSubmit: () => void}) => {
   return (
     <div className="flex-grow overflow-show h-full">
       <div className="flex flex-row">
         <div className="flex-grow">
           <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">FRESH</span>
           <br />
-
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Ham:</span>
             <div className="flex flex-col">
               <div className="flex flex-row mb-0.5">
-                <PorkFreshCuredOptions obj={instructions.ham.fresh} />
+                <PorkFreshCuredOptions obj={instructions.ham.fresh} refreshCanSubmit={refreshCanSubmit} />
                 <SelectInputType
                   initial={instructions.ham.fresh.type}
                   onChange={v => instructions.ham.fresh.type=v}
@@ -181,7 +191,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Bacon:</span>
-            <PorkFreshCuredOptions obj={instructions.bacon.fresh} />
+            <PorkFreshCuredOptions obj={instructions.bacon.fresh} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType
               initial={instructions.bacon.fresh.cutType}
               onChange={v => instructions.bacon.fresh.cutType=v}
@@ -198,7 +208,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Jowl:</span>
-            <PorkFreshCuredOptions obj={instructions.jowl.fresh} />
+            <PorkFreshCuredOptions obj={instructions.jowl.fresh} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType 
               initial={instructions.jowl.fresh.type}
               onChange={v => instructions.jowl.fresh.type=v}
@@ -209,7 +219,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Loin:</span>
-            <PorkFreshCuredOptions obj={instructions.loin.fresh} />
+            <PorkFreshCuredOptions obj={instructions.loin.fresh} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType 
               initial={instructions.loin.fresh.size}
               onChange={v => instructions.loin.fresh.size=v}
@@ -226,7 +236,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Butt:</span>
-            <PorkFreshCuredOptions obj={instructions.butt.fresh} />
+            <PorkFreshCuredOptions obj={instructions.butt.fresh} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType 
               initial={instructions.butt.fresh.type}
               onChange={v => instructions.butt.fresh.type=v}
@@ -243,7 +253,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Picnic:</span>
-            <PorkFreshCuredOptions obj={instructions.picnic.fresh} />
+            <PorkFreshCuredOptions obj={instructions.picnic.fresh} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType
               initial={instructions.picnic.fresh.type}
               onChange={v => instructions.picnic.fresh.type=v}
@@ -266,7 +276,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Ham:</span>
             <div className="flex flex-col">
               <div className="flex flex-row mb-0.5">
-                <PorkFreshCuredOptions obj={instructions.ham.cured} />
+                <PorkFreshCuredOptions obj={instructions.ham.cured} refreshCanSubmit={refreshCanSubmit} />
                 <SelectInputType
                   initial={instructions.ham.cured.type}
                   onChange={v => instructions.ham.cured.type=v}
@@ -300,7 +310,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Bacon:</span>
-            <PorkFreshCuredOptions obj={instructions.bacon.cured} />
+            <PorkFreshCuredOptions obj={instructions.bacon.cured} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType
               initial={instructions.bacon.cured.cutType}
               onChange={v => instructions.bacon.cured.cutType=v}
@@ -317,7 +327,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Jowl:</span>
-            <PorkFreshCuredOptions obj={instructions.jowl.cured} />
+            <PorkFreshCuredOptions obj={instructions.jowl.cured} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType 
               initial={instructions.jowl.cured.type}
               onChange={v => instructions.jowl.cured.type=v}
@@ -328,7 +338,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Loin:</span>
-            <PorkFreshCuredOptions obj={instructions.loin.cured} />
+            <PorkFreshCuredOptions obj={instructions.loin.cured} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType 
               initial={instructions.loin.cured.size}
               onChange={v => instructions.loin.cured.size=v}
@@ -345,7 +355,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Butt:</span>
-            <PorkFreshCuredOptions obj={instructions.butt.cured} />
+            <PorkFreshCuredOptions obj={instructions.butt.cured} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType
               initial={instructions.butt.cured.type}
               onChange={v => instructions.butt.cured.type=v}
@@ -362,7 +372,7 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
 
           <div className="pt-4 flex flex-row">
             <span className="ml-2 pr-2 text-gray-700 w-1/4">Picnic:</span>
-            <PorkFreshCuredOptions obj={instructions.picnic.cured} />
+            <PorkFreshCuredOptions obj={instructions.picnic.cured} refreshCanSubmit={refreshCanSubmit} />
             <SelectInputType
               initial={instructions.picnic.cured.type}
               onChange={v => instructions.picnic.cured.type=v}
@@ -375,6 +385,33 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
               values={['2/Pkg', '3/Pkg', '4/Pkg']} 
               width={65} 
             />
+          </div>
+        </div>
+        <div className="flex-grow">
+          <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">VALID</span>
+          <br/>
+          <div className="pt-4 flex flex-row">
+            <PartValid instruction={instructions.ham} />
+          </div>
+
+          <div className="pt-16 flex flex-row">
+            <PartValid instruction={instructions.bacon} />
+          </div>
+
+          <div className="pt-5 flex flex-row">
+            <PartValid instruction={instructions.jowl} />          
+          </div>
+
+          <div className="pt-5 flex flex-row">
+            <PartValid instruction={instructions.loin} />   
+          </div>
+
+          <div className="pt-5 flex flex-row">
+            <PartValid instruction={instructions.butt} />   
+          </div>
+
+          <div className="pt-5 flex flex-row">
+            <PartValid instruction={instructions.picnic} />    
           </div>
         </div>
       </div>
@@ -447,6 +484,25 @@ const PorkInstructions = ({instructions}: {instructions: PorkCutInstructions}) =
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+const PartValid = ({instruction}: { instruction: {
+  fresh: { amount: number }
+  cured: { amount: number }
+}}) => {
+  const amount = (instruction.fresh.amount + instruction.cured.amount)
+  const valid = amount === 2
+  return (
+    <div className={"ml-2 pr-2 flex flex-row h-6 " + (valid ? "text-green-500" : "text-tomato-500")}>
+      {valid ? 
+      <SvgPlus /> : 
+      <>
+        <SvgCross data-tip={`Fresh and Cured should add up<br>to 2 halves. Currently is ${amount} ${amount === 1 ? "half" : "halves"}`}/>
+        <ReactTooltip delayShow={200} multiline /> 
+      </>
+      }
     </div>
   )
 }
@@ -697,11 +753,14 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
   )
 }
 
-const PorkFreshCuredOptions = ({obj}: { obj: { amount: number }}) => {
+const PorkFreshCuredOptions = ({obj, refreshCanSubmit}: { obj: { amount: number }, refreshCanSubmit: () => void}) => {
   const [value, setValue] = useState(obj.amount)
 
   return (
-    <select className="bg-gray-200 border border-gray-500 rounded-md" value={value} onChange={e => setValue(obj.amount = parseInt(e.target.value))}>
+    <select className="bg-gray-200 border border-gray-500 rounded-md" value={value} onChange={e => {
+      setValue(obj.amount = parseInt(e.target.value))
+      refreshCanSubmit()
+    }}>
       <option value="0">0</option>
       <option value="1">1</option>
       <option value="2">2</option>

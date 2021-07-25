@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose"
 import ReactTooltip from "react-tooltip"
 import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons"
-import Animal, { AnimalStateFields, IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
+import Animal, { AnimalStateFields, AnimalType, IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
 import User, { IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
@@ -10,6 +10,7 @@ import { getDayNumber, printPage } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
 import { useMemo } from "react";
 import { DatabaseWait } from "../database/Database";
+import UserTag from "../components/UserTag";
 
 export const TodayPage = () => {
   const today = useMemo(() => new Date(), [])
@@ -65,7 +66,7 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
     return (<div>Problem loading user with ID {animal.bringer.toHexString()}</div>)
   }
 
-  const Tag = animal.animalType === "Cow" ? SvgCow : SvgPig
+  const Tag = animal.animalType === AnimalType.Beef ? SvgCow : SvgPig
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => console.log("go to animal")}>
       <div className="w-20">
@@ -128,7 +129,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="w-20">
-        {animal.animalType === "Cow" ? <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" /> : <SvgPig className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />}
+        {animal.animalType === AnimalType.Beef ? <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" /> : <SvgPig className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />}
       </div>
       <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>
@@ -146,12 +147,3 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   )
 }
 
-const UserTag = ({user, id} : {user: IUser, id?: number}) => {
-  const history = useHistory();
-  return (
-    <div className="flex flex-row">
-      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={e => {history.push(userDetailsPage, user.id); e.stopPropagation();}}>{user.name}</p>
-      {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300" onClick={() => console.log("go to sub user's individual cut instructions")}>#{id}</p>}
-    </div>
-  )
-}

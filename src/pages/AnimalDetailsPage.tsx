@@ -1,5 +1,5 @@
 import { useHistoryListState } from "../AppHooks";
-import Animal, { getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState, AnimalType, paddedAnimalId } from "../database/types/Animal";
+import Animal, { getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState, AnimalType, paddedAnimalId, validateEaters } from "../database/types/Animal";
 import { SvgArrow, SvgCalendar, SvgEdit } from "../assets/Icons";
 import Autosuggest from 'react-autosuggest';
 import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
@@ -13,6 +13,7 @@ import { editUserDetails } from "../modals/ModalManager";
 import { DatabaseWait } from "../database/Database";
 import Invoice, { generateInvoice, IInvoice, useInvoice } from "../database/types/Invoices";
 import { useConfig } from "../database/types/Configs";
+import InvoiceListItem from "../components/InvoiceListItem";
 
 type DummyEater = {
   _rand: number
@@ -29,6 +30,7 @@ type DummyEater = {
 export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(Animal.findById(id).select(""), [id], id as ObjectId)
+
   const bringer = animal === DatabaseWait ? null : animal.bringer
   const user = useUsers(User.findById(bringer).select("name"), [bringer], bringer)
   const animalSexes = useMemo(() => animal === DatabaseWait ? [] : getSexes(animal), [animal])
@@ -252,56 +254,6 @@ const InvoiceList = ({animal}: {animal: IAnimal}) => {
   </>)
 }
 
-const InvoiceListItem = ({invoice}: {invoice: IInvoice}) => {
-  const mainUser = useUsers(User.findById(invoice.user), [invoice.user], invoice.user)
-  const secondaryUser = useUsers(User.findById(invoice.secondaryUser), [invoice.secondaryUser], invoice.secondaryUser)
- 
-  if(mainUser === DatabaseWait || secondaryUser == DatabaseWait) {
-    return <div>Loading Users...</div>
-  }
-
-  return (
-    <Link to={{
-      pathname: invoiceDetails,
-      state: invoice.id
-    }} className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row">
-      <div className="w-1/6 text-gray-800 group-hover:text-gray-900">
-        <p className="font-semibold">Invoice:</p>
-        <StringUserTag name={String(invoice.invoiceId)} />
-      </div>
-      <div className="w-1/5 text-gray-800 group-hover:text-gray-900">
-        <p className="font-semibold">Status:</p>
-        <p className={`${invoice.dateTimePaid ? "bg-green-100 hover:bg-green-200" : "bg-tomato-100 hover:bg-tomato-200"} px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{invoice.dateTimePaid ? "Paid" : "Pending"}</p>
-      </div>
-      <div className="w-1/6 mx-4 text-gray-800 group-hover:text-gray-900">
-          <p className="font-semibold">Portion:</p>
-          <StringUserTag name={invoice.half ? "Half" : "Whole"} />
-        </div>
-      <div className="flex-grow text-gray-800 group-hover:text-gray-900">
-        <p className="font-semibold">Cut List:</p>
-        <StringUserTag name={mainUser.name} id={invoice.cutInstructionId} />
-      </div>
-      {
-        secondaryUser && 
-        <div className="flex-grow text-gray-800 group-hover:text-gray-900">
-          <p className="font-semibold">Secondary User:</p>
-          <StringUserTag name={secondaryUser.name} />
-        </div>
-      }
-    </Link>
-  )
-}
-
-//Delete this once the placeholder stuff for the cut list users is removed and replace with UserTag.
-const StringUserTag = ({ name, id }: { name: string, id?: number }) => {
-  return (
-    <div className="flex">
-      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">{name}</p>
-      {id && <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">#{id}</p>}
-    </div>
-  )
-}
-
 
 const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters: DummyEater[], setEaters: (e: DummyEater[]) => void, users: IUser[], animal: IAnimal, currentState: number }) => {
   const [numEaters, setNumEaters] = useState(animal.numEaters ?? 1)
@@ -329,7 +281,6 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
   }
 
   useEffect(() => {
-    console.log("eaters changed")
     const eaters: DummyEater[] = []
     eaters.length = numEaters === 2 ? 2 : Math.round(numEaters / 2)
     for (let i = 0; i < eaters.length; i++) {
@@ -404,8 +355,6 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
     eater.halfUser.foundUser = halfUser
   }
 
-  const cutInstructionType = animalType === AnimalType.Beef ? "beef" : "pork"
-
   return (
     <div>
       <div className="flex flex-row">
@@ -417,7 +366,7 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
           {eater.foundUser &&
             eater.foundUser.cutInstructions.slice()
               .sort((a, b) => a.id - b.id)
-              .filter(a => a.instructions.cutType === cutInstructionType)
+              .filter(a => a.instructions.cutType === animalType)
               .map(c => <option key={c.id} value={c.id}>{c.id}</option>)
           }
         </select>

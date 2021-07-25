@@ -2,13 +2,12 @@ import { ObjectId } from "mongoose"
 import { useEffect, useState } from "react"
 import { useHistoryListState } from "../AppHooks"
 import { DatabaseWait } from "../database/Database"
-import Animal, { IAnimal, useAnimals } from "../database/types/Animal"
+import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal"
 import { PriceDataNumbers } from "../database/types/Configs"
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
 import Invoice, { IInvoice, useInvoice } from "../database/types/Invoices"
 import User, { useUsers } from "../database/types/User"
-import { formatPhoneNumber } from "../Util"
 
 export const InvoiceDetailsPage = () => {
     const id = useHistoryListState()
@@ -70,7 +69,7 @@ export const InvoiceDetailsPage = () => {
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Phone Number:</p>
-                        { user.phoneNumbers.map((num, i) => <div key={i} className="text-right">{formatPhoneNumber(num.number)}</div> ) }
+                        { user.phoneNumbers.map((num, i) => <div key={i} className="text-right">{num.number}</div> ) }
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Email:</p>
@@ -111,7 +110,7 @@ export const InvoiceDetailsPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    { cutInstruction.cutType === "beef" ? 
+                    { cutInstruction.cutType === AnimalType.Beef ? 
                         <CowDataTable invoice={invoice} cutInstructions={cutInstruction} price={invoice.priceData.beef} /> :
                         <PigDataTable invoice={invoice} cutInstructions={cutInstruction} price={invoice.priceData.pork} />  
                     }
@@ -123,12 +122,13 @@ export const InvoiceDetailsPage = () => {
                     <thead className="bg-gray-800 rounded-md">
                         <tr className="rounded-md">
                             <th className="w-52 text-left font-semibold text-gray-200 p-2 rounded-tl-md">Charge Name</th>
-                            <th className="w-96 text-left font-semibold text-gray-200 p-2">Calculation</th>
+                            <th className="w-96 text-left font-semibold text-gray-200 p-2">Price</th>
+                            <th className="w-52 text-left font-semibold text-gray-200 p-2">Quantity</th>
                             <th className="w-52 text-left font-semibold text-gray-200 p-2">Charge</th>
                         </tr>
                     </thead>
                     <tbody>
-                        { cutInstruction.cutType === "beef" ? 
+                        { cutInstruction.cutType === AnimalType.Beef ? 
                             <CowChargesTable animal={animal} invoice={invoice} cutInstructions={cutInstruction} /> :
                             <PigChargesTable invoice={invoice} cutInstructions={cutInstruction} />  
                         }
@@ -173,69 +173,72 @@ export const CowChargesTable = ({animal, invoice, cutInstructions}: {animal: IAn
     return (
     <> 
         <ChargesEntry 
-            title={`Processing Fee`}
-            calculation={`$${price.processing} x Dress Weight - ${animal.dressWeight}lbs (Min $200)`}
+            title="Processing Fee"
+            price={`${price.processing.toFixed(2)} per lbs of dress weight. (Min $200.00)`}
+            quantity={`${animal.dressWeight}lbs`}
             value={invoice.beefprices.processing}
             setValue={runThenSave(v => invoice.beefprices.processing = v)}
         />
         <ChargesEntry 
-            title={`Slaughter Fee`}
-            calculation={`$${price.slaughter}`}
+            title="Slaughter Fee"
+            price={price.slaughter.toFixed(2)}
+            quantity="1 Slaughter"
             value={invoice.beefprices.slaughter}
             setValue={runThenSave(v => invoice.beefprices.slaughter = v)}
         />
         <ChargesEntry 
-            title={`Split into halves - ${invoice.half ? "Yes" : "No"}`}
-            calculation={`$${price.halves} x ${invoice.half ? "2 Halves" : "1 Half"} (if applicable)`}
+            title="Split into halves"
+            price={`${price.halves.toFixed(2)} per half`}
+            quantity={invoice.half ? "1 Half" : "N/A"}
             value={invoice.beefprices.halving}
             setValue={runThenSave(v => invoice.beefprices.halving = v)}
         />
         <ChargesEntry 
-            title={`Divide a half in half - ${invoice.half ? "Yes" : "No"}`}
-            calculation={`$${price.halvesToQuaters} x ${invoice.numQuaters} Quater${invoice.numQuaters === 1 ? "" : "s"} (if applicable)`}
+            title="Divide a half in half"
+            price={`${price.halvesToQuaters.toFixed(2)} per quater.`}
+            quantity={invoice.secondaryUser ? "2 Quaters" : "N/A"}
             value={invoice.beefprices.quatering}
             setValue={runThenSave(v => invoice.beefprices.quatering = v)}
         />
-        <ChargesEntry 
-            title={`Extra Boning`} //- ${invoice.beefdata.tboneBoneOut ? `TBone (${invoice.beefdata.tbone ?? 0}lbs) ` : ""}${invoice.beefdata.clubRibeye ? `Ribeye (${invoice.beefdata.club ?? 0}lbs) ` : ""}
-            // calculation={`$${price.extraBoning} x ${(invoice.beefdata.tboneBoneOut ? invoice.beefdata.tbone ?? 0 : 0) + (invoice.beefdata.clubRibeye ? invoice.beefdata.club ?? 0 : 0)}lbs`}
-            calculation={`???`}
-            value={invoice.beefprices.extraboning}
-            setValue={runThenSave(v => invoice.beefprices.extraboning = v)}
-        />
         <ChargesEntry
-            title={`Patties - ${invoice.beefdata.patties ?? 0}lbs`}
-            calculation={`$${price.patties} x ${invoice.beefdata.patties ?? 0}lb`}
+            title="Patties"
+            price={`${price.patties.toFixed(2)} per lbs`}
+            quantity={`${invoice.beefdata.patties ?? 0}lbs`}
             value={invoice.beefprices.patties}
             setValue={runThenSave(v => invoice.beefprices.patties = v)}
         />
         <ChargesEntry 
-            title={`Cut Stew Meat - ${invoice.beefdata.stewmeat ?? 0}lbs`}
-            calculation={`$${price.cutStewMeat} x ${invoice.beefdata.stewmeat ?? 0}lb`}
+            title="Cut Stew Meat"
+            price={`${price.cutStewMeat.toFixed(2)} per lbs`}
+            quantity={`${invoice.beefdata.stewmeat ?? 0}lbs`}
             value={invoice.beefprices.cutstewmeat}
             setValue={runThenSave(v => invoice.beefprices.cutstewmeat = v)}
         />
         <ChargesEntry 
-            title={`Bone and Tenderized - ${cutInstructions.round.tenderizedAmount}`}
-            calculation={`$${price.boneAndTenderizeRoundSteaks} x ${invoice.half ? "2 Halves" : "1 Half"} (if applicable)`}
+            title="Bone and Tenderized"
+            price={`${price.boneAndTenderizeRoundSteaks.toFixed(2)} per half`}
+            quantity={invoice.beefdata.hasTenderized ? (invoice.half ? "1 Half" : "2 Halves") : "N/A"}
             value={invoice.beefprices.tenderized}
             setValue={runThenSave(v => invoice.beefprices.tenderized = v)}
         />
         <ChargesEntry 
-            title={`Make Cubes Steaks - ${invoice.beefdata.makeCubedSteaks ? "Yes" : "No"}`}
-            calculation={`$${price.makeCubedSteaks} x ${invoice.half ? "1 Half" : "2 Halves"} (if applicable)`}
+            title="Make Cubes Steaks"
+            price={`${price.makeCubedSteaks.toFixed(2)} per half`}
+            quantity={invoice.beefdata.makeCubedSteaks ? (invoice.half ? "1 Half" : "2 Halves") : "N/A"}
             value={invoice.beefprices.cubedsteaks}
             setValue={runThenSave(v => invoice.beefprices.cubedsteaks = v)}
         />
         <ChargesEntry 
             title={`Bone Out Prime Rib`}
-            calculation={`???`}
+            price={`${price.boneOutPrimeRib.toFixed(2)} per half`}
+            quantity="???"
             value={invoice.beefprices.boneoutrimerib}
             setValue={runThenSave(v => invoice.beefprices.boneoutrimerib = v)}
         />
         <ChargesEntry 
             title={`Bone Out Loin`}
-            calculation={`???`}
+            price={`${price.boneOutLoin.toFixed(2)} per half`}
+            quantity="???"
             value={invoice.beefprices.boneoutloin}
             setValue={runThenSave(v => invoice.beefprices.boneoutloin = v)}
         />
@@ -243,7 +246,7 @@ export const CowChargesTable = ({animal, invoice, cutInstructions}: {animal: IAn
     
 }
 
-const ChargesEntry = ({title, calculation, value, setValue}: {title: string, calculation: string, value: number, setValue: (val: number) => void}) => {
+const ChargesEntry = ({title, price, quantity, value, setValue}: {title: string, price: number | string, quantity: number | string, value: number, setValue: (val: number) => void}) => {
 
     const getVal = () => String((value ?? 0).toFixed(2))
     const [internalValue, setInternalValue] = useState("")
@@ -258,7 +261,8 @@ const ChargesEntry = ({title, calculation, value, setValue}: {title: string, cal
     return (
         <tr>
             <td>{title}</td>
-            <td>{calculation}</td>
+            <td>${price}</td>
+            <td>{quantity}</td>
             <td>
                 <input 
                     className="text-right focus:text-left"
@@ -295,106 +299,64 @@ export const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: 
     }
         
     return (
-    <> 
-        <EditableDatabaseEntry 
+    <>
+        <NonEditableCutInstructionEntry 
             title="Round"
             cutInstructions={`${c.round.tenderizedAmount}  ${c.round.size} ${c.round.perPackage}`}
-            editableValue={invoice.beefdata.round}
-            setEditableValue={runThenSave(v => invoice.beefdata.round = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Sirloin Tip"
             cutInstructions={`${c.sirlointip.size} ${c.sirlointip.amount}`}
-            editableValue={invoice.beefdata.sirlointip}
-            setEditableValue={runThenSave(v => invoice.beefdata.sirlointip = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Flank"
             cutInstructions={c.flank}
-            editableValue={invoice.beefdata.flank}
-            setEditableValue={runThenSave(v => invoice.beefdata.flank = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Sirloin"
             cutInstructions={`${c.sirloin.size} ${c.sirloin.amount}`}
-            editableValue={invoice.beefdata.sirloin}
-            setEditableValue={runThenSave(v => invoice.beefdata.sirloin = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="T-Bone"
             cutInstructions={`${c.tbone.bone} ${c.tbone.size} ${c.tbone.amount}`}
-            editableValue={invoice.beefdata.tbone}
-            setEditableValue={runThenSave(v => invoice.beefdata.tbone = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Rump"
             cutInstructions={c.rump}
-            editableValue={invoice.beefdata.rump}
-            setEditableValue={runThenSave(v => invoice.beefdata.rump = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Pikes Peak"
             cutInstructions={c.pikespeak}
-            editableValue={invoice.beefdata.pikespeak}
-            setEditableValue={runThenSave(v => invoice.beefdata.pikespeak = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Soup Bones"
             cutInstructions={c.soupbones}
-            editableValue={invoice.beefdata.soupbones}
-            setEditableValue={runThenSave(v => invoice.beefdata.soupbones = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Ground Beef"
             cutInstructions={c.groundbeef}
-            editableValue={invoice.beefdata.groundbeef}
-            setEditableValue={runThenSave(v => invoice.beefdata.groundbeef = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Chunk"
             cutInstructions={c.chuck}
-            editableValue={invoice.beefdata.chuck}
-            setEditableValue={runThenSave(v => invoice.beefdata.chuck = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Arm"
             cutInstructions={c.arm}
-            editableValue={invoice.beefdata.arm}
-            setEditableValue={runThenSave(v => invoice.beefdata.arm = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Ribs"
             cutInstructions={c.ribs}
-            editableValue={invoice.beefdata.ribs}
-            setEditableValue={runThenSave(v => invoice.beefdata.ribs = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Club"
             cutInstructions={`${c.club.bone} ${c.club.size} ${c.club.amount}`}
-            editableValue={invoice.beefdata.club}
-            setEditableValue={runThenSave(v => invoice.beefdata.club = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <NonEditableCutInstructionEntry 
             title="Brisket"
             cutInstructions={c.brisket}
-            editableValue={invoice.beefdata.brisket}
-            setEditableValue={runThenSave(v => invoice.beefdata.brisket = v)}
-            editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <EditableCutInstructionEntry 
             title="Stew Meat"
             cutInstructions={`${c.stewmeat.amount} ${c.stewmeat.size}`}
             editableValue={invoice.beefdata.stewmeat}
@@ -404,7 +366,7 @@ export const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: 
             }, true)}
             editableSuffix="lbs"
         />
-        <EditableDatabaseEntry 
+        <EditableCutInstructionEntry 
             title="Patties"
             cutInstructions={`${c.patties.weight} ${c.patties.amount}`}
             editableValue={invoice.beefdata.patties}
@@ -417,7 +379,17 @@ export const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: 
     </>)
 }
 
-export const EditableDatabaseEntry = ({title, cutInstructions, editableValue, setEditableValue, editableSuffix}: {
+export const NonEditableCutInstructionEntry = ({title, cutInstructions}: {title: string, cutInstructions: string}) => {
+    return (
+        <tr>
+            <td>{title}</td>
+            <td>{cutInstructions}</td>
+            <td>---</td>
+        </tr>
+    )
+}
+
+export const EditableCutInstructionEntry = ({title, cutInstructions, editableValue, setEditableValue, editableSuffix}: {
     title: string, 
     cutInstructions: string,
     editableValue: number

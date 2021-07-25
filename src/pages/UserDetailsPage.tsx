@@ -2,17 +2,19 @@ import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from "../NavBar";
 import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash } from "../assets/Icons";
-import User, { CutInstructions, useUsers } from "../database/types/User";
+import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
 import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields, paddedAnimalId } from "../database/types/Animal";
 import { DatabaseWait } from "../database/Database";
 import { ObjectId } from "bson";
 import { formatPhoneNumber } from "../Util";
+import Invoice, { useInvoice } from "../database/types/Invoices";
+import InvoiceListItem from "../components/InvoiceListItem";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState() as ObjectId
-  const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions"), [id], id)
+  const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions invoices"), [id], id)
 
   const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user.id : null).select("killDate animalType tagNumber animalId " + AnimalStateFields), [user, id])
   if (user === DatabaseWait || usersAnimals === DatabaseWait) {
@@ -49,7 +51,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Contact Information</div>
-              <SvgTack className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => pinnedList.updatePinned(id, true)} />
+              <SvgTack className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => pinnedList.updatePinned(id.toHexString(), true)} />
               <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(editUserDetails, id)} />
             </div>
             <div className="bg-white rounded-md p-2 mx-4 mb-1 mt-4 flex flex-row"><SvgUser className="mt-1 mr-1 text-gray-400" />{user.name}</div>
@@ -102,12 +104,27 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
             <div className="bg-gray-700 p-1 mb-1 rounded-t-lg">
               <div className="text-gray-200 pl-4 font-semibold">Invoices</div>
             </div>
+            <div className="ml-2 mb-2 flex flex-col">
+               <InvoiceList user={user} />
+            </div>
           </div>
 
         </div>
       </div>
     </div>
   )
+}
+
+const InvoiceList = ({user}: {user: IUser}) => {
+  const invoices = useInvoice(Invoice.where("_id").in(user.invoices.map(i => i.toHexString())), [user.invoices, String(user.invoices)], ...user.invoices)
+  if(invoices === DatabaseWait) {
+    return <p>Loading...</p>
+  }
+
+
+  return (<> 
+    { invoices.map(i => <InvoiceListItem key={i.id} invoice={i} />) }  
+  </>)
 }
 
 const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
@@ -119,7 +136,7 @@ const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
   }) => {
   return (
     <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => setModal(editCutInstructions, { id, instructionID })}>
-      <div className="flex-grow">{instruction.cutType == "beef" ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+      <div className="flex-grow">{instruction.cutType === AnimalType.Beef ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
       <div className="mr-4">{instructionID}</div>
       <div className="pl-2" onClick={e => {
         onDelete()

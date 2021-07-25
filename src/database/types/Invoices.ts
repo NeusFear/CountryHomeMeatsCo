@@ -22,24 +22,8 @@ export interface IInvoice extends Document {
     dateTimePaid?: Date,
     
     beefdata?: {
-        tboneBoneOut?: boolean
-        clubRibeye?: boolean
         makeCubedSteaks: boolean
-        
-        round?: number,
-        sirlointip?: number,
-        flank?: number,
-        sirloin?: number,
-        tbone?: number,
-        rump?: number,
-        pikespeak?: number,
-        soupbones?: number,
-        groundbeef?: number,
-        chuck?: number,
-        arm?: number,
-        ribs?: number,
-        club?: number,
-        brisket?: number,
+        hasTenderized: boolean
         stewmeat?: number,
         patties?: number,
     }
@@ -73,24 +57,8 @@ const invoiceSchema = new Schema({
     dateTimePaid: { type: Schema.Types.Date },
 
     beefdata: { type: {
-        tboneBoneOut: { type: Boolean },
-        clubRibeye: { type: Boolean },
         makeCubedSteaks: { type: Boolean, required: true },
-        
-        round: { type: Number },
-        sirlointip: { type: Number },
-        flank: { type: Number },
-        sirloin: { type: Number },
-        tbone: { type: Number },
-        rump: { type: Number },
-        pikespeak: { type: Number },
-        soupbones: { type: Number },
-        groundbeef: { type: Number },
-        chuck: { type: Number },
-        arm: { type: Number },
-        ribs: { type: Number },
-        club: { type: Number },
-        brisket: { type: Number },
+        hasTenderized: { type: Boolean, required: true },
         stewmeat: { type: Number },
         patties: { type: Number },
     }},
@@ -103,7 +71,6 @@ const invoiceSchema = new Schema({
         tenderized: { type: Number },
         patties: { type: Number },
         cutstewmeat: { type: Number },
-        extraboning: { type: Number },
         cubedsteaks: { type: Number },
         boneoutrimerib: { type: Number },
         boneoutloin: { type: Number },
@@ -136,11 +103,10 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
 
     
 
-    if(cutInstruction.cutType === "beef") {
+    if(cutInstruction.cutType === AnimalType.Beef) {
         invoice.beefdata = {
-            // tboneBoneOut: cutInstruction.tbone.bone.toLowerCase() == "bone out",
-            // clubRibeye: cutInstruction.club.bone.toLowerCase() == "ribeye",
-            makeCubedSteaks: cutInstruction.round.size.toLowerCase() == "chicken fry" || cutInstruction.sirlointip.size.toLowerCase() == "chicken fry" || cutInstruction.flank.toLowerCase() == "chicken fry"
+            makeCubedSteaks: cutInstruction.round.size.toLowerCase() == "chicken fry" || cutInstruction.sirlointip.size.toLowerCase() == "chicken fry" || cutInstruction.flank.toLowerCase() == "chicken fry",
+            hasTenderized: false
         }
         invoice.beefprices = {}
 
@@ -154,10 +120,11 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         }
         runIfGroup(
             cutInstruction.round.tenderizedAmount, /(\d+.?\d+?)%/,
-            amount => invoice.beefprices.tenderized = priceData.beef.boneAndTenderizeRoundSteaks * (parseFloat(amount) / 100) * numHalves
+            amount => {
+                invoice.beefprices.tenderized = priceData.beef.boneAndTenderizeRoundSteaks * (parseFloat(amount) / 100) * numHalves
+                invoice.beefdata.hasTenderized = true;
+            }
         )
-        const extraboning = (invoice.beefdata.tboneBoneOut ? invoice.beefdata.tbone ?? 0 : 0) + (invoice.beefdata.clubRibeye ? invoice.beefdata.club ?? 0 : 0)
-        invoice.beefprices.extraboning = extraboning * priceData.beef.extraBoning
         if(invoice.beefdata.makeCubedSteaks) {
             invoice.beefprices.cubedsteaks = numHalves * priceData.beef.makeCubedSteaks
         }

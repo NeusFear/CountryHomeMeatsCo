@@ -1,4 +1,5 @@
 import { SchemaDefinition } from "mongoose"
+import { AnimalType } from "../Animal"
 
 export const validateFreshCuredPart = ({ fresh, cured }: {
   fresh: { amount: number }
@@ -8,7 +9,7 @@ export const validateFreshCuredPart = ({ fresh, cured }: {
 }
 
 export type PorkCutInstructions = {
-  cutType: "pork"
+  cutType: AnimalType.Pork
   ham: {
     fresh: { amount: number, type: string, cutType: string, size: string, amountPerPackage: string }
     cured: { amount: number, type: string, cutType: string, size: string, amountPerPackage: string }
@@ -76,7 +77,7 @@ export const PorkCutInstructionsSchema: SchemaDefinition = {
 
 export const clonePorkCutInstructions = (instructions: PorkCutInstructions): PorkCutInstructions => {
   return {
-    cutType: "pork",
+    cutType: AnimalType.Pork,
     ham: instructions.ham,
     bacon: instructions.bacon,
     jowl: instructions.jowl,

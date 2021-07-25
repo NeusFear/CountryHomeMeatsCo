@@ -19,8 +19,21 @@ export type Eater = {
 
 export const ValidateEatersFields = ""
 export const validateEaters = (animal: IAnimal): boolean => {
-  return true;
-  //TODO re-add this to make sure that if there are x specified users that we have information for all said users
+  console.log(animal)
+  const eaterValid = ({id, cutInstruction}: { id: ObjectId; tag: string; cutInstruction?: number }) => {
+    return (id ?? false) && (cutInstruction === undefined || cutInstruction >= 0)
+  }
+  const eaters = animal.numEaters;
+  if(eaters < 1 || eaters > 4) {
+    return false
+  }
+  switch(eaters) {
+    case 1: return animal.eaters.length === 1 && eaterValid(animal.eaters[0]) && !animal.eaters[0].halfUser
+    case 2: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && !animal.eaters[0].halfUser && eaterValid(animal.eaters[1]) && !animal.eaters[1].halfUser
+    case 3: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && eaterValid(animal.eaters[0].halfUser) && eaterValid(animal.eaters[1]) && !animal.eaters[1].halfUser
+    case 4: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && eaterValid(animal.eaters[0].halfUser) && eaterValid(animal.eaters[1]) && eaterValid(animal.eaters[1].halfUser)
+  }
+  return false;
 }
 
 const CowSexes = ["Steer", "Heiffer", "Cow", "Bull"] as const
@@ -149,7 +162,7 @@ export const useComputedAnimalState = (animalWithWait: IAnimal | undefined | Dat
   } else {
     animal = animalWithWait
   }
-  
+
   return useMemo(() => computeAnimalState(animal), [
     //To get from scheduled to confirmed
     animal?.confirmed,
@@ -162,6 +175,7 @@ export const useComputedAnimalState = (animalWithWait: IAnimal | undefined | Dat
 
     //To get from hanging to ready-to-cut.
     //The stringify is as it needs to be one element, rather than several
+    animal?.numEaters,
     JSON.stringify(animal?.eaters?.map(e => { return [e.id, e.halfUser, e.cutInstruction] })),
 
     //To get from ready-to-cut to ready-for-pickup

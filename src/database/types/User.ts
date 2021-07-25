@@ -1,7 +1,8 @@
-import mongoose, { Schema, Document, ObjectId, SchemaDefinition, DocumentDefinition } from 'mongoose';
-
+import mongoose, { Schema, Document, SchemaDefinition, DocumentDefinition } from 'mongoose';
+import { ObjectId } from 'bson';
 import { createResultWatcher } from '../Database';
 import { invoiceDatabaseName, userDatabaseName } from '../DatabaseNames';
+import { AnimalType } from './Animal';
 import { BeefCutInstructions, BeefCutInstructionsSchema } from './cut_instructions/Beef';
 import { PorkCutInstructions, PorkCutInstructionsSchema } from './cut_instructions/Pork';
 
@@ -20,7 +21,7 @@ export interface IUser extends Document {
 }
 
 export const CutInstructionsSchema: SchemaDefinition<DocumentDefinition<any>> = {
-  cutType: { type: String, enum: ["beef", "pork"], required: true },
+  cutType: { type: String, enum: [AnimalType.Beef, AnimalType.Pork], required: true },
   ...BeefCutInstructionsSchema, 
   ...PorkCutInstructionsSchema,
   notes: { type: String, default: '' },

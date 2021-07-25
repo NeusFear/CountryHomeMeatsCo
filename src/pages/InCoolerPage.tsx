@@ -1,4 +1,4 @@
-import Animal, { IAnimal, paddedAnimalId, useAnimals } from "../database/types/Animal"
+import Animal, { AnimalType, IAnimal, paddedAnimalId, useAnimals } from "../database/types/Animal"
 import { useHistory } from 'react-router-dom';
 import User, { useUsers } from "../database/types/User"
 import { animalDetailsPage } from "../NavBar"
@@ -10,7 +10,7 @@ export const InCoolerPage = () => {
   const cows: (IAnimal)[] = []
   const pigs = []
   if (animals !== DatabaseWait) {
-    animals.forEach(a => (a.animalType === "Cow" ? cows : pigs).push(a))
+    animals.forEach(a => (a.animalType === AnimalType.Beef ? cows : pigs).push(a))
   }
 
   return (

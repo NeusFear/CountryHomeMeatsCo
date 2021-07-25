@@ -1,7 +1,8 @@
 import { SchemaDefinition } from 'mongoose';
+import { AnimalType } from '../Animal';
 
 export type BeefCutInstructions = {
-  cutType: "beef"
+  cutType: AnimalType.Beef
   round: { tenderizedAmount: string, size: string, perPackage: string }
   sirlointip: { size: string, amount: string }
   flank: string

@@ -58,6 +58,7 @@ export const PriceSheet = () => {
               <PriceEntry description="Make Cubed Steaks" currentPrice={beef.makeCubedSteaks} onChange={thenSave(v => beef.makeCubedSteaks = v)} unit="per Half"/>
               <PriceEntry description="Bone Out Prime Rib" currentPrice={beef.boneOutPrimeRib} onChange={thenSave(v => beef.boneOutPrimeRib = v)} unit="per Half"/>
               <PriceEntry description="Bone Out Loin" currentPrice={beef.boneOutLoin} onChange={thenSave(v => beef.boneOutLoin = v)} unit="per Half"/>
+              <PriceEntry description="Minimum Price (Beef)" currentPrice={beef.minPrice} onChange={thenSave(v => beef.minPrice = v)} unit=""/>
             </tbody>
           </table>
 
@@ -72,11 +73,12 @@ export const PriceSheet = () => {
               </tr>
             </thead>
             <tbody>
-              <PriceEntry description="Slaughter Fee < 150lbs" currentPrice={pork.slaughter} onChange={thenSave(v => pork.slaughter = v)} unit="per Animal"/>
-              <PriceEntry description="Slaughter Fee > 150lbs" currentPrice={pork.slaughter150lb} onChange={thenSave(v => pork.slaughter150lb = v)} unit="per Animal"/>
+              <PriceEntry description="Slaughter Fee ≤ 350lbs" currentPrice={pork.slaughter} onChange={thenSave(v => pork.slaughter = v)} unit="per Animal"/>
+              <PriceEntry description="Slaughter Fee ≥ 351lbs" currentPrice={pork.slaughterOver150lb} onChange={thenSave(v => pork.slaughterOver150lb = v)} unit="per Animal"/>
               <PriceEntry description="Processing" currentPrice={pork.processing} onChange={thenSave(v => pork.processing = v)} unit="Per Pound * Dressed Weight"/>
               <PriceEntry description="Cure" currentPrice={pork.cure} onChange={thenSave(v => pork.cure = v)} unit="Per Pound of Cured Meat"/>
               <PriceEntry description="Sausage" currentPrice={pork.sausage} onChange={thenSave(v => pork.sausage = v)} unit="per Pound of Sausage"/>
+              <PriceEntry description="Minimum Price (Pork)" currentPrice={pork.minPrice} onChange={thenSave(v => pork.minPrice = v)} unit=""/>
             </tbody>
           </table>
         </div>

@@ -18,13 +18,15 @@ export type PriceDataNumbers = {
     makeCubedSteaks: number;
     boneOutPrimeRib: number;
     boneOutLoin: number;
+    minPrice: number;
   };
   pork: {
       slaughter: number;
-      slaughter150lb: number;
+      slaughterOver150lb: number;
       processing: number;
       cure: number;
       sausage: number;
+      minPrice: number;
   };
 }
 
@@ -41,13 +43,15 @@ export const PriceDataSchema: SchemaDefinition<DocumentDefinition<any>> = {
     makeCubedSteaks: { type: Number, required: true },
     boneOutPrimeRib: { type: Number, required: true },
     boneOutLoin: { type: Number, required: true },
+    minPrice: { type: Number, required: true },
   }, required: true },
   pork: { type: {
     slaughter: { type: Number, required: true },
-    slaughter150lb: { type: Number, required: true },
+    slaughterOver150lb: { type: Number, required: true },
     processing: { type: Number, required: true },
     cure: { type: Number, required: true },
     sausage: { type: Number, required: true },
+    minPrice: { type: Number, required: true },
   }, required: true }
 }
 
@@ -98,9 +102,9 @@ export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigType
         beef: {
           slaughter: 75, processing: 1, patties: 0.45, halves: 3, halvesToQuaters: 5,
           extraBoning: 0.2, cutStewMeat: 0.5, boneAndTenderizeRoundSteaks: 3, 
-          makeCubedSteaks: 3, boneOutPrimeRib: 5, boneOutLoin: 10
+          makeCubedSteaks: 3, boneOutPrimeRib: 5, boneOutLoin: 10, minPrice: 400
         },
-        pork: { slaughter: 50, slaughter150lb: 60, processing: 1, cure: 1, sausage: 0.25 }
+        pork: { slaughter: 50, slaughterOver150lb: 60, processing: 1, cure: 1, sausage: 0.25, minPrice: 200 }
       }
     } as AllConfigs) as ConfigTypes<T>
   }

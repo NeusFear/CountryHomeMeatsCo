@@ -7,6 +7,14 @@ import { AnimalType, IAnimal } from './Animal';
 import { CutInstructions, CutInstructionsSchema, IUser } from './User';
 import { PriceData, PriceDataNumbers, PriceDataSchema } from './Configs';
 
+export const BeefPricesList: (keyof IInvoice['beefprices'])[] = [
+    "slaughter", "processing", "halving", "quatering", "tenderized", "patties", 
+    "cutstewmeat", "extraboning", "cubedsteaks", "boneoutrimerib", "boneoutloin",
+]
+
+export const PorkPricesList: (keyof IInvoice['porkprices'])[] = [ "slaughter", "processing", "cured", "sausage", ]
+
+export const AllCuredPorkDataPieces = [ "curedham", "curedbacon", "curedjowl", "curedloin", "curedbutt", "curedpicnic", ] as const
 
 export interface IInvoice extends Document {
     invoiceId: number,
@@ -20,6 +28,8 @@ export interface IInvoice extends Document {
     numQuaters: number,
 
     dateTimePaid?: Date,
+
+    takeHomeWeight: number,
     
     beefdata?: {
         makeCubedSteaks: boolean
@@ -27,7 +37,6 @@ export interface IInvoice extends Document {
         stewmeat?: number,
         patties?: number,
     }
-
     beefprices?: {
         slaughter?: number
         processing?: number
@@ -40,6 +49,24 @@ export interface IInvoice extends Document {
         cubedsteaks?: number
         boneoutrimerib?: number
         boneoutloin?: number
+    }
+
+    porkdata?: {
+        over350lbs: boolean
+        totalcured: number
+        sausage?: number
+        curedham?: number
+        curedbacon?: number
+        curedjowl?: number
+        curedloin?: number
+        curedbutt?: number
+        curedpicnic?: number
+    }
+    porkprices?: {
+        slaughter?: number
+        processing?: number
+        cured?: number
+        sausage?: number
     }
 }
 
@@ -56,13 +83,15 @@ const invoiceSchema = new Schema({
 
     dateTimePaid: { type: Schema.Types.Date },
 
+    takeHomeWeight: { type: Number },
+
+
     beefdata: { type: {
         makeCubedSteaks: { type: Boolean, required: true },
         hasTenderized: { type: Boolean, required: true },
         stewmeat: { type: Number },
         patties: { type: Number },
     }},
-
     beefprices: { type: {
         slaughter: { type: Number },
         processing: { type: Number },
@@ -75,6 +104,24 @@ const invoiceSchema = new Schema({
         boneoutrimerib: { type: Number },
         boneoutloin: { type: Number },
     }},
+
+    porkdata: { type: {
+        over350lbs: { type: Boolean, required: true },
+        totalcured: { type: Number, required: true },
+        sausage: { type: Number },
+        curedham: { type: Number },
+        curedbacon: { type: Number },
+        curedjowl: { type: Number },
+        curedloin: { type: Number },
+        curedbutt: { type: Number },
+        curedpicnic: { type: Number },
+    }},
+    porkprices: { type: {
+        slaughter: { type: Number },
+        processing: { type: Number },
+        cured: { type: Number },
+        sausage: { type: Number }
+    }}
 });
 
 const Invoice = mongoose.model<IInvoice>(invoiceDatabaseName, invoiceSchema)
@@ -98,7 +145,7 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         priceData: priceData,
         animal: new ObjectId(animal.id),
         half: half,
-        numQuaters: numQuaters
+        numQuaters: numQuaters,
     })
 
     
@@ -128,6 +175,18 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         if(invoice.beefdata.makeCubedSteaks) {
             invoice.beefprices.cubedsteaks = numHalves * priceData.beef.makeCubedSteaks
         }
+    } else {
+        invoice.porkdata = {
+            over350lbs: animal.liveWeight >= 350,
+            totalcured: 0
+        }
+
+        invoice.porkprices = {
+            processing: animal.dressWeight * priceData.pork.processing,
+            slaughter: invoice.porkdata.over350lbs ? priceData.pork.slaughterOver150lb : priceData.pork.slaughter
+        }
+
+
     }
 
     animal.invoices.push(invoice.id)

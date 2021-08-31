@@ -41,9 +41,9 @@ export const PriceSheet = () => {
         <table className="table-fixed border-collapse w-full bg-gray-100">
             <thead>
               <tr className="bg-gray-500 rounded-t-md font-bold text-center">
-                <th className="w-1/2 text-left pl-2 rounded-t-md">BEEF</th>
-                <th className="w-1/8"></th>
-                <th className="w-3/8"></th>
+                <th className="w-7/12 text-left pl-2 rounded-tl-md">BEEF</th>
+                <th className="w-1/6"></th>
+                <th className="w-3/12 rounded-tr-md"></th>
               </tr>
             </thead>
             <tbody>
@@ -67,9 +67,9 @@ export const PriceSheet = () => {
           <table className="table-fixed border-collapse w-full bg-gray-100">
             <thead>
               <tr className="bg-gray-400 rounded-t-md font-bold text-center">
-                <th className="w-1/2 text-left pl-2 rounded-t-md">PORK</th>
-                <th className="w-1/8"></th>
-                <th className="w-3/8"></th>
+                <th className="w-7/12 text-left pl-2 rounded-tl-md">PORK</th>
+                <th className="w-1/6"></th>
+                <th className="w-3/12 rounded-tr-md"></th>
               </tr>
             </thead>
             <tbody>
@@ -113,33 +113,35 @@ const PriceEntry = ({ description, currentPrice, onChange, unit }: {description:
   if(displayRef.current !== undefined) {
     const w = displayRef.current.getBoundingClientRect().width
     if(w !== 0) {
-      inputRef.current.style.width = w+'px'
+      inputRef.current.style.width = '120px'
     }
   }
 
   return (
       <tr>
         <td className="border-t border-gray-600 pl-2 pr-4">{description}</td>
-        <td className="border-t border-gray-600 w-20 text-right pr-4">
-          $
-          <span ref={displayRef} className={isEdit?'hidden':''} onDoubleClick={e => {
-            if(globalEdit) {
-              return
-            }
-            inputRef.current.classList.remove('hidden') //Can't be hidden to focus
-            inputRef.current.focus()
-            setEditing(true)
-            e.preventDefault()
-            e.stopPropagation()
-          }}>{displayValue}</span>
-          <input 
-            ref={inputRef}
-            className={(isEdit?'':'hidden ') + " bg-tomato-100"}
-            value={value} 
-            onKeyDown={e => e.key === 'Enter' ? setEditing(false) : false}
-            onChange={e => doChange(e.target.value)} 
-            onBlur={() => setEditing(false)} 
-          />
+        <td className="border-t border-gray-600 items-end pr-4">
+          <div className="relative right-0">
+            $
+            <span ref={displayRef} className={isEdit?'hidden':''} onDoubleClick={e => {
+              if(globalEdit) {
+                return
+              }
+              inputRef.current.classList.remove('hidden') //Can't be hidden to focus
+              inputRef.current.focus()
+              setEditing(true)
+              e.preventDefault()
+              e.stopPropagation()
+            }}>{displayValue}</span>
+            <input 
+              ref={inputRef}
+              className={(isEdit?'':'hidden ') + " bg-gray-200 border border-gray-600"}
+              value={value} 
+              onKeyDown={e => e.key === 'Enter' ? setEditing(false) : false}
+              onChange={e => doChange(e.target.value)} 
+              onBlur={() => setEditing(false)} 
+            />
+          </div>
         </td>
         <td className="border-t border-gray-600 px-4">{unit}</td>
       </tr>

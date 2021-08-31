@@ -1,6 +1,7 @@
 import { ObjectId } from "mongoose"
 import { FC, useEffect, useState } from "react"
 import { useHistoryListState } from "../AppHooks"
+import { SvgPrint } from "../assets/Icons"
 import { DatabaseWait } from "../database/Database"
 import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal"
 import { PriceDataNumbers } from "../database/types/Configs"
@@ -49,7 +50,8 @@ export const InvoiceDetailsPage = () => {
     return (
         <div className="w-full h-screen flex flex-col">
         <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
-            <div className="text-white text-4xl font-bold ml-4">INVOICE</div>
+            <div className="text-white text-4xl font-bold ml-4 flex-grow">INVOICE</div>
+            <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 mr-4 mt-1 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgPrint /></div>
         </div>
         <div className="flex-grow flex flex-col p-4">
             

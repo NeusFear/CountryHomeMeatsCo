@@ -93,13 +93,13 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Name:</span>
           <div>
-            <EditorValidateInput placeholder="First Name" current={user.firstName} predicate={t => t.length >= 3} onChange={d => setFirstName(d)} />
+            <EditorValidateInput label="First Name" example="John" current={user.firstName} predicate={t => t.length >= 3} onChange={d => setFirstName(d)} />
           </div>
           <div>
-            <EditorValidateInput placeholder="Middle Name (if any)" current={user.middleName} onChange={d => setMiddleName(d)} />
+            <EditorValidateInput label="Middle Name" example="Jimmy" current={user.middleName} onChange={d => setMiddleName(d)} />
           </div>
           <div>
-            <EditorValidateInput placeholder="Last Name" current={user.lastName} predicate={t => t.length >= 3} onChange={d => setLastName(d)} />
+            <EditorValidateInput label="Last Name" example="Doe" current={user.lastName} predicate={t => t.length >= 3} onChange={d => setLastName(d)} />
           </div>
         </div>
 
@@ -108,14 +108,14 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
           <div>
             {phoneNumbers.map(d=> (
               <div key={d._id}>
-                <EditorValidateInput placeholder="Name" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
+                <EditorValidateInput label="Name" example="cell" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
                   if(d.name.text !== data.text || d.name.valid !== data.valid) {
                     d.name = data
                     setPhoneNumbers([...phoneNumbers])
                   }
                 }} />
                 :
-                <EditorValidateInput placeholder="Number" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
+                <EditorValidateInput label="Number" example="4051234567" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
                   if(d.number.text !== data.text || d.number.valid !== data.valid) {
                     d.number = data
                     setPhoneNumbers([...phoneNumbers])
@@ -143,32 +143,32 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
         <div className="pt-5">
           <span className="ml-2 pr-2 text-gray-700"><SvgEmail className="float-left mx-2" />Address:</span>
           <div>
-            <EditorValidateInput placeholder="Address Line 1" current={user.address[0]} predicate={t => t.length >= 5} onChange={d => {address[0] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Address 1" example="123 S Street St." current={user.address[0]} predicate={t => t.length >= 5} onChange={d => {address[0] = d; setAddress([...address])}} />
           </div>
           <div>
-            <EditorValidateInput placeholder="Address Line 2" current={user.address[1]} predicate={t => t.length >= 5} onChange={d => {address[1] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Address 2" example="Town, Ok" current={user.address[1]} predicate={t => t.length >= 5} onChange={d => {address[1] = d; setAddress([...address])}} />
           </div>
           <div>
-            <EditorValidateInput placeholder="Address Line 3" current={user.address[2]} predicate={t => t.length >= 5} onChange={d => {address[2] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Address 3" example="Appt. 200" current={user.address[2]} predicate={t => t.length >= 5} onChange={d => {address[2] = d; setAddress([...address])}} />
           </div>
          </div>
 
          <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Start Date:</span>
           <div>
-            <EditorValidateInput placeholder="MM/DD/YYYY" current={user.startDate===undefined?undefined:`${user.startDate.getMonth()+1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setStartDate(d)} />
+            <EditorValidateInput label="Start Date MM/DD/YYYY" example="01/31/1999" current={user.startDate===undefined?undefined:`${user.startDate.getMonth()+1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setStartDate(d)} />
           </div>
         </div>
 
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Birthday:</span>
           <div>
-            <EditorValidateInput placeholder="MM/DD/YYYY" current={user.birthday===undefined?undefined:`${user.birthday.getMonth()+1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setBirthday(d)} />
+            <EditorValidateInput label="Birth Date MM/DD/YYYY" example="01/31/1999" current={user.birthday===undefined?undefined:`${user.birthday.getMonth()+1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setBirthday(d)} />
           </div>
         </div>
 
 
-        <button onClick={trySubmitData} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
+        <button onClick={trySubmitData} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} ml-4 py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>
 
       </div>
     </div>

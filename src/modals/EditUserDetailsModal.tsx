@@ -83,7 +83,7 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Name:</span>
           <div>
-            <EditorValidateInput placeholder="Name" current={user.name} predicate={t => t.length >= 3} onChange={d => setNameData(d)} />
+            <EditorValidateInput label="Name" example="John Doe" current={user.name} predicate={t => t.length >= 3} onChange={d => setNameData(d)} />
           </div>
         </div>
 
@@ -92,14 +92,14 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
           <div>
             {phoneNumbers.map(d=> (
               <div key={d._id}>
-                <EditorValidateInput placeholder="Name" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
+                <EditorValidateInput label="Name" example="cell" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
                   if(d.name.text !== data.text || d.name.valid !== data.valid) {
                     d.name = data
                     setPhoneNumbers([...phoneNumbers])
                   }
                 }} />
                 :
-                <EditorValidateInput placeholder="Number" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
+                <EditorValidateInput label="Number" example="4051234567" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
                   if(d.number.text !== data.text || d.number.valid !== data.valid) {
                     d.number = data
                     setPhoneNumbers([...phoneNumbers])
@@ -129,7 +129,7 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
           <div>
             {emails.map(email => (
             <div key={email._id}>
-              <EditorValidateInput placeholder="Email" current={email.text} predicate={t => t.match(emailRegex) !== null} onChange={data => {
+              <EditorValidateInput label="Email" example="someone@example.com" current={email.text} predicate={t => t.match(emailRegex) !== null} onChange={data => {
                 if(email.text !== data.text || email.valid !== data.valid) {
                   email.text = data.text
                   email.valid = data.valid
@@ -148,7 +148,7 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IUser}>(({u
           <div className="bg-gray-200 p-1, rounded-sm ml-2 w-60 text-gray-700 mt-0.5 hover:bg-gray-300" onClick={() => {
             emails.push({ text: '', valid: false, _id: Math.random() })
             setEmails([...emails])
-          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add Anothyer Email</div>
+          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add Another Email</div>
         </div>
 
         <button onClick={trySubmitData} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>

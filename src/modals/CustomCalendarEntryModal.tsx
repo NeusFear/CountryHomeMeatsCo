@@ -35,7 +35,7 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700">Name:</span>
           <div>
-          <EditorValidateInput placeholder="Name" current={entry.eventName} predicate={t => t.length >= 3} onChange={d => entry.eventName = d.text} />
+          <EditorValidateInput label="Name" example="vacation" current={entry.eventName} predicate={t => t.length >= 3} onChange={d => entry.eventName = d.text} />
           </div>
         </div>
         <div className="pt-4">

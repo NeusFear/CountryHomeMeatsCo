@@ -90,14 +90,14 @@ const EditVendorDetailsModalWithUser = forwardRef<ModalHanler, {vendor: IVendor}
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Company:</span>
           <div>
-            <EditorValidateInput placeholder="Company Name" current={vendor.company} predicate={t => t.length >= 3} onChange={d => setCompanyData(d)} />
+            <EditorValidateInput label="Company Name" example="Company Inc." current={vendor.company} predicate={t => t.length >= 3} onChange={d => setCompanyData(d)} />
           </div>
         </div>
 
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Primary Contact:</span>
           <div>
-            <EditorValidateInput placeholder="Contact Name" current={vendor.primaryContact} predicate={t => t.length >= 3} onChange={d => setPrimaryContactData(d)} />
+            <EditorValidateInput label="Contact Name" example="John Doe" current={vendor.primaryContact} predicate={t => t.length >= 3} onChange={d => setPrimaryContactData(d)} />
           </div>
         </div>
 
@@ -106,14 +106,14 @@ const EditVendorDetailsModalWithUser = forwardRef<ModalHanler, {vendor: IVendor}
           <div>
             {phoneNumbers.map(d=> (
               <div key={d._id}>
-                <EditorValidateInput placeholder="Name" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
+                <EditorValidateInput label="Name" example="Office" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
                   if(d.name.text !== data.text || d.name.valid !== data.valid) {
                     d.name = data
                     setPhoneNumbers([...phoneNumbers])
                   }
                 }} />
                 :
-                <EditorValidateInput placeholder="Number" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
+                <EditorValidateInput label="Number" example="4051234567" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
                   if(d.number.text !== data.text || d.number.valid !== data.valid) {
                     d.number = data
                     setPhoneNumbers([...phoneNumbers])
@@ -143,7 +143,7 @@ const EditVendorDetailsModalWithUser = forwardRef<ModalHanler, {vendor: IVendor}
           <div>
             {emails.map(email => (
             <div key={email._id}>
-              <EditorValidateInput placeholder="Email" current={email.text} predicate={t => t.match(emailRegex) !== null} onChange={data => {
+              <EditorValidateInput label="Email" example="someone@company.co" current={email.text} predicate={t => t.match(emailRegex) !== null} onChange={data => {
                 if(email.text !== data.text || email.valid !== data.valid) {
                   email.text = data.text
                   email.valid = data.valid

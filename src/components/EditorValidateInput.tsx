@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 
-export const EditorValidateInput = ({placeholder, current, predicate = () => true, onChange}: 
+export const EditorValidateInput = ({label, current, example, predicate = () => true, onChange}: 
 { 
-  placeholder: string,
+  label: string,
   current: string, 
+  example: string,
   predicate?: (test: string) => boolean,
   onChange: (data: ValidatedString) => void
 }) => {
@@ -25,7 +26,10 @@ export const EditorValidateInput = ({placeholder, current, predicate = () => tru
   })
 
   return (    
-    <input placeholder={placeholder} className={`${valid ? "border-blue-500 bg-blue-100" : "border-red-500 bg-tomato-100"} placeholder-gray-700 w-60 border-2 rounded-sm p-1 my-1 mx-2 text-gray-800`} type="text" onChange={e => onInputChange(e.target.value)} value={data || ''}/>
+    <div className="inline-block">
+      <p className="ml-2 text-xs text-black">{label}</p>
+      <input placeholder={"ex: " + example} className={`${valid ? "border-black bg-blue-100" : "border-black bg-tomato-100"} bg-opacity-40 placeholder-gray-700 placeholder-opacity-50 w-60 border-2 rounded-sm p-1 my-1 mx-2 text-gray-800`} type="text" onChange={e => onInputChange(e.target.value)} value={data || ''}/>
+    </div>
   )
 }
 

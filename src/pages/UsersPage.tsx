@@ -1,7 +1,7 @@
 import { UserPinnedList } from "../App"
 import { useHistory } from 'react-router-dom';
 import { userDetailsPage } from "../NavBar";
-import { SvgNewUser, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
+import { SvgNewUser, SvgNotes, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
 import User, { IUser, useUsers } from "../database/types/User";
 import { editUserDetails, setModal } from "../modals/ModalManager";
 import { useMemo, useState } from "react";
@@ -15,6 +15,9 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
       <span className="pr-2 flex-1">{details.name}</span>
       <span className="pr-2 flex-1 flex flex-row">{formatPhoneNumber(details.phoneNumbers[0]?.number) ?? 'Invalid: No Number'}{details.phoneNumbers.length > 1 ? <p className="ml-3 pt-0.5 text-xs bg-gray-200 rounded-md px-1"> +{details.phoneNumbers.length - 1}</p> : <></>}</span>
       <span className="pr-2 flex-1 flex flex-row">{details.emails[0] ?? 'Invalid: No Email'}{details.emails.length > 1 ? <p className="ml-3 pt-0.5 text-xs bg-gray-200 rounded-md px-1"> +{details.emails.length - 1}</p> : <></>}</span>
+      <span className="text-gray-600 h-6 w-6 mr-2 flex-shrink pt-1.5">
+        {details.notes.length > 0 && <SvgNotes />}
+      </span>
       <span className="hover:text-tomato-400 text-gray-600 h-6 w-6 mr-2 flex-shrink pt-1.5" onClick={e => {addPinnedUserDetails(details.id); e.stopPropagation()}}>
         <SvgTack />
       </span>
@@ -28,7 +31,7 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
 export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const [search, setSearch] = useState<string>('')
   const regExp = useMemo(() => new RegExp(search.split(' ').filter(s => s.trim().length !== 0).map(s => `(${s})`).join('|'), 'i'), [search])
-  const users = useUsers(User.where('name').regex(regExp).select("name phoneNumbers emails"), [search])
+  const users = useUsers(User.where('name').regex(regExp).select("name phoneNumbers emails notes"), [search])
 
   const deleteEntry = (user: IUser) => {
     user.delete()
@@ -50,9 +53,9 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <div onClick={() => setModal(editUserDetails)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgNewUser /></div>
       </div>
       <div className="bg-gray-400 px-1 py-0.5 shadow-sm flex flex-row mb-2">
-        <span className="ml-6 pr-2 flex-1 text-gray-700">Name</span>
-        <span className="pr-2 flex-1 text-gray-700 ml-2">Phone Number</span>
-        <span className="pr-2 flex-1 text-gray-700 ml-4">Email</span>
+        <span className="ml-6 flex-1 text-gray-700">Name</span>
+        <span className="flex-1 text-gray-700">Phone Number</span>
+        <span className="pr-2 flex-1 text-gray-700">Email</span>
         <span className="w-24"></span>
       </div>
       <div className="px-4 mt-4 h-full overflow-y-scroll">

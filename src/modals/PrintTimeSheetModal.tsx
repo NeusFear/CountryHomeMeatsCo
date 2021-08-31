@@ -19,19 +19,21 @@ export const PrintTimeSheetModal = () => {
   })
 
   return (
-    <div>
+    <div className="bg-gray-200 h-full rounded-lg">
+      <div className="bg-gray-800 font-semibold rounded-t-md text-white px-2 py-1" >Print Time Sheets</div>
       <div className="flex flex-row" style={{ width: '700px', height: '500px' }}>
-        <div className="flex flex-col">
-          <div>From:</div>
+        
+        <div className="flex flex-col flex-grow">
+        <div className="w-full bg-gray-400 text-black mt-2 text-center">Select Start of Pay Period</div>
           <div><DayPickerEntry date={fromDate} setDate={setFromDate} /></div>
         </div>
-        <div className="flex flex-col">
-          <div>To:</div>
+        <div className="flex flex-col flex-grow">
+          <div className="w-full bg-gray-400 text-black mt-2 text-center">Select End of Pay Period</div>
           <div><DayPickerEntry date={toDate} setDate={setToDate} /></div>
         </div>
       </div>
-      <div className="flex flex-row">
-        <div>Printer:</div>
+      <div className="flex flex-row bg-gray-100 p-2 mx-10 rounded-sm">
+        <div className="flex-grow">Select Printer:</div>
         <div><PrinterDropdownBox setPrinter={setPrinter} /></div>
       </div>
       <button
@@ -41,7 +43,7 @@ export const PrintTimeSheetModal = () => {
             doPrint(printer.name, employees, fromDate, toDate)
           }
         }}
-        className={printer === null ? "bg-tomato-500" : "bg-green-200"}
+        className={printer === null ? "bg-tomato-500 hover:bg-gray-600" : "bg-green-200 hover:bg-green-300" + " w-full rounded-sm py-2 mt-4"}
       >
         Print
       </button>

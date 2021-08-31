@@ -137,8 +137,9 @@ export const InvoiceDetailsPage = () => {
                     </tbody>
             </table>
             <div className="w-full relative">
-                <div className="bg-gray-300 mt-4 border absolute right-0">
-                    Total: ${total.toFixed(2)}
+                <div className="mt-4 absolute right-0 flex flex-row">
+                    <p className="bg-tomato-700 px-2 rounded-l-md text-3xl text-white">TOTAL</p>
+                    <p className="bg-gray-300 rounded-r-sm px-2 text-3xl">${total.toFixed(2)}</p>
                 </div>
             </div>
         </div>

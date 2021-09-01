@@ -20,7 +20,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   const dbInstrucionObject = user !== DatabaseWait ? user.cutInstructions[dbInstructionIndex] : undefined
   const dbInstructions = dbInstrucionObject?.instructions
 
-  const [ animalType, setAnimalType ] = useState<AnimalType>(instructionID === undefined ? AnimalType.Beef : undefined)
+  const [ animalType, setAnimalType ] = useState<AnimalType>(instructionID === undefined || dbInstructions === undefined ? AnimalType.Beef : dbInstructions.cutType)
 
   if(dbInstructions !== undefined && animalType === undefined) {
     setAnimalType(dbInstructions.cutType)

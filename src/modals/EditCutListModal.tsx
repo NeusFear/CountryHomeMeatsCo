@@ -1,12 +1,12 @@
 import { SvgCow, SvgPig, SvgArrow } from "../assets/Icons"
 import { DatabaseWait } from "../database/Database"
-import Animal, { AnimalType, IAnimal, useAnimals, validateEaters } from "../database/types/Animal"
+import Animal, { AnimalType, IAnimal, useAnimals, validateEaters, ValidateEatersFields } from "../database/types/Animal"
 import User, { useUsers } from "../database/types/User"
 import { hangingAnimals, setModal } from "./ModalManager"
 
 export const EditCutListModal = () => {
 
-  const animalsHanging = useAnimals(Animal.where('processDate', null).sort('killDate').select('killDate animalType bringer'))
+  const animalsHanging = useAnimals(Animal.where('processDate', null).sort('killDate').select('killDate animalType bringer ' + ValidateEatersFields))
 
   const animalsToCut = useAnimals(Animal
     .where('processDate').ne(null)

@@ -190,7 +190,8 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
     } else {
         invoice.porkdata = {
             over350lbs: animal.liveWeight >= 350,
-            totalcured: 0
+            totalcured: 0,
+            sausage: 0
         }
 
         invoice.porkprices = {

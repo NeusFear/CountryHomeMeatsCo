@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { SvgEdit, SvgNewUser, SvgNotes, SvgSearch, SvgTrash } from "../assets/Icons";
+import { DatabaseWait } from "../database/Database";
 import Vendor, { IVendor, useVendors } from "../database/types/Vendor";
 import { editUserDetails, editVendorDetails, setModal, vendorNotes } from "../modals/ModalManager";
 
@@ -35,7 +36,7 @@ export const AddressBook = () => {
         <span className="w-24"></span>
       </div>
       <div className="px-4 mt-4 h-full overflow-y-scroll">
-        {vendors !== undefined && vendors.map(d => <AddressBookEntry key={d.id} details={d} deleteUserDetails={() => deleteEntry(d)} />)}
+        {vendors !== DatabaseWait && vendors.map(d => <AddressBookEntry key={d.id} details={d} deleteUserDetails={() => deleteEntry(d)} />)}
       </div>
     </div>
   )

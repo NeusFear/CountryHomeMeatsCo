@@ -1,6 +1,7 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
 import { EditorValidateInput, ValidatedString } from "../components/EditorValidateInput";
+import { DatabaseWait } from "../database/Database";
 import Vendor, { IVendor, useVendors } from "../database/types/Vendor";
 
 import { ModalHandler as ModalHanler, setModal } from "./ModalManager";
@@ -31,7 +32,7 @@ export const EditVendorDetailsModal = forwardRef<ModalHanler, {objectId: string}
 
 const EditVendorDetailsModalWithUserID = forwardRef<ModalHanler, {id: string}>(({id}, ref) => {
   const vendor = useVendors(Vendor.findById(id), [id], id)
-  return vendor === undefined ?
+  return vendor === DatabaseWait ?
     (<div>Loading Vendor ID {id}</div>) :
     (<EditVendorDetailsModalWithUser ref={ref} vendor={vendor}/>)
 })
@@ -41,7 +42,7 @@ const EditVendorDetailsModalWithUser = forwardRef<ModalHanler, {vendor: IVendor}
   const [companyData, setCompanyData] = useState<ValidatedString>(null) 
   const [primaryContactData, setPrimaryContactData] = useState<ValidatedString>(null) 
   const [phoneNumbers, setPhoneNumbers] = useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
-    [...vendor.phoneNumbers].map(d => {
+    Array.from(vendor.phoneNumbers).map(d => {
       return {
         name: { text: d.name, valid: false },
         number: { text: d.number, valid: false },

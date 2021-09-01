@@ -1,7 +1,7 @@
 import { ObjectId } from "mongoose"
 import { FC, useEffect, useState } from "react"
 import { useHistoryListState } from "../AppHooks"
-import { SvgPrint } from "../assets/Icons"
+import { SvgPlus, SvgPrint, SvgTrash } from "../assets/Icons"
 import { DatabaseWait } from "../database/Database"
 import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal"
 import { PriceDataNumbers } from "../database/types/Configs"
@@ -40,7 +40,10 @@ export const InvoiceDetailsPage = () => {
         total += keyObject[key] ?? 0
     }
 
+    (invoice.customcharges ?? []).forEach(c => total += c.amount)
+
     const minTotal = (animal.animalType === AnimalType.Beef ? invoice.priceData.beef : invoice.priceData.pork).minPrice
+    const calcualtedTotal = total;
     if(total < minTotal) {
         total = minTotal
     }
@@ -53,7 +56,7 @@ export const InvoiceDetailsPage = () => {
             <div className="text-white text-4xl font-bold ml-4 flex-grow">INVOICE</div>
             <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 mr-4 mt-1 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgPrint /></div>
         </div>
-        <div className="flex-grow flex flex-col p-4">
+        <div className="flex-grow flex flex-col p-4 overflow-y-scroll">
             
             <div className="flex flex-row h-40">
                 <div className="bg-gray-300 rounded-md shadow-md flex-grow">
@@ -138,10 +141,53 @@ export const InvoiceDetailsPage = () => {
                         }
                     </tbody>
             </table>
-            <div className="w-full relative">
-                <div className="mt-4 absolute right-0 flex flex-row">
-                    <p className="bg-tomato-700 px-2 rounded-l-md text-3xl text-white">TOTAL</p>
-                    <p className="bg-gray-300 rounded-r-sm px-2 text-3xl">${total.toFixed(2)}</p>
+            <div className="flex flex-row">
+                <div className="flex-grow">
+                    <table className="bg-gray-300 mt-4 border rounded-md w-full">
+                            <thead className="bg-gray-800 rounded-md w-full">
+                                <tr className="rounded-md w-full">
+                                    <th className="text-left font-semibold text-gray-200 p-2 rounded-tl-md">Charge Name</th>
+                                    <th className="text-left font-semibold text-gray-200 p-2">Charge Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    (invoice.customcharges ?? []).map((c, i) =>
+                                        <CustomChargesEntry key={i} charge={c} 
+                                        onSave={() => {
+                                            invoice.markModified("customcharges")
+                                            invoice.save()
+                                        }} 
+                                        onRemove={() => {
+                                            console.log("removed " + i)
+                                            invoice.customcharges.splice(i, 1)
+                                            invoice.markModified("customcharges")
+                                            invoice.save()
+                                        }} />    
+                                    )
+                                }
+                            </tbody>
+                    </table>
+                    <div className="w-full relative">
+                        <div className="mt-4 absolute left-0 flex flex-row text-green" onClick={() => {
+                            invoice.customcharges.push({name:"New Charge", amount:0})
+                            invoice.save()
+                        }}>
+                            <SvgPlus />
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-grow flex relative">
+                    <div className="mt-4 absolute right-0 flex flex-col">
+                        <div className="flex flex-row">
+                            <p className="bg-tomato-700 px-2 rounded-l-md text-base text-white">TOTAL BEFORE MIN</p>
+                            <p className="bg-gray-300 rounded-r-sm px-2 text-base">${calcualtedTotal.toFixed(2)}</p>
+                        </div>
+                        <div className="flex flex-row">
+                            <p className="bg-tomato-700 px-2 rounded-l-md text-3xl text-white">TOTAL</p>
+                            <p className="bg-gray-300 rounded-r-sm px-2 text-3xl">${total.toFixed(2)}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -268,7 +314,7 @@ const PigDataTablePart = ({title, mapper, DatabaseCreator, invoice, cutInstructi
         </div>
     )
 }
-export const PigDataTable = (props: {invoice: IInvoice, cutInstructions: PorkCutInstructions, price: PriceDataNumbers["pork"]}) => {
+const PigDataTable = (props: {invoice: IInvoice, cutInstructions: PorkCutInstructions, price: PriceDataNumbers["pork"]}) => {
     const runThenSave = (r: (v: number) => void) => {
         return (v: number) => {
             r(v)
@@ -317,7 +363,7 @@ export const PigDataTable = (props: {invoice: IInvoice, cutInstructions: PorkCut
     </>)
 }
 
-export const PigChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}) => {
+const PigChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}) => {
     const runThenSave = (r: (v: number) => void) => {
         return (v: number) => {
             r(v)
@@ -361,7 +407,7 @@ export const PigChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: II
     
 }
 
-export const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}) => {
+const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}) => {
     const runThenSave = (r: (v: number) => void) => {
         return (v: number) => {
             r(v)
@@ -446,6 +492,33 @@ export const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: II
     </>)   
 }
 
+const CustomChargesEntry = ({charge, onSave, onRemove}: {charge: { name: string, amount: number }, onSave: () => void, onRemove: () => void }) => {
+    const [name, setName] = useState(charge.name)
+    return (
+        <tr>
+            <td>
+                <input value={name} onChange={i => setName(i.currentTarget.value)} onBlur={() => {
+                    charge.name = name
+                    onSave()
+                }} />
+            </td>
+            <td className="flex flex-row">
+                <div className="flex-grow">
+                    <RightFacingNumberInput value={charge.amount} fixed setValue={val => {
+                        charge.amount = val
+                        onSave()
+                    }}/>$
+                </div>
+                <div onClick={onRemove}>
+                    <SvgTrash />
+                </div>
+            </td>
+        </tr>
+    )
+}
+
+
+
 const RightFacingNumberInput = ({value, setValue, fixed}: {value: number, setValue: (val: number) => void, fixed?: boolean }) => {
     const getVal = () => String((value ?? 0).toFixed(fixed ? 2 : 0))
     const [internalValue, setInternalValue] = useState("")
@@ -491,7 +564,7 @@ const ChargesEntry = ({title, price, quantity, value, setValue}: {title: string,
     )
 }
 
-export const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: IInvoice, cutInstructions: BeefCutInstructions, price: PriceDataNumbers["beef"]}) => {
+const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: IInvoice, cutInstructions: BeefCutInstructions, price: PriceDataNumbers["beef"]}) => {
     const runThenSave = (r: (v: number) => void ) => {
         return (v: number) => {
             r(v)
@@ -582,7 +655,7 @@ export const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: 
 
 }
 
-export const NonEditableCutInstructionEntry = ({title, cutInstructions}: {title: string, cutInstructions: string}) => {
+const NonEditableCutInstructionEntry = ({title, cutInstructions}: {title: string, cutInstructions: string}) => {
     return (
         <tr>
             <td>{title}</td>
@@ -592,7 +665,7 @@ export const NonEditableCutInstructionEntry = ({title, cutInstructions}: {title:
     )
 }
 
-export const EditableCutInstructionEntry = ({title, cutInstructions, editableValue, setEditableValue}: {
+const EditableCutInstructionEntry = ({title, cutInstructions, editableValue, setEditableValue}: {
     title: string, 
     cutInstructions: string,
     editableValue: number
@@ -606,3 +679,4 @@ export const EditableCutInstructionEntry = ({title, cutInstructions, editableVal
         </tr>
     )
 }
+

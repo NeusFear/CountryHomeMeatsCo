@@ -68,6 +68,11 @@ export interface IInvoice extends Document {
         cured?: number
         sausage?: number
     }
+
+    customcharges: {
+        name: string,
+        amount: number
+    }[]
 }
 
 const invoiceSchema = new Schema({
@@ -121,7 +126,12 @@ const invoiceSchema = new Schema({
         processing: { type: Number },
         cured: { type: Number },
         sausage: { type: Number }
-    }}
+    }},
+
+    customcharges: { type: [{ 
+        name: { type: String },
+        amount: { type: Number }
+     }]}
 });
 
 const Invoice = mongoose.model<IInvoice>(invoiceDatabaseName, invoiceSchema)
@@ -146,6 +156,8 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         animal: new ObjectId(animal.id),
         half: half,
         numQuaters: numQuaters,
+
+        customcharges: []
     })
 
     

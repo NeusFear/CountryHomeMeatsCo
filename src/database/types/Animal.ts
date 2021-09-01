@@ -17,9 +17,8 @@ export type Eater = {
   cutInstruction: number
 }
 
-export const ValidateEatersFields = ""
+export const ValidateEatersFields = "numEaters eaters"
 export const validateEaters = (animal: IAnimal): boolean => {
-  console.log(animal)
   const eaterValid = ({id, cutInstruction}: { id: ObjectId; tag: string; cutInstruction?: number }) => {
     return (id ?? false) && (cutInstruction === undefined || cutInstruction >= 0)
   }

@@ -6,7 +6,7 @@ import Animal, { AnimalStateFields, AnimalType, IAnimal, useAnimals, useComputed
 import User, { IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
-import { getDayNumber, printPage } from "../Util"
+import { getDayNumber, normalizeDay, printPage } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
 import { useMemo } from "react";
 import { DatabaseWait } from "../database/Database";
@@ -37,8 +37,9 @@ const TodaysCutList = () => {
   const animals = useAnimals(Animal
     .where('processDate').ne(undefined)
     .where('pickedUp', false)
-    .select("bringer animalType eaters")
+    .select("bringer animalType eaters animalId")
   )
+
   return (
     <div className="h-5/6 flex-grow pl-4 pr-2 py-4">
       <div className="h-5/6 bg-gray-200 rounded-lg">
@@ -71,6 +72,7 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => console.log("go to animal")}>
       <div className="w-20">
         <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />
+        #{animal.animalId}
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>
@@ -85,9 +87,8 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
 }
 
 const ScheduledSlaughterList = () => {
-  const now = new Date()
-  now.setHours(12, 0, 0, 0)
-  const scheduledToday = useAnimals(Animal.where('killDate', now).select("bringer eaters animalType confirmed " + AnimalStateFields), [ getDayNumber(now) ])
+  const now = normalizeDay()
+  const scheduledToday = useAnimals(Animal.where('killDate', now).select("bringer eaters animalType confirmed animalId " + AnimalStateFields), [ getDayNumber(now) ])
 
   if(scheduledToday === DatabaseWait) {
     return (<div>Loading...</div>)
@@ -99,7 +100,7 @@ const ScheduledSlaughterList = () => {
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Scheduled Slaughters</div>
         </div>
-        { scheduledToday.length > 0 ? scheduledToday.map((a, i) => <SlaughterInfo animal={a} />) : <p className="ml-4">No scheduled slaughters for today.</p> }
+        { scheduledToday.length > 0 ? scheduledToday.map((a, i) => <SlaughterInfo key={i} animal={a} />) : <p className="ml-4">No scheduled slaughters for today.</p> }
       </div>
     </div>
   )
@@ -130,6 +131,7 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="w-20">
         {animal.animalType === AnimalType.Beef ? <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" /> : <SvgPig className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />}
+        #{animal.animalId}
       </div>
       <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>

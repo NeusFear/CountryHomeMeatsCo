@@ -70,9 +70,9 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
   const Tag = animal.animalType === AnimalType.Beef ? SvgCow : SvgPig
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => console.log("go to animal")}>
-      <div className="w-20">
-        <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />
-        #{animal.animalId}
+      <div className="w-14 mr-1">
+        <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" />
+        <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{animal.animalId}</p>
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>
@@ -80,7 +80,11 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        {animal.eaters.length > 0 ? animal.eaters.map((eater, i) => <UserTag key={i} user={allFoundUsers.find(u => u.id === eater.id.toHexString())} id={eater.cutInstruction}/> ) : <p className="font-semibold text-tomato-400">Error</p>}
+        {animal.eaters.length > 0 ? animal.eaters.map((eater, i) => 
+          <div className="flex flex-row" key={i} >
+            <p className="flex-grow bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{allFoundUsers.find(u => eater.id.toHexString()).name}</p>
+            <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{eater.cutInstruction}</p>
+          </div> ) : <p className="font-semibold text-tomato-400">Error</p>}
       </div>
     </div>
   )
@@ -129,9 +133,9 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
-      <div className="w-20">
-        {animal.animalType === AnimalType.Beef ? <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" /> : <SvgPig className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-0.5 ml-4 transform translate-y-1/2" />}
-        #{animal.animalId}
+      <div className="w-14 mr-1">
+        {animal.animalType === AnimalType.Beef ? <SvgCow className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" /> : <SvgPig className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" />}
+        <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{animal.animalId}</p>
       </div>
       <div className="w-1/2 text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Bringer:</p>

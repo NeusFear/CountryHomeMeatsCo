@@ -22,15 +22,24 @@ export const LandingPage = () => {
             <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1">Upcoming Events</div>
             <div className="flex flex-col overflow-y-scroll mb-4 h-full">
 
-              <EventDivider label="Today" />
+              <EventDivider daysAway={0} />
               <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
               <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
               <EventItem eventType={DaysEnum.somethingElse} eventName="Jessee's Birthday" />
-              <EventDivider label="Tomorrow" />
+              <EventDivider daysAway={1} />
               <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
               <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
               <EventItem eventType={DaysEnum.somethingElse} eventName="Someone's Birthday" />
               <EventItem eventType={DaysEnum.somethingElse} eventName="Someone's Anniversary" />
+              <EventDivider daysAway={2} />
+              <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
+              <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
+              <EventDivider daysAway={3} />
+              <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
+              <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
+              <EventDivider daysAway={4} />
+              <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
+              <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
 
             </div>
           </div>
@@ -65,7 +74,27 @@ const EventItem = ({ eventName, eventType }: { eventName: string, eventType: any
   )
 }
 
-const EventDivider = ({ label }: { label: string }) => {
+const EventDivider = ({ daysAway }: { daysAway: number }) => {
+
+  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+  var date = new Date();
+  date.setDate(date.getDate() + daysAway);
+
+  var dd = date.getDate();
+  var day;
+  var mm = date.getMonth()+1; 
+  var yyyy = date.getFullYear();
+  dd < 10 ? day = "0" + dd : day = dd;
+
+  var dateLabel = months[mm] + " " + dd + ", " + yyyy;
+
+  var label;
+
+  if (daysAway == 0) label = "Today"
+  if (daysAway == 1) label = "Tomorrow"
+  if (daysAway > 1) label = dateLabel;
+
   return (
     <div className="bg-gray-300 h-5 px-6 group mb-2 w-full">
       <div className="w-full text-sm">{label}</div>

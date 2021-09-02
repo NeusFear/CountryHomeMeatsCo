@@ -14,14 +14,18 @@ export const VendorNotesModal = forwardRef<ModalHandler, { value: string, setVal
   }))
 
   return (
-    <div>
-      <textarea
-        ref={textAreaRef}
-        defaultValue={value}
-        onBlur={e => {
-          setValue(e.currentTarget.value ?? '')
-        }}
-      />
+    <div className="rounded-md overflow-hidden" style={{height: "50vh", width: "50vw"}}>
+      <div className="bg-gray-800 text-white rounded-t-md">Notes</div>
+      <div className="p-4 h-full overflow-hidden">
+        <textarea
+          className="w-full h-full"
+          ref={textAreaRef}
+          defaultValue={value}
+          onBlur={e => {
+            setValue(e.currentTarget.value ?? '')
+          }}
+        />
+      </div>
     </div>
   )
 })

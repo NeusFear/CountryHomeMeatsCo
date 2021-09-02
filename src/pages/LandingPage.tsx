@@ -8,10 +8,10 @@ export const LandingPage = () => {
       <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
         <div className="text-white text-4xl font-bold ml-4">COUNTRY HOME MEATS</div>
       </div>
-      <div className="flex-grow flex flex-col p-4">
+      <div className="flex-grow flex flex-col p-4 overflow-hidden">
         <div className="flex flex-row mt-4 h-full">
           <div className="flex-grow bg-gray-200 rounded-lg">
-            <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1">Upcoming Events</div>
+            <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1">Notes</div>
             <div className="bg-white m-2">
               Some notes go here<br />
               more notes<br />
@@ -20,7 +20,7 @@ export const LandingPage = () => {
           </div>
           <div className="flex-grow bg-gray-200 mx-4 h-full rounded-lg">
             <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1">Upcoming Events</div>
-            <div className="flex flex-col overflow-y-scroll mb-4">
+            <div className="flex flex-col overflow-y-scroll mb-4 h-full">
 
               <EventDivider label="Today" />
               <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>

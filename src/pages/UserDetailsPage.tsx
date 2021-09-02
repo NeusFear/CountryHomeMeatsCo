@@ -1,7 +1,7 @@
 import { useHistoryListState } from "../AppHooks"
 import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from "../NavBar";
-import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash } from "../assets/Icons";
+import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash, SvgNotes } from "../assets/Icons";
 import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
 import { UserPinnedList } from "../App";
 import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
@@ -136,12 +136,15 @@ const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
   }) => {
   return (
     <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => setModal(editCutInstructions, { id, instructionID })}>
-      <div className="flex-grow">{instruction.cutType === AnimalType.Beef ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
-      <div className="mr-4">{instructionID}</div>
+      <div >{instruction.cutType === AnimalType.Beef ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+      <div className="px-2 ml-2 bg-gray-200 rounded-md">{instruction.cutType === AnimalType.Beef ? "Beef" : "Pork"}</div>
+      <div className="bg-gray-200 rounded-md px-2 ml-1 text-xs pt-1">#{instructionID}</div>
+      <div className="flex-grow"></div>
+      {instruction.notes != undefined && instruction.notes.length > 0 && <SvgNotes className="mt-0.5 h-4 w-4 text-gray-600" />}
       <div className="pl-2" onClick={e => {
         onDelete()
         e.stopPropagation()
-      }}><SvgTrash className="mt-0.5 h-4 w-4 text-gray-200 hover:text-tomato-400" /></div>
+      }}><SvgTrash className="mt-0.5 h-4 w-4 text-gray-600 hover:text-tomato-400" /></div>
     </div>
   )
 }

@@ -9,10 +9,7 @@ export const LandingPage = () => {
         <div className="text-white text-4xl font-bold ml-4">COUNTRY HOME MEATS</div>
       </div>
       <div className="flex-grow flex flex-col p-4">
-        <div className="bg-gray-200 h-1/5 rounded-lg">
-          No special events today.
-        </div>
-        <div className="flex flex-row mt-4 h-4/5">
+        <div className="flex flex-row mt-4 h-full">
           <div className="flex-grow bg-gray-200 rounded-lg">
             <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1">Upcoming Events</div>
             <div className="bg-white m-2">

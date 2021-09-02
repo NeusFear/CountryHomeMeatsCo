@@ -147,7 +147,7 @@ export const InvoiceDetailsPage = () => {
                             <thead className="bg-gray-800 rounded-md w-full">
                                 <tr className="rounded-md w-full">
                                     <th className="text-left font-semibold text-gray-200 p-2 rounded-tl-md">Charge Name</th>
-                                    <th className="text-left font-semibold text-gray-200 p-2">Charge Price</th>
+                                    <th className="text-left font-semibold text-gray-200 p-2 rounded-tr-md">Charge Price</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -168,21 +168,22 @@ export const InvoiceDetailsPage = () => {
                                 }
                             </tbody>
                     </table>
-                    <div className="w-full relative">
-                        <div className="mt-4 absolute left-0 flex flex-row text-green" onClick={() => {
+                    <div className="w-full relative bg-gray-300">
+                        <div className="py-1 mt-4 absolute left-0 flex flex-row text-green bg-gray-300 px-4 rounded-md text-gray-700 hover:text-black hover:bg-gray-200 cursor-pointer text-xs" onClick={() => {
                             invoice.customcharges.push({name:"New Charge", amount:0})
                             invoice.save()
                         }}>
-                            <SvgPlus />
+                            <SvgPlus className="h-4 w-4 mr-2" /> Add Charge
                         </div>
                     </div>
                 </div>
                 <div className="flex-grow flex relative">
                     <div className="mt-4 absolute right-0 flex flex-col">
                         <div className="flex flex-row">
-                            <p className="bg-tomato-700 px-2 rounded-l-md text-base text-white">TOTAL BEFORE MIN</p>
+                            <p className="bg-gray-600 px-2 rounded-l-md text-base text-white">TOTAL BEFORE MIN</p>
                             <p className="bg-gray-300 rounded-r-sm px-2 text-base">${calcualtedTotal.toFixed(2)}</p>
                         </div>
+                        <br />
                         <div className="flex flex-row">
                             <p className="bg-tomato-700 px-2 rounded-l-md text-3xl text-white">TOTAL</p>
                             <p className="bg-gray-300 rounded-r-sm px-2 text-3xl">${total.toFixed(2)}</p>
@@ -190,6 +191,7 @@ export const InvoiceDetailsPage = () => {
                     </div>
                 </div>
             </div>
+            <br /><br /><br /><br /><br />
         </div>
         </div>
     )
@@ -495,22 +497,22 @@ const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
 const CustomChargesEntry = ({charge, onSave, onRemove}: {charge: { name: string, amount: number }, onSave: () => void, onRemove: () => void }) => {
     const [name, setName] = useState(charge.name)
     return (
-        <tr>
-            <td>
-                <input value={name} onChange={i => setName(i.currentTarget.value)} onBlur={() => {
+        <tr className="m-1">
+            <td className="m-1">
+                <input value={name} className="w-full ml-2" onChange={i => setName(i.currentTarget.value)} onBlur={() => {
                     charge.name = name
                     onSave()
                 }} />
             </td>
-            <td className="flex flex-row">
-                <div className="flex-grow">
-                    <RightFacingNumberInput value={charge.amount} fixed setValue={val => {
+            <td className="flex flex-row m-1">
+                <div className="flex-grow ml-3">
+                    $<RightFacingNumberInput value={charge.amount} fixed setValue={val => {
                         charge.amount = val
                         onSave()
-                    }}/>$
+                    }}/>
                 </div>
                 <div onClick={onRemove}>
-                    <SvgTrash />
+                    <SvgTrash className="text-gray-700 hover:text-tomato-700 mr-2" />
                 </div>
             </td>
         </tr>

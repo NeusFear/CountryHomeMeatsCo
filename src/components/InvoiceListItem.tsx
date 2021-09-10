@@ -54,4 +54,4 @@ const DataTag = ({ name }: { name: string }) => {
         <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">{name}</p>
       </div>
     )
-  }
+}

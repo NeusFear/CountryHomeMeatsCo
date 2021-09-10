@@ -12,11 +12,12 @@ import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
 import { NavPageButton } from './components/NavPageButton';
 import { useHistoryListState } from "./AppHooks";
 
-import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgArrow, SvgSnowman } from './assets/Icons';
+import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgArrow, SvgSnowman, SvgNotes } from './assets/Icons';
 import { UserPinnedList } from './App';
 import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
 import { useEffect, useState } from 'react';
 import { InCoolerPage } from './pages/InCoolerPage';
+import { InvoicesPage } from './pages/InvoicesPage';
 
 const logo = require('./assets/logo.png');
 
@@ -40,7 +41,8 @@ export const routes = [
   // { path: editUserDetailsPage, page: () => <EditUserDetailsPage /> },
   { path: "/today", page: () => <TodayPage /> },
   { path: "/calendar", page: () => <CalendarPage /> },
-  { path: "/incooler", page: () => <InCoolerPage /> }
+  { path: "/incooler", page: () => <InCoolerPage /> },
+  { path: "/invoices", page: () => <InvoicesPage /> }
 ];
 
 export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
@@ -66,6 +68,7 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>
         <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
         <li><Link to="/incooler"><NavPageButton Page="Cooler" Icon={SvgSnowman} /></Link></li>
+        <li><Link to="/invoices"><NavPageButton Page="Invoices" Icon={SvgNotes} /></Link></li>
       </ul>
       <Switch>
         {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} /> ))}

@@ -33,18 +33,37 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
       </div>
       <div className="flex-grow overflow-auto">
         <div className="pt-4">
-          <span className="ml-2 pr-2 text-gray-700">Name:</span>
-          <div>
           <EditorValidateInput label="Name" example="vacation" current={entry.eventName} predicate={t => t.length >= 3} onChange={d => entry.eventName = d.text} />
+        </div>
+        <div className="flex flex-row w-full h-56">
+          <div className="m-2 bg-gray-300">
+            Start Day Picker (default: today)
+          </div>
+          <div className="m-2 bg-gray-300">
+            End Day Picker (default: today)
           </div>
         </div>
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700">Color:</span>
-          <div>
-          <input type="number" defaultValue={entry.eventColor} onChange={e => entry.eventColor = e.currentTarget.valueAsNumber} />
+          <div className="flex flex-row ml-6">
+            <ColorOption color="bg-purple-400" selected={false} />
+            <ColorOption color="bg-pink-400" selected={false} />
+            <ColorOption color="bg-tomato-400" selected={false} />
+            <ColorOption color="bg-yellow-400" selected={false} />
+            <ColorOption color="bg-green-400" selected={false} />
+            <ColorOption color="bg-blue-400" selected={false} />
+            <ColorOption color="bg-indigo-400" selected={false} />
           </div>
         </div>
       </div>
     </div>
   )
 })
+
+const ColorOption = ({color, selected}: {color: string, selected: boolean}) => {
+  return(
+    <div className={color + ` w-8 h-8 rounded-md hover:border border-black mx-1`}>
+
+    </div>
+  )
+}

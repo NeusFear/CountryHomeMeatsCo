@@ -12,7 +12,7 @@ import { useHistory } from 'react-router-dom';
 import { animalDetailsPage } from '../NavBar';
 import { calendarDayEntry, customDay, setModal } from '../modals/ModalManager';
 import DayEvents, { useDayEvents, ICustomEvent } from '../database/types/DayEvents';
-import { DatabaseWait } from '../database/Database';
+import { DatabaseWait, DatabaseWaitType } from '../database/Database';
 
 
 const daysEqual = (d1: Date, d2: Date) => {
@@ -149,26 +149,54 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
 
     const isWeekFull = config.dates.some(d => daysEqual(d, start))
 
+    //This is a weird way of doing what we want. Oh well
+    const holidays = Array(7).fill(0).map((_, i) => useCalandarDates(addDay(i)))
+
+
+    const customDays = useDayEvents(DayEvents.where('date').gte(start.getTime()).lt(nextWeek.getTime()).select("eventName eventColor date"), [ start.getTime() ])
+    const getCustomsForDay: (day: number) => (DatabaseWaitType | ICustomEvent[]) = day => {
+      if(customDays == DatabaseWait) {
+        return DatabaseWait
+      }
+      const date = addDay(day)
+      return customDays.filter(d => d.date.getTime() == date.getTime())
+    }
+
+
+    const niceCustomDays = customDays === DatabaseWait ? [] : customDays
+
+    const allHolidays = niceCustomDays.map(d => d.eventName).concat(holidays.flatMap(arr => arr.map(a => a.name)))
+
+
     return (
       <div className="relative pl-2">
         <div ref={isThisWeek ? todayRef : null} className="flex flex-row">
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={0} day={addDay(0)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={1} day={addDay(1)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={2} day={addDay(2)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={3} day={addDay(3)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={4} day={addDay(4)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={5} day={addDay(5)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={6} day={addDay(6)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={0} day={addDay(0)} isWeekFull={isWeekFull} holidays={holidays[0]} customDays={getCustomsForDay(0)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={1} day={addDay(1)} isWeekFull={isWeekFull} holidays={holidays[1]} customDays={getCustomsForDay(1)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={2} day={addDay(2)} isWeekFull={isWeekFull} holidays={holidays[2]} customDays={getCustomsForDay(2)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={3} day={addDay(3)} isWeekFull={isWeekFull} holidays={holidays[3]} customDays={getCustomsForDay(3)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={4} day={addDay(4)} isWeekFull={isWeekFull} holidays={holidays[4]} customDays={getCustomsForDay(4)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={5} day={addDay(5)} isWeekFull={isWeekFull} holidays={holidays[5]} customDays={getCustomsForDay(5)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={6} day={addDay(6)} isWeekFull={isWeekFull} holidays={holidays[6]} customDays={getCustomsForDay(6)} />
           <div className={"p-1.5 w-28 h-36 flex-grow flex flex-col border-solid border-tomato-900 " + borderSummary}>
-            <div className={`${isWeekFull ? 'bg-tomato-600' : 'bg-gray-300'} text-gray-900 flex-grow`}>
-              Full: <input type="checkbox" checked={isWeekFull} onChange={e => {
-                if (e.target.checked) {
-                  config.dates.push(start)
-                } else {
-                  config.dates = config.dates.filter(d => !daysEqual(d, start))
-                }
-                config.save()
-              }} />
+            <div className={`${isWeekFull ? 'bg-tomato-300' : 'bg-gray-300'} text-gray-900 flex-grow`}>
+              <div className="flex flex-row">
+                <div>Full:</div>
+                <input className="mt-1 h-5 w-5 rounded-md mr-2" type="checkbox" checked={isWeekFull} onChange={e => {
+                  if (e.target.checked) {
+                    config.dates.push(start)
+                  } else {
+                    config.dates = config.dates.filter(d => !daysEqual(d, start))
+                  }
+                  config.save()
+                }} />
+              </div>
+              { allHolidays.length !== 0 &&
+                <div className="mt-1">
+                  <div>Holidays:</div>
+                  {allHolidays.join(", ")}
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -198,9 +226,7 @@ export type AnimalEntriesType = {
   ids: ObjectId[];
 }[]
 
-const GridDayEntry = ({ entry, weekEntry, day, getUsername }: { entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string }) => {
-  const holidays = useCalandarDates(day)
-
+const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays, customDays }: { entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string, isWeekFull: boolean, holidays: HolidayEntry[], customDays: (DatabaseWaitType | ICustomEvent[]) } ) => {
   const animals = useAnimals(
     Animal.where('killDate', day).select('animalType bringer confirmed'),
     [day.getTime()]
@@ -244,7 +270,7 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername }: { entry: number, w
   })
 
 
-  const customDays = useDayEvents(DayEvents.where('date', day).select("eventName eventColor"), [day.getTime()])
+  // const customDays = useDayEvents(DayEvents.where('date', day).select("eventName eventColor"), [day.getTime()])
 
   const [hovering, setHovering] = useState(false)
 
@@ -274,9 +300,24 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername }: { entry: number, w
   const isToday = useMemo(() => daysEqual(new Date(), day), [day.getTime()])
   const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getTime()])
 
+  let bg;
+  if(isWeekFull) {
+    if(isBeforeToday) {
+      bg = "bg-tomato-100"
+    } else {
+      bg = "bg-tomato-300"
+    }
+  } else {
+    if(isBeforeToday) {
+      bg = "bg-gray-400"
+    } else {
+      bg = "bg-gray-100"
+    }
+  }
+
   return (
     <div className={"flex flex-col p-1.5 w-36 h-36 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
-      <div onPointerEnter={() => setHovering(true)} onPointerLeave={() => setHovering(false)} className={`${isToday ? 'border-2 border-solid border-blue-500' : ''} ${isBeforeToday ? 'bg-gray-400' : 'bg-gray-200'} text-gray-900 flex-grow relative`}>
+      <div onPointerEnter={() => setHovering(true)} onPointerLeave={() => setHovering(false)} className={`${isToday ? 'border-2 border-solid border-blue-500' : ''} ${bg} text-gray-900 flex-grow relative`}>
         <div className="flex flex-col p-1">
           {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} dayData={allUserAnimalEntries} {...e} />)}
           {customDays !== DatabaseWait && customDays.map((e, i) => <CustomDayEntry key={i} event={e} />)}
@@ -407,6 +448,6 @@ const useCalandarDates = (date: Date) => {
 }
 
 type HolidayEntry = {
-  name: String,
+  name: string,
   date: Date
 }

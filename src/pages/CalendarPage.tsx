@@ -3,7 +3,7 @@ import { Property } from 'csstype';
 import InfiniteScroll from 'react-infinite-scroller';
 import { IFullDaysConfig, useConfig } from '../database/types/Configs';
 import { SvgArrow, SvgCow, SvgPig, SvgPlus } from '../assets/Icons';
-import Animal, { AnimalType, useAnimals } from '../database/types/Animal';
+import Animal, { AnimalType, IAnimal, useAnimals } from '../database/types/Animal';
 import { normalizeDay } from '../Util';
 import { list } from 'postcss';
 import { ObjectId } from 'bson'
@@ -162,22 +162,33 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
       return customDays.filter(d => d.date.getTime() == date.getTime())
     }
 
+    const animals = useAnimals(
+      Animal.where('killDate').gte(start.getTime()).lt(nextWeek.getTime()).select('animalType bringer confirmed killDate'),
+      [start.getTime()]
+    )
+    const getAnimalsForDay: (day: number) => (DatabaseWaitType | IAnimal[]) = day => {
+      if(animals == DatabaseWait) {
+        return DatabaseWait
+      }
+      const date = addDay(day)
+      return animals.filter(d => d.killDate.getTime() == date.getTime())
+    }
+
 
     const niceCustomDays = customDays === DatabaseWait ? [] : customDays
-
     const allHolidays = niceCustomDays.map(d => d.eventName).concat(holidays.flatMap(arr => arr.map(a => a.name)))
 
 
     return (
       <div className="relative pl-2">
         <div ref={isThisWeek ? todayRef : null} className="flex flex-row">
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={0} day={addDay(0)} isWeekFull={isWeekFull} holidays={holidays[0]} customDays={getCustomsForDay(0)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={1} day={addDay(1)} isWeekFull={isWeekFull} holidays={holidays[1]} customDays={getCustomsForDay(1)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={2} day={addDay(2)} isWeekFull={isWeekFull} holidays={holidays[2]} customDays={getCustomsForDay(2)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={3} day={addDay(3)} isWeekFull={isWeekFull} holidays={holidays[3]} customDays={getCustomsForDay(3)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={4} day={addDay(4)} isWeekFull={isWeekFull} holidays={holidays[4]} customDays={getCustomsForDay(4)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={5} day={addDay(5)} isWeekFull={isWeekFull} holidays={holidays[5]} customDays={getCustomsForDay(5)} />
-          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={6} day={addDay(6)} isWeekFull={isWeekFull} holidays={holidays[6]} customDays={getCustomsForDay(6)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={0} day={addDay(0)} isWeekFull={isWeekFull} holidays={holidays[0]} customDays={getCustomsForDay(0)} animals={getAnimalsForDay(0)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={1} day={addDay(1)} isWeekFull={isWeekFull} holidays={holidays[1]} customDays={getCustomsForDay(1)} animals={getAnimalsForDay(1)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={2} day={addDay(2)} isWeekFull={isWeekFull} holidays={holidays[2]} customDays={getCustomsForDay(2)} animals={getAnimalsForDay(2)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={3} day={addDay(3)} isWeekFull={isWeekFull} holidays={holidays[3]} customDays={getCustomsForDay(3)} animals={getAnimalsForDay(3)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={4} day={addDay(4)} isWeekFull={isWeekFull} holidays={holidays[4]} customDays={getCustomsForDay(4)} animals={getAnimalsForDay(4)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={5} day={addDay(5)} isWeekFull={isWeekFull} holidays={holidays[5]} customDays={getCustomsForDay(5)} animals={getAnimalsForDay(5)} />
+          <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={6} day={addDay(6)} isWeekFull={isWeekFull} holidays={holidays[6]} customDays={getCustomsForDay(6)} animals={getAnimalsForDay(6)} />
           <div className={"p-1.5 w-28 h-36 flex-grow flex flex-col border-solid border-tomato-900 " + borderSummary}>
             <div className={`${isWeekFull ? 'bg-tomato-300' : 'bg-gray-300'} text-gray-900 flex-grow`}>
               <div className="flex flex-row">
@@ -191,6 +202,8 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
                   config.save()
                 }} />
               </div>
+              Beef: { animals === DatabaseWait ? '??' : animals.filter(a => a.animalType === AnimalType.Beef).length },
+              Pork: { animals === DatabaseWait ? '??' : animals.filter(a => a.animalType === AnimalType.Pork).length }
               { allHolidays.length !== 0 &&
                 <div className="mt-1">
                   <div>Holidays:</div>
@@ -226,11 +239,7 @@ export type AnimalEntriesType = {
   ids: ObjectId[];
 }[]
 
-const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays, customDays }: { entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string, isWeekFull: boolean, holidays: HolidayEntry[], customDays: (DatabaseWaitType | ICustomEvent[]) } ) => {
-  const animals = useAnimals(
-    Animal.where('killDate', day).select('animalType bringer confirmed'),
-    [day.getTime()]
-  )
+const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays, customDays, animals }: { entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string, isWeekFull: boolean, holidays: HolidayEntry[], customDays: (DatabaseWaitType | ICustomEvent[]), animals: (DatabaseWaitType | IAnimal[]) } ) => {
 
   const sortedNamedEntries = animals === DatabaseWait ? [] :
     Array.from(animals
@@ -333,14 +342,6 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays
 }
 
 const CustomDayEntry = ({ event }: { event: ICustomEvent }) => {
-
-  const rgbToHex = (rgb: number) => {
-    var hex = rgb.toString(16);
-    if (hex.length < 2) {
-      hex = "0" + hex;
-    }
-    return hex;
-  };
   return (
     <div onClick={() => setModal(customDay, { objectId: event.id })} className="flex flex-row cursor-pointer mt-0.5 rounded-sm " style={{
       backgroundColor: event.eventColor

@@ -6,13 +6,13 @@ import { customEventsDatabaseName } from '../DatabaseNames';
 export interface ICustomEvent extends Document {
   date: Date
   eventName: string
-  eventColor: number
+  eventColor: string
 }
 
 const customEventsSchema = new Schema({
   date: { type: Schema.Types.Date, required: true },
   eventName: { type: String, required: true },
-  eventColor: { type: Number, default: 0 }
+  eventColor: { type: String, default: 'white' }
 });
 
 const DayEvents = mongoose.model<ICustomEvent>(customEventsDatabaseName, customEventsSchema)

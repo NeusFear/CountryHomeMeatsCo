@@ -341,16 +341,9 @@ const CustomDayEntry = ({ event }: { event: ICustomEvent }) => {
     }
     return hex;
   };
-  const fullColorHex = (color: number) => {
-    const red = rgbToHex((color >> 16) & 255);
-    const green = rgbToHex((color >> 8) & 255);
-    const blue = rgbToHex((color >> 0) & 255);
-    return red + green + blue;
-  };
-
   return (
     <div onClick={() => setModal(customDay, { objectId: event.id })} className="flex flex-row cursor-pointer mt-0.5 rounded-sm " style={{
-      backgroundColor: "#" + fullColorHex(event.eventColor)
+      backgroundColor: event.eventColor
     }}>
       <div className="w-1.5 mr-0.5 rounded-l-sm bg-gray-600 hover:bg-gray-500"></div>
       <div className="flex-grow flex flex-col">

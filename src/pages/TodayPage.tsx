@@ -15,7 +15,7 @@ import UserTag from "../components/UserTag";
 export const TodayPage = () => {
   const today = useMemo(() => new Date(), [])
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen overflow-y-hidden">
       <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
         <div className="text-white text-4xl font-bold ml-4">TODAY</div>
         <div className="text-gray-700 ml-1 text-3xl">
@@ -25,7 +25,7 @@ export const TodayPage = () => {
           /
           {today.getFullYear()}</div>
       </div>
-      <div className="flex flex-row w-full h-full">
+      <div className="flex flex-row w-full h-full pb-14">
         <TodaysCutList />
         <ScheduledSlaughterList />
       </div>
@@ -41,8 +41,8 @@ const TodaysCutList = () => {
   )
 
   return (
-    <div className="h-5/6 flex-grow pl-4 pr-2 py-4">
-      <div className="h-5/6 bg-gray-200 rounded-lg">
+    <div className="h-full flex-grow pl-4 pr-2 py-4">
+      <div className="h-full bg-gray-200 rounded-lg">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
           <SvgPrint className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => printPage("test.pdf")}/>
@@ -99,12 +99,14 @@ const ScheduledSlaughterList = () => {
   }
 
   return (
-    <div className="h-5/6 pl-2 pr-4 py-4 flex-grow">
-      <div className="h-5/6 bg-gray-200 rounded-lg pb-4">
+    <div className="h-full pl-2 pr-4 py-4 flex-grow">
+      <div className="h-full bg-gray-200 rounded-lg pb-14">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Scheduled Slaughters</div>
         </div>
-        { scheduledToday.length > 0 ? scheduledToday.map((a, i) => <SlaughterInfo key={i} animal={a} />) : <p className="ml-4">No scheduled slaughters for today.</p> }
+        <div className="overflow-y-scroll h-full">
+          { scheduledToday.length > 0 ? scheduledToday.map((a, i) => <SlaughterInfo key={i} animal={a} />) : <p className="ml-4">No scheduled slaughters for today.</p> }
+        </div>
       </div>
     </div>
   )

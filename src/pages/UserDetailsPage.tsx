@@ -174,7 +174,7 @@ const BroughtInAnimalEntry = ({ animals }: {
           }
 
         </div>
-        {state === 0 && <div className=" mt-1 pt-0.5 bg-green-200 text-xs cursor-pointer px-2 rounded-sm text-white mr-2 truncate" onClick={e => {
+        {state === 0 && <div className=" mt-1 pt-0.5 bg-green-200 hover:bg-green-300 text-xs cursor-pointer px-2 rounded-sm text-white mr-2 truncate" onClick={e => {
           animals.forEach(a => {
             a.confirmed = true
             a.save()
@@ -182,6 +182,9 @@ const BroughtInAnimalEntry = ({ animals }: {
           e.stopPropagation()
           e.preventDefault()
         }}>Click to Confirm</div>}
+
+        {(state !== 0 && amount > 1) && <div className=" mt-0.5 bg-gray-600 text-xs cursor-pointer px-2 rounded-sm text-white mr-2 truncate">Click to add Slaughter Info<br />for one of the Animals</div>}
+
         <div>{date.toLocaleDateString()}</div>
       </div>
       {

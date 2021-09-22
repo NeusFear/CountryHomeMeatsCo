@@ -320,9 +320,9 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays
   let bg;
   if(isWeekFull) {
     if(isBeforeToday) {
-      bg = "bg-tomato-100"
+      bg = "border-tomato-400 border-2 bg-gray-400"
     } else {
-      bg = "bg-tomato-300"
+      bg = "border-tomato-100 border-2 bg-gray-100"
     }
   } else {
     if(isBeforeToday) {

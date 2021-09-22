@@ -5,14 +5,14 @@ import DayEvents, { ICustomEvent, useDayEvents } from "../database/types/DayEven
 import { ModalHandler } from "./ModalManager";
 
 const colours = [
-  '#f66353', //Red
-  '#f6a253', //Orange
-  '#f6eb53', //Yellow
-  '#56f653', //Green
-  '#53cbf6', //Light Blue
-  '#5361f6', //Dark Blue
-  '#aa53f6', //Purple
-  '#f653ba', //Pink
+  '#FCA5A5', //Red
+  '#FDBA74', //Orange
+  '#FDE047', //Yellow
+  '#BEF264', //Green
+  '#5EEAD4', //Light Blue
+  '#7DD3FC', //Dark Blue
+  '#C4B5FD', //Purple
+  '#F9A8D4', //Pink
 ] as const
 
 export const CustomCalendarEntryModal = forwardRef<ModalHandler, { date?: Date, objectId?: string }>(({ date, objectId }, ref) => {
@@ -74,7 +74,7 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
 
 const ColorOption = ({color, selected, setSelected}: {color: string, selected: boolean, setSelected: () => void}) => {
   return <div
-    className={`w-8 h-8 rounded-md border-2 hover:border-tomato-600 mx-1 ${selected ? 'border-blue-500' : 'border-black'}`} 
+    className={`w-8 h-8 rounded-md border hover:border-gray-800 mx-1 ${selected ? 'border-black' : 'border-white'}`} 
     onClick={setSelected}
     style={{backgroundColor: color}} 
   />

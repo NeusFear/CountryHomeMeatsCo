@@ -24,7 +24,7 @@ export const CalendarDayModal = ({ state }:
   const users = useMemo(() => dayData.map(d => d.user), [dayData])
   const animalIds = useMemo(() => dayData.map(d => d.ids).reduce((a, b) => a.concat(b)), [dayData])
 
-  const animals = useAnimals(Animal.where('_id').in(animalIds).select('confirmed'), [animalIds])
+  const animals = useAnimals(Animal.where('_id').in(animalIds).select('confirmed animalType'), [animalIds])
   const allUsers = useUsers(User.where('_id').in(users).select('name phoneNumbers'), [users])
 
   if(allUsers === DatabaseWait || animals === DatabaseWait) {
@@ -71,7 +71,7 @@ export const CalendarDayModal = ({ state }:
             <div>
               {selectedUserModel.phoneNumbers.map((pn, i) => <div key={i}>{pn.name}: {pn.number}</div>)}
             </div>
-            <div className="cursor-pointer mt-5 bg-red-500 hover:bg-red-900" onClick={confirmAll}>Confirm all</div>
+            <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={confirmAll}>Confirm all</div>
             <div className="mt-5">
               {selectedAnimalModels === undefined ? 'Loading...' : 
                 selectedAnimalModels.map((a, i) => <AnimalEntry key={i} animal={a} />)
@@ -102,12 +102,16 @@ const UserListItem = ({user, amount, type, selected, onClick}: {user: IUser, amo
 }
 
 const AnimalEntry = ({animal}: {animal: IAnimal}) => {
+
   const history = useHistory()
+
+  const confirmedClasses = "bg-green-200 hover:bg-green-300"
+  const unconfirmedClasses = "bg-tomato-200 hover:bg-tomato-300"
+
   return (
-    <div className={`cursor-pointer 
-      bg-${animal.confirmed?'green':'tomato'}-500
-      hover:bg-${animal.confirmed?'green':'tomato'}-700
-    `} onClick={() => history.push(animalDetailsPage, animal.id)}>
+    <div className={`cursor-pointer rounded-sm mb-0.5 shadow px-2 ${animal.confirmed ? confirmedClasses : unconfirmedClasses}`} 
+    onClick={() => history.push(animalDetailsPage, animal.id)}>
+      {animal.animalType === AnimalType.Beef ? "Beef " : "Pork "}
       Confirmed: {animal.confirmed?'Yes':'No'}
     </div>
   )

@@ -63,7 +63,7 @@ export const LandingPage = () => {
   )
 }
 
-const DaysEnum = Object.freeze({"scheduledBeef":"bg-tomato-400 group-hover:bg-tomato-300", "scheduledPig":"bg-green-300 group-hover:bg-green-200", "somethingElse":"bg-blue-300 group-hover:bg-blue-200"})
+const DaysEnum = Object.freeze({"scheduledBeef":"bg-tomato-400 group-hover:bg-tomato-300", "somethingElse":"bg-green-300 group-hover:bg-green-200", "scheduledPig":"bg-blue-300 group-hover:bg-blue-200"})
 
 const EventItem = ({ eventName, eventType }: { eventName: string, eventType: any }) => {
   return (

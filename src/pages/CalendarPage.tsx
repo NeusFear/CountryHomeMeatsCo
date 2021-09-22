@@ -106,6 +106,17 @@ export const CalendarPage = () => {
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] as const
 
+const DaysEnum = Object.freeze({"scheduledBeef":"bg-tomato-400 group-hover:bg-tomato-300", "scheduledPig":"bg-blue-300 group-hover:bg-blue-200", "somethingElse":"bg-green-300 group-hover:bg-green-200"})
+
+const EventItem = ({ eventName, eventType }: { eventName: string, eventType: any }) => {
+  return (
+    <div className="flex flex-row bg-gray-200 h-4 ml-1 rounded-r-sm rounded-l-md mb-0.5 shadow-sm">
+      <div className={`${eventType} w-2 rounded-l-md mr-2`}></div>
+      <div className="text-xs">{eventName}</div>
+    </div>
+  )
+}
+
 const GridWeekEntry = forwardRef<HTMLDivElement,
   {
     weekEntry: number,
@@ -178,6 +189,8 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
     const niceCustomDays = customDays === DatabaseWait ? [] : customDays
     const allHolidays = niceCustomDays.map(d => d.eventName).concat(holidays.flatMap(arr => arr.map(a => a.name)))
 
+    const numBeef = animals === DatabaseWait ? '??' : animals.filter(a => a.animalType === AnimalType.Beef).length;
+    const numPork = animals === DatabaseWait ? '??' : animals.filter(a => a.animalType === AnimalType.Pork).length;
 
     return (
       <div className="relative pl-2">
@@ -190,9 +203,9 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
           <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={5} day={addDay(5)} isWeekFull={isWeekFull} holidays={holidays[5]} customDays={getCustomsForDay(5)} animals={getAnimalsForDay(5)} />
           <GridDayEntry getUsername={getUsername} weekEntry={weekEntry} entry={6} day={addDay(6)} isWeekFull={isWeekFull} holidays={holidays[6]} customDays={getCustomsForDay(6)} animals={getAnimalsForDay(6)} />
           <div className={"p-1.5 w-28 h-36 flex-grow flex flex-col border-solid border-tomato-900 " + borderSummary}>
-            <div className={`${isWeekFull ? 'bg-tomato-300' : 'bg-gray-300'} text-gray-900 flex-grow`}>
-              <div className="flex flex-row">
-                <div>Full:</div>
+            <div className={`${isWeekFull ? 'bg-tomato-300' : 'bg-gray-300'} text-gray-900 flex-grow pt-1 pr-4`}>
+              <div className="flex flex-row pr-4 transform -translate-y-3 absolute right-0 bottom-0">
+                <div className="text-xs mt-1.5 mr-1">Full:</div>
                 <input className="mt-1 h-5 w-5 rounded-md mr-2" type="checkbox" checked={isWeekFull} onChange={e => {
                   if (e.target.checked) {
                     config.dates.push(start)
@@ -202,14 +215,9 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
                   config.save()
                 }} />
               </div>
-              Beef: { animals === DatabaseWait ? '??' : animals.filter(a => a.animalType === AnimalType.Beef).length },
-              Pork: { animals === DatabaseWait ? '??' : animals.filter(a => a.animalType === AnimalType.Pork).length }
-              { allHolidays.length !== 0 &&
-                <div className="mt-1">
-                  <div>Holidays:</div>
-                  {allHolidays.join(", ")}
-                </div>
-              }
+              <EventItem eventType={DaysEnum.scheduledBeef} eventName={ numBeef + " Beef Scheduled"}/>
+              <EventItem eventType={DaysEnum.scheduledPig} eventName={ numPork + " Pork Scheduled"} />
+              {allHolidays.map((holiday) => <EventItem eventType={DaysEnum.somethingElse} eventName={holiday} /> )}
             </div>
           </div>
         </div>

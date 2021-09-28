@@ -2,7 +2,7 @@ import { createResultWatcher, DatabaseWait, DatabaseWaitType } from './../Databa
 import mongoose, { Schema, Document, SchemaDefinition, DocumentDefinition } from 'mongoose';
 import { animalDatabaseName, configDatabaseName } from '../DatabaseNames';
 
-const Configs = ["FullDays", "PriceData"] as const
+const Configs = ["FullDays", "PriceData", "GlobalNotes"] as const
 
 
 export type PriceDataNumbers = {
@@ -63,20 +63,29 @@ export interface IFullDaysConfig extends Document {
   dates: Date[]
 }
 
+export interface IGlobalNotes extends Document {
+  globalNotes: string
+}
+
 type ConfigTypes<T> = 
   T extends typeof Configs[0] ? IFullDaysConfig :
   T extends typeof Configs[1] ? PriceData :
+  T extends typeof Configs[2] ? IGlobalNotes :
   never;
 
-type AllConfigs = IFullDaysConfig & PriceData
+type AllConfigs = IFullDaysConfig & PriceData & IGlobalNotes
 
 const configSchema = new Schema({
   //Full days:
-  dates: { type: [Schema.Types.Date], required: true },
+  dates: { type: [Schema.Types.Date] },
 
   //Price: data
-  currentPrices: { type: PriceDataSchema, required: true },
-  
+  currentPrices: { type: PriceDataSchema },
+
+  //Global Notes
+  globalNotes: { type: String },
+
+
 })
 
 
@@ -84,7 +93,8 @@ const ConfigModel = mongoose.model<AllConfigs>(configDatabaseName, configSchema)
 
 const TypeToKey: { [path in typeof Configs[number]]: keyof Omit<ConfigTypes<path>, keyof Document> } = {
   "FullDays": "dates",
-  "PriceData": "currentPrices"
+  "PriceData": "currentPrices",
+  "GlobalNotes": "globalNotes"
 }
 
 const useConfigs = createResultWatcher(ConfigModel)
@@ -97,6 +107,8 @@ export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigType
   if(configs.length === 0) {
     return new ConfigModel({
       dates: [],
+
+      globalNotes: "",
 
       currentPrices: {
         beef: {

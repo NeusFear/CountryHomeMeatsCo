@@ -1,6 +1,9 @@
 import { SvgAddressbook, SvgPrices, SvgTimesheets } from "../assets/Icons"
 import { Link } from 'react-router-dom';
 import { timeSheet, addressBook, priceSheet } from "../NavBar";
+import { IGlobalNotes, useConfig } from "../database/types/Configs";
+import { DatabaseWait } from "../database/Database";
+import { useState } from "react";
 
 export const LandingPage = () => {
   return (
@@ -13,9 +16,7 @@ export const LandingPage = () => {
           <div className="flex-grow bg-gray-200 rounded-lg">
             <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1">Notes</div>
             <div className="bg-white m-2">
-              Some notes go here<br />
-              more notes<br />
-              something else<br />
+              <NotesEdit />
             </div>
           </div>
           <div className="flex-grow bg-gray-200 mx-4 h-full rounded-lg">
@@ -60,6 +61,19 @@ export const LandingPage = () => {
         </div>
       </div>
     </div>
+  )
+}
+
+const NotesEdit = () => {
+  const notes = useConfig("GlobalNotes")
+  if(notes === DatabaseWait) {
+    return <span>Loading...</span>
+  }
+  return (
+    <textarea className="w-full" value={notes.globalNotes} onChange={v => {
+      notes.globalNotes = v.currentTarget.value
+      notes.save()
+    }} />
   )
 }
 

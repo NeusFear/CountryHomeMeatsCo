@@ -164,7 +164,7 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
     const holidays = Array(7).fill(0).map((_, i) => useCalandarDates(addDay(i)))
 
 
-    const customDays = useDayEvents(DayEvents.where('startDate').lt(nextWeek.getTime()).where("endDate").gte(start.getTime()).select("eventName eventColor startDate endDate"), [ start.getTime() ])
+    const customDays = useDayEvents(DayEvents.where('startDate').lt(nextWeek.getTime()).where("endDate").gte(start.getTime()).select("eventName eventColor startDate endDate noWork"), [ start.getTime() ])
     const getCustomsForDay: (day: number) => (DatabaseWaitType | ICustomEvent[]) = day => {
       if(customDays == DatabaseWait) {
         return DatabaseWait
@@ -184,6 +184,8 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
       const date = addDay(day)
       return animals.filter(d => d.killDate.getTime() == date.getTime())
     }
+
+    
 
 
     const niceCustomDays = customDays === DatabaseWait ? [] : customDays
@@ -318,23 +320,23 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays
   const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getTime()])
 
   let bg;
-  if(isWeekFull) {
+  if(isWeekFull || (customDays !== DatabaseWait && customDays.some(d => d.noWork))) {
     if(isBeforeToday) {
-      bg = "border-tomato-400 border-2 bg-gray-400"
+      bg = "border-tomato-400 bg-gray-400"
     } else {
-      bg = "border-tomato-100 border-2 bg-gray-100"
+      bg = "border-tomato-100 bg-gray-100"
     }
   } else {
     if(isBeforeToday) {
-      bg = "bg-gray-400"
+      bg = "border-transparent bg-gray-400"
     } else {
-      bg = "bg-gray-100"
+      bg = "border-transparent bg-gray-100"
     }
   }
 
   return (
     <div className={"flex flex-col p-1.5 w-36 h-36 border-solid border-tomato-900 text-xs font-semibold " + borderClassText.toUpperCase()}>
-      <div onPointerEnter={() => setHovering(true)} onPointerLeave={() => setHovering(false)} className={`${isToday ? 'border-2 border-solid border-blue-500' : ''} ${bg} text-gray-900 flex-grow relative`}>
+      <div onPointerEnter={() => setHovering(true)} onPointerLeave={() => setHovering(false)} className={`${isToday ? 'border-2 border-solid border-blue-500' : ''} ${bg} border-2 text-gray-900 flex-grow relative`}>
         <div className="flex flex-col p-1">
           {sortedNamedEntries.map((e, i) => <GridDayAnimalEntry key={i} day={day} dayData={allUserAnimalEntries} {...e} />)}
           {customDays !== DatabaseWait && customDays.map((e, i) => <CustomDayEntry key={i} event={e} />)}

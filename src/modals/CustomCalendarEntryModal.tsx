@@ -4,7 +4,7 @@ import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCap
 import { EditorValidateInput } from "../components/EditorValidateInput";
 import { DatabaseWait } from "../database/Database";
 import DayEvents, { ICustomEvent, useDayEvents } from "../database/types/DayEvents";
-import { ModalHandler } from "./ModalManager";
+import { ModalHandler, setModal } from "./ModalManager";
 
 const colours = [
   '#FCA5A5', //Red
@@ -35,7 +35,7 @@ const style = `
 
 export const CustomCalendarEntryModal = forwardRef<ModalHandler, { date?: Date, objectId?: string }>(({ date, objectId }, ref) => {
   return objectId === undefined ?
-    (<CustomCalendarEntryModalWithEntry ref={ref} entry={new DayEvents({ startDate: date, endDate: date, eventColor: colours[0] })} />) :
+    (<CustomCalendarEntryModalWithEntry ref={ref} entry={new DayEvents({ startDate: date, endDate: date, eventColor: colours[0], noWork: false })} />) :
     (<CustomCalendarEntryModalWithID ref={ref} id={objectId} />)
 })
 
@@ -117,8 +117,15 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
             }}  />) }
           </div>
         </div>
+        <div className="pt-4 flex flex-row">
+          <div>No Work:</div>
+          <input className="mt-1 h-5 w-5 rounded-md mr-2" type="checkbox" checked={entry.noWork} onChange={runThenSave(e => entry.noWork = e.target.checked)} />
+        </div>
       </div>
-      <div>Delete</div>
+      <div className="bg-tomato-200 cursor-pointer" onClick={() => {
+        entry.delete()
+        setModal(null)
+      }}>Delete</div>
     </div>
   )
 })

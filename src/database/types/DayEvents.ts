@@ -8,13 +8,15 @@ export interface ICustomEvent extends Document {
   endDate: Date
   eventName: string
   eventColor: string
+  noWork: boolean
 }
 
 const customEventsSchema = new Schema({
   startDate: { type: Schema.Types.Date, required: true },
   endDate: { type: Schema.Types.Date, required: true },
   eventName: { type: String, required: true },
-  eventColor: { type: String, default: 'white' }
+  eventColor: { type: String, default: 'white' },
+  noWork: { type: Boolean, default: false }
 });
 
 const DayEvents = mongoose.model<ICustomEvent>(customEventsDatabaseName, customEventsSchema)

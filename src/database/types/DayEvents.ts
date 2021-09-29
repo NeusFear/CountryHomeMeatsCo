@@ -4,13 +4,15 @@ import { createResultWatcher } from '../Database';
 import { customEventsDatabaseName } from '../DatabaseNames';
 
 export interface ICustomEvent extends Document {
-  date: Date
+  startDate: Date
+  endDate: Date
   eventName: string
   eventColor: string
 }
 
 const customEventsSchema = new Schema({
-  date: { type: Schema.Types.Date, required: true },
+  startDate: { type: Schema.Types.Date, required: true },
+  endDate: { type: Schema.Types.Date, required: true },
   eventName: { type: String, required: true },
   eventColor: { type: String, default: 'white' }
 });

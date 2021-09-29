@@ -1,4 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import DayPicker from "react-day-picker"
+import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
 import { EditorValidateInput } from "../components/EditorValidateInput";
 import { DatabaseWait } from "../database/Database";
 import DayEvents, { ICustomEvent, useDayEvents } from "../database/types/DayEvents";
@@ -15,9 +17,25 @@ const colours = [
   '#F9A8D4', //Pink
 ] as const
 
+
+const style = `
+.DayPicker-Day {
+  border-radius: 0
+}
+.DayPicker-Day--isHighlighted {
+  background-color: var(--yellow-300)
+}
+.DayPicker-Day--isSelected {
+  background-color: var(--blue-300)
+}
+.DayPicker-Day:hover {
+  background-color: var(--blue-100) !important
+}
+`
+
 export const CustomCalendarEntryModal = forwardRef<ModalHandler, { date?: Date, objectId?: string }>(({ date, objectId }, ref) => {
   return objectId === undefined ?
-    (<CustomCalendarEntryModalWithEntry ref={ref} entry={new DayEvents({ date, eventColor: colours[0] })} />) :
+    (<CustomCalendarEntryModalWithEntry ref={ref} entry={new DayEvents({ startDate: date, endDate: date, eventColor: colours[0] })} />) :
     (<CustomCalendarEntryModalWithID ref={ref} id={objectId} />)
 })
 
@@ -29,6 +47,28 @@ const CustomCalendarEntryModalWithID = forwardRef<ModalHandler, { id: string }>(
 })
 
 const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICustomEvent }>(({ entry }, ref) => {
+  const runThenSave = <T,>(run: (arg: T) => void) => {
+    return (arg: T) => {
+      run(arg)
+      if(!entry.isNew) {
+        entry.save()
+      }
+      
+    }
+  }
+
+  const [startDate, setStartDate] = useState(entry.startDate)
+  const [endDate, setEndDate] = useState(entry.endDate)
+
+  const swapIfNeededAndUpdate = () => {
+    if(entry.startDate.getTime() > entry.endDate.getTime()) {
+      const temp = entry.startDate
+      entry.startDate = entry.endDate
+      entry.endDate = temp
+    }
+    setStartDate(entry.startDate)
+    setEndDate(entry.endDate)
+  }
 
   useImperativeHandle(ref, () => ({
     onClose: () => entry.save()
@@ -37,7 +77,7 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
   const [selectedColour, setSelectedColour] = useState(entry.eventColor)
   
   return (
-    <div className="flex flex-col" style={{ width: '700px', height: '500px' }}>
+    <div className="flex flex-col" style={{ width: '700px', height: '650px' }}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
         {entry.isNew ?
           <span className="text-gray-300 font-semibold">Create New Event</span> :
@@ -48,12 +88,21 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
         <div className="pt-4">
           <EditorValidateInput label="Name" example="vacation" current={entry.eventName} predicate={t => t.length >= 3} onChange={d => entry.eventName = d.text} />
         </div>
-        <div className="flex flex-row w-full h-56">
+        <div className="flex flex-row w-full">
+          <style>{style}</style>
           <div className="m-2 bg-gray-300">
-            Start Day Picker (default: today)
+            Start Day Picker
+            <DayPickerWrapper date={startDate} entry={entry} setDate={runThenSave(d => {
+              entry.startDate = d
+              swapIfNeededAndUpdate()
+            })} />
           </div>
           <div className="m-2 bg-gray-300">
-            End Day Picker (default: today)
+            End Day Picker
+            <DayPickerWrapper date={endDate} entry={entry} setDate={runThenSave(d => {
+              entry.endDate = d
+              swapIfNeededAndUpdate()
+            })}/>
           </div>
         </div>
         <div className="pt-4">
@@ -62,7 +111,9 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
             { colours.map((colour, i) => <ColorOption key={i} color={colour} selected={selectedColour === colour} setSelected={() => {
               entry.eventColor = colour
               setSelectedColour(colour)
-              entry.save()
+              if(!entry.isNew) {
+                entry.save()
+              }
             }}  />) }
           </div>
         </div>
@@ -78,4 +129,35 @@ const ColorOption = ({color, selected, setSelected}: {color: string, selected: b
     onClick={setSelected}
     style={{backgroundColor: color}} 
   />
+}
+
+const DayPickerWrapper = ({date, setDate, entry}: {date: Date, setDate: (date: Date) => void, entry: ICustomEvent}) => {
+  const [selectedMonth, setSelectedMonth] = useState(date)
+
+  return (
+    <DayPicker
+      onDayClick={setDate}
+      month={selectedMonth}
+      captionElement={({ date, localeUtils }) =>
+        <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth} />
+      }
+      modifiers={{
+        isSelected: d => d.getTime() === date.getTime(),
+        isHighlighted: d => d.getTime() >= entry.startDate.getTime() && d.getTime() <= entry.endDate.getTime()
+      }}
+      fromMonth={fromMonth}
+      toMonth={toMonth}
+      renderDay={day => {
+        return (
+          <div
+            //Below is some hacks to make this div take up the entire parent area.
+            //This is to have the data-tip take up the whole area
+            style={{ margin: '-8px', padding: '8px' }}
+          >
+            {day.getDate()}
+          </div>
+        )
+      }}
+    />
+  )
 }

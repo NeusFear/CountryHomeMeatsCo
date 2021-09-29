@@ -164,13 +164,13 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
     const holidays = Array(7).fill(0).map((_, i) => useCalandarDates(addDay(i)))
 
 
-    const customDays = useDayEvents(DayEvents.where('date').gte(start.getTime()).lt(nextWeek.getTime()).select("eventName eventColor date"), [ start.getTime() ])
+    const customDays = useDayEvents(DayEvents.where('startDate').lt(nextWeek.getTime()).where("endDate").gte(start.getTime()).select("eventName eventColor startDate endDate"), [ start.getTime() ])
     const getCustomsForDay: (day: number) => (DatabaseWaitType | ICustomEvent[]) = day => {
       if(customDays == DatabaseWait) {
         return DatabaseWait
       }
       const date = addDay(day)
-      return customDays.filter(d => d.date.getTime() == date.getTime())
+      return customDays.filter(d => date.getTime() >= d.startDate.getTime() && date.getTime() < d.endDate.getTime())
     }
 
     const animals = useAnimals(

@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import { AnimalEntriesType } from "../pages/CalendarPage";
 import { DatabaseWait } from "../database/Database";
 import { formatDay } from "../Util";
+import { formatPhoneNumber } from "../Util";
 
 export const CalendarDayModal = ({ state }:
 { 
@@ -68,27 +69,24 @@ export const CalendarDayModal = ({ state }:
             /> 
           ) }
         </div>
-        <div className="w-1/3 p-2 border-r border-black">
-          <div>{selectedUserModel.name}</div>
-          <div>
-            {selectedUserModel.phoneNumbers.map((pn, i) => <div key={i}>{pn.name}: {pn.number}</div>)}
+        <div className="w-1/3 p-2 border-r border-black flex flex-col">
+          <div className="font-bold">{selectedUserModel.name}</div>
+          <div className="flex-grow">
+            <div className="my-2">
+              {selectedUserModel.phoneNumbers.map((pn, i) => <div className="flex flex-row" key={i}><p className="flex-grow">{pn.name}:</p>{formatPhoneNumber(pn.number)}</div>)}
+            </div>
             {selectedUserModel.emails.map((em, i) => <div key={i}>{em}</div>)}
             {selectedUserModel.notes}
           </div>
-          <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={confirmAll}>Confirm all</div>
+          <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow text-center" onClick={() => history.push(userDetailsPage, selectedUser)}>Go to User</div>
+        </div>
+        <div className="w-1/3 p-2">
+        <div className="cursor-pointer mt-1 bg-gray-200 hover:bg-gray-300 rounded-sm px-2 shadow" onClick={confirmAll}>Confirm all</div>
           <div className="mt-5">
             {selectedAnimalModels === undefined ? 'Loading...' : 
               selectedAnimalModels.map((a, i) => <AnimalEntry key={i} animal={a} />)
             }
           </div>
-        </div>
-        <div className="w-1/3 p-2">
-          <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={() => {
-            if(selectedAnimalModels !== undefined) {
-              history.push(animalDetailsPage, selectedAnimalModels[0].id)
-            }
-          }}>Go to first animal</div>
-          <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={() => history.push(userDetailsPage, selectedUser)}>Go to User</div>
         </div>
       </div>
     </div>
@@ -119,11 +117,24 @@ const AnimalEntry = ({animal}: {animal: IAnimal}) => {
   const confirmedClasses = "bg-green-200 hover:bg-green-300"
   const unconfirmedClasses = "bg-tomato-200 hover:bg-tomato-300"
 
+  const confirmAnimal = () => {
+    if (!animal.confirmed) {
+      animal.confirmed = true
+      animal.save()
+    }
+  }
+
   return (
-    <div className={`cursor-pointer rounded-sm mb-0.5 shadow px-2 ${animal.confirmed ? confirmedClasses : unconfirmedClasses}`} 
-    onClick={() => history.push(animalDetailsPage, animal.id)}>
-      {animal.animalType === AnimalType.Beef ? "Beef " : "Pork "}
-      Confirmed: {animal.confirmed?'Yes':'No'}
+    <div className="cursor-pointer rounded-sm shadow px-2 hover:bg-gray-200 mb-1">
+      <div className="flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
+        <p className="flex-grow text-xs font-bold">{animal.animalType === AnimalType.Beef ? "Beef " : "Pork "}</p>
+        <div className={`text-xs rounded-sm shadow text-center mt-0.5 px-1 + ${animal.confirmed ? confirmedClasses : unconfirmedClasses}`} 
+        onClick={e => {
+          confirmAnimal()
+          e.stopPropagation()
+        }}>{animal.confirmed?'Confirmed':'Not Confirmed'}</div>
+      </div>
+      <p className="text-xs">ID: {animal.id}</p>
     </div>
   )
 }

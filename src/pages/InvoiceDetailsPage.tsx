@@ -7,8 +7,9 @@ import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Anima
 import { PriceDataNumbers } from "../database/types/Configs"
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
-import Invoice, { AllCuredPorkDataPieces, BeefPricesList, IInvoice, PorkPricesList, useInvoice } from "../database/types/Invoices"
+import Invoice, { AllCuredPorkDataPieces, BeefPricesList, IInvoice, PaymentType, PorkPricesList, useInvoice } from "../database/types/Invoices"
 import User, { useUsers } from "../database/types/User"
+import { formatDay, normalizeDay } from "../Util"
 
 export const InvoiceDetailsPage = () => {
     const id = useHistoryListState()
@@ -32,22 +33,8 @@ export const InvoiceDetailsPage = () => {
         return <div>Error: Animal with id {animalID.toHexString()} was not found</div>
     }
 
-
-    const keyList = animal.animalType === AnimalType.Beef ? BeefPricesList : PorkPricesList
-    const keyObject = animal.animalType === AnimalType.Beef ? invoice.beefprices : invoice.porkprices
-    let total = 0
-    for(let key of keyList) {
-        total += keyObject[key] ?? 0
-    }
-
-    (invoice.customcharges ?? []).forEach(c => total += c.amount)
-
-    const minTotal = (animal.animalType === AnimalType.Beef ? invoice.priceData.beef : invoice.priceData.pork).minPrice
-    const calcualtedTotal = total;
-    if(total < minTotal) {
-        total = minTotal
-    }
-
+    const { total, calcualtedTotal } = calculateTotal(animal, invoice)
+    
     const cutInstruction = invoice.cutInstruction
 
     return (
@@ -59,7 +46,7 @@ export const InvoiceDetailsPage = () => {
         <div className="flex-grow flex flex-col p-4 overflow-y-scroll">
             
             <div className="flex flex-row h-40">
-                <div className="bg-gray-300 rounded-md shadow-md flex-grow">
+                {/* <div className="bg-gray-300 rounded-md shadow-md flex-grow">
                     <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2">Invoice Details</div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Date Paid:</p>
@@ -77,8 +64,8 @@ export const InvoiceDetailsPage = () => {
                         <p className="font-semibold flex-grow">Check Number:</p>
                         <p className="text-right">#TODO#</p>
                     </div>
-                </div>
-                <div className="bg-gray-300 rounded-md shadow-md flex-grow mx-4">
+                </div> */}
+                <div className="bg-gray-300 rounded-md shadow-md flex-grow">
                     <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2">User Details</div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Name:</p>
@@ -159,7 +146,6 @@ export const InvoiceDetailsPage = () => {
                                             invoice.save()
                                         }} 
                                         onRemove={() => {
-                                            console.log("removed " + i)
                                             invoice.customcharges.splice(i, 1)
                                             invoice.markModified("customcharges")
                                             invoice.save()
@@ -168,8 +154,8 @@ export const InvoiceDetailsPage = () => {
                                 }
                             </tbody>
                     </table>
-                    <div className="w-full relative bg-gray-300">
-                        <div className="py-1 mt-4 absolute left-0 flex flex-row text-green bg-gray-300 px-4 rounded-md text-gray-700 hover:text-black hover:bg-gray-200 cursor-pointer text-xs" onClick={() => {
+                    <div className="float-left mt-4 bg-gray-300">
+                        <div className="py-1 flex flex-row text-green bg-gray-300 px-4 rounded-md text-gray-700 hover:text-black hover:bg-gray-200 cursor-pointer text-xs" onClick={() => {
                             invoice.customcharges.push({name:"New Charge", amount:0})
                             invoice.save()
                         }}>
@@ -178,7 +164,7 @@ export const InvoiceDetailsPage = () => {
                     </div>
                 </div>
                 <div className="flex-grow flex relative">
-                    <div className="mt-4 absolute right-0 flex flex-col">
+                    <div className="mt-4 absolute right-0 bottom-0 flex flex-col">
                         <div className="flex flex-row">
                             <p className="bg-gray-600 px-2 rounded-l-md text-base text-white">TOTAL BEFORE MIN</p>
                             <p className="bg-gray-300 rounded-r-sm px-2 text-base">${calcualtedTotal.toFixed(2)}</p>
@@ -191,10 +177,116 @@ export const InvoiceDetailsPage = () => {
                     </div>
                 </div>
             </div>
-            <br /><br /><br /><br /><br />
+            <PaymentPart animal={animal} invoice={invoice}/>
         </div>
         </div>
     )
+}
+
+const PaymentPart = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}) => {
+    const paid = invoice.markedAsPaid
+
+    const { total } = calculateTotal(animal, invoice)
+    const amountPayed = invoice.paymentTypes.map(t => t.amount).reduce((a, b) => a + b, 0)
+
+    return (
+        <div className="pt-24 w-full">
+            <div className="w-full bg-gray-800 rounded-md">
+                <p className="text-left font-semibold text-gray-200 p-2 rounded-tl-md">Payment {paid && <span>(Paid on {formatDay(invoice.dateTimePaid)} at {invoice.dateTimePaid.toLocaleTimeString()})</span>}</p>
+            </div>
+            <div className="bg-gray-300">
+                { invoice.paymentTypes.map((p, i) => 
+                    <InvoicePaymentEntry key={i} type={p} 
+                        onSave={() => {
+                            invoice.markModified("paymentTypes")
+                            invoice.save()
+                        }} 
+                        onDelete={() => {
+                            invoice.paymentTypes.splice(i, 1)
+                            invoice.markModified("paymentTypes")
+                            invoice.save()
+                        }} 
+                    />
+                ) }  
+            </div>
+            <div className="flex flex-row">
+                <div className="flex-grow">
+                    <div className="float-left mt-4 bg-gray-300">
+                        <div className="py-1 flex flex-row text-green bg-gray-300 px-4 rounded-md text-gray-700 hover:text-black hover:bg-gray-200 cursor-pointer text-xs" onClick={() => {
+                            invoice.paymentTypes.push({ type:"cash", amount:0 })
+                            invoice.save()
+                        }}>
+                            <SvgPlus className="h-4 w-4 mr-2" /> Add Charge
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex flex-row">
+                <div>Unpaid: ${(total - amountPayed).toFixed(2)}</div>
+                <div 
+                    className={(paid ? "bg-green-400" : "bg-tomato-400") + " ml-5"}
+                    onClick={() => {
+                        invoice.markedAsPaid = !invoice.markedAsPaid
+                        invoice.dateTimePaid = invoice.markedAsPaid ? new Date() : null
+                        invoice.save()
+                    }}
+                >
+                    {paid ? "Mark As Unpaid" : "Mark As Paid"}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+const InvoicePaymentEntry = ({type, onDelete, onSave}: {type: PaymentType, onDelete: () => void, onSave: () => void}) => {
+    return (
+        <div className="flex flex-row">
+            <span onClick={onDelete}><SvgTrash className="text-gray-700 hover:text-tomato-700 mr-2" /></span>
+            <select value={type.type} onChange={e => {
+                type.type = e.target.value as any
+                onSave()
+            }}>
+                <option value="cash">Cash</option>
+                <option value="card">Card</option>
+                <option value="check">Check</option>
+            </select>
+            $<RightFacingNumberInput value={type.amount} fixed setValue={v => {
+                type.amount = v
+                onSave()
+            }} />
+            { type.type !== "cash" &&
+                <input
+                    value={type.additionalData ?? ''}
+                    onChange={v => {
+                        v.currentTarget.value = v.currentTarget.value.replace(/[^0-9]/g, '')
+                        type.additionalData = v.currentTarget.value
+                        onSave()
+                    }}
+                    placeholder={type.type === "card" ? "Last 4 card digets" : "Check Number"}
+                />
+            }
+        </div>
+    )
+}
+
+const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
+    const keyList = animal.animalType === AnimalType.Beef ? BeefPricesList : PorkPricesList
+    const keyObject = animal.animalType === AnimalType.Beef ? invoice.beefprices : invoice.porkprices
+    let total = 0
+    for(let key of keyList) {
+        total += keyObject[key] ?? 0
+    }
+
+    (invoice.customcharges ?? []).forEach(c => total += c.amount)
+
+    const minTotal = (animal.animalType === AnimalType.Beef ? invoice.priceData.beef : invoice.priceData.pork).minPrice
+    const calcualtedTotal = total;
+    if(total < minTotal) {
+        total = minTotal
+    }
+
+    return { total, calcualtedTotal }
+
 }
 
 const DataTableWrapper: FC = ({children}) => {

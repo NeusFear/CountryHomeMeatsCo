@@ -5,6 +5,8 @@ export function getDayNumber(date = new Date()) {
 export const normalizeDay = (date: Date = new Date()) => 
   new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0)
 
+export const formatDay = (date: Date) => date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear() //America moment
+
 export const formatPhoneNumber = (numStr: String) => {
     return "(" + numStr.substr(0, 3) + ") " + numStr.substr(3, 3) + "-" + numStr.substr(6);
 }

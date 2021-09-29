@@ -16,6 +16,12 @@ export const PorkPricesList: (keyof IInvoice['porkprices'])[] = [ "slaughter", "
 
 export const AllCuredPorkDataPieces = [ "curedham", "curedbacon", "curedjowl", "curedloin", "curedbutt", "curedpicnic", ] as const
 
+export type PaymentType = {
+    type: "check" | "card" | "cash";
+    amount: number;
+    additionalData?: string;
+}
+
 export interface IInvoice extends Document {
     invoiceId: number,
     user: ObjectId,
@@ -26,8 +32,6 @@ export interface IInvoice extends Document {
     animal: ObjectId,
     half: boolean,
     numQuaters: number,
-
-    dateTimePaid?: Date,
 
     takeHomeWeight: number,
     
@@ -73,6 +77,10 @@ export interface IInvoice extends Document {
         name: string,
         amount: number
     }[]
+
+    dateTimePaid?: Date,
+    markedAsPaid: boolean,
+    paymentTypes: PaymentType[]
 }
 
 const invoiceSchema = new Schema({
@@ -85,8 +93,6 @@ const invoiceSchema = new Schema({
     animal: { type: Schema.Types.ObjectId, ref: animalDatabaseName, required: true },
     half: { type: Boolean, required: true },
     numQuaters: { type: Number, required: true },
-
-    dateTimePaid: { type: Schema.Types.Date },
 
     takeHomeWeight: { type: Number },
 
@@ -131,7 +137,15 @@ const invoiceSchema = new Schema({
     customcharges: { type: [{ 
         name: { type: String },
         amount: { type: Number }
-     }]}
+     }]},
+
+     dateTimePaid: { type: Schema.Types.Date },
+     markedAsPaid: { type: Boolean },
+     paymentTypes: { type: [{ 
+        type: { type: String, enum: ["check", "card", "cash"] },
+        amount: { type: Number },
+        additionalData: { type: String },
+     }]},
 });
 
 const Invoice = mongoose.model<IInvoice>(invoiceDatabaseName, invoiceSchema)
@@ -157,7 +171,10 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         half: half,
         numQuaters: numQuaters,
 
-        customcharges: []
+        customcharges: [],
+        
+        markedAsPaid: false,
+        paymentTypes: [],
     })
 
     

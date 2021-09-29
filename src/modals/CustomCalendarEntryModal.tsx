@@ -90,39 +90,41 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
         </div>
         <div className="flex flex-row w-full">
           <style>{style}</style>
-          <div className="m-2 bg-gray-300">
-            Start Day Picker
+          <div className="m-2 bg-gray-200 border border-gray-600 rounded-md">
+            <p className="ml-4">Event Start:</p>
             <DayPickerWrapper date={startDate} entry={entry} setDate={runThenSave(d => {
               entry.startDate = d
               swapIfNeededAndUpdate()
             })} />
           </div>
-          <div className="m-2 bg-gray-300">
-            End Day Picker
+          <div className="m-2 bg-gray-200 border border-gray-600 rounded-md">
+            <p className="ml-4">Event End:</p>
             <DayPickerWrapper date={endDate} entry={entry} setDate={runThenSave(d => {
               entry.endDate = d
               swapIfNeededAndUpdate()
             })}/>
           </div>
         </div>
-        <div className="pt-4">
-          <span className="ml-2 pr-2 text-gray-700">Color:</span>
-          <div className="flex flex-row ml-6">
-            { colours.map((colour, i) => <ColorOption key={i} color={colour} selected={selectedColour === colour} setSelected={() => {
-              entry.eventColor = colour
-              setSelectedColour(colour)
-              if(!entry.isNew) {
-                entry.save()
-              }
-            }}  />) }
+        <div className="flex flex-row">
+          <div className="pt-4">
+            <span className="ml-2 pr-2 text-gray-700">Color:</span>
+            <div className="flex flex-row ml-6">
+              { colours.map((colour, i) => <ColorOption key={i} color={colour} selected={selectedColour === colour} setSelected={() => {
+                entry.eventColor = colour
+                setSelectedColour(colour)
+                if(!entry.isNew) {
+                  entry.save()
+                }
+              }}  />) }
+            </div>
+          </div>
+          <div className="pt-4 flex flex-row ml-4 mt-6">
+            <p className="mr-2">Day Off:</p>
+            <input className="mt-1 h-5 w-5 rounded-md mr-2" type="checkbox" checked={entry.noWork} onChange={runThenSave(e => entry.noWork = e.target.checked)} />
           </div>
         </div>
-        <div className="pt-4 flex flex-row">
-          <div>No Work:</div>
-          <input className="mt-1 h-5 w-5 rounded-md mr-2" type="checkbox" checked={entry.noWork} onChange={runThenSave(e => entry.noWork = e.target.checked)} />
-        </div>
       </div>
-      <div className="bg-tomato-200 cursor-pointer" onClick={() => {
+      <div className="bg-tomato-200 cursor-pointer m-2 rounded-md shadow text-white hover:bg-tomato-300 text-center p-2" onClick={() => {
         entry.delete()
         setModal(null)
       }}>Delete</div>

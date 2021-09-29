@@ -148,6 +148,7 @@ const DayPickerWrapper = ({date, setDate, entry}: {date: Date, setDate: (date: D
       captionElement={({ date, localeUtils }) =>
         <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth} />
       }
+      onMonthChange={setSelectedMonth}
       modifiers={{
         isSelected: d => d.getTime() === date.getTime(),
         isHighlighted: d => d.getTime() >= entry.startDate.getTime() && d.getTime() <= entry.endDate.getTime()

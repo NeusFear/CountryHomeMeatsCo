@@ -7,9 +7,10 @@ import { getDayNumber, normalizeDay } from "../Util";
 import User, { useUsers } from "../database/types/User";
 import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
 import { mongo } from "mongoose";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { useConfig } from "../database/types/Configs";
 import { DatabaseWait } from "../database/Database";
+import DayEvents, { useDayEvents } from "../database/types/DayEvents";
 
 const style = `
 .DayPicker-Day {
@@ -23,7 +24,11 @@ const style = `
 } 
 .DayPicker-Day--isBusyDay {
   background-color: var(--tomato-100)
-} 
+}
+.DayPicker-Day--isFullDay {
+  background-color: #de6f6f
+}
+
 .DayPicker-Day--isSelected {
   background-color: var(--blue-300)
 }
@@ -46,12 +51,6 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   const databaseLength = useAnimals(Animal.count())
 
   const [quantity, setQuantity] = useState(1)
-
-  function isDayAvailable(date: Date) {
-    const normalizedDay = normalizeDay(date)
-    normalizedDay.setDate(normalizedDay.getDate() - normalizedDay.getDay())
-    return (disabledDays === DatabaseWait || !disabledDays.includes(normalizedDay.getTime())) && getDayNumber(date) >= dayNumber
-  }
 
   function getOrdersForDay(date: Date) {
     if (allAnimals === DatabaseWait) {
@@ -88,6 +87,40 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
   const [selectedMonth, setSelectedMonth] = useState(new Date())
 
+
+  const monthStart = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 0, 12, 0, 0, 0)
+  const monthEnd = new Date(monthStart.getTime())
+  monthEnd.setMonth(monthEnd.getMonth() + 1)
+  const customDays = useDayEvents(
+    DayEvents.
+      where('startDate').lt(monthEnd.getTime()).
+      where("endDate").gte(monthStart.getTime()).
+      select("eventName eventColor startDate endDate noWork"), 
+    [ monthStart.getTime() ]
+  )
+
+  const isDayFull = (date: Date) => {
+    if(customDays !== DatabaseWait && customDays.some(d => d.noWork && date.getTime() >= d.startDate.getTime() && date.getTime() < d.endDate.getTime())) {
+      return true
+    }
+
+    if(disabledDays !== DatabaseWait) {
+      const normalizedDay = normalizeDay(date)
+      normalizedDay.setDate(normalizedDay.getDate() - normalizedDay.getDay())
+      if(disabledDays.includes(normalizedDay.getTime())) {
+        return true
+      }
+    }
+
+    return false
+   
+  }
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+    console.log("rebyild")
+  }, [selectedMonth.getTime()])
+
   return (
     <div style={{ width: '450px', height: '400px' }}>
       <div className="bg-gray-800 w-full rounded-t-sm text-white p-2 font-semibold">
@@ -117,14 +150,16 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
               isQuietDay: date => isOrdersBetween(date, 1, 3),
               isNormalDay: date => isOrdersBetween(date, 4, 6),
               isBusyDay: date => isOrdersBetween(date, 7, 9),
+              isFullDay: date => isDayFull(date)
             }}
             month={selectedMonth}
             captionElement={({ date, localeUtils }) =>
               <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth} />
             }
+            onMonthChange={setSelectedMonth}
             fromMonth={fromMonth}
             toMonth={toMonth}
-            disabledDays={[{ daysOfWeek: [0, 6] }, date => !isDayAvailable(date)]}
+            disabledDays={[{ daysOfWeek: [0, 6] }, date => getDayNumber(date) < dayNumber ]}
             renderDay={day => {
               const orders = getOrdersForDay(day)
               const orderMap = new Map<string, number>()
@@ -140,8 +175,14 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
                 }
               })
 
+              const tipLines = Array.from(orderMap).map(o => `${o[1]}x ${o[0]}`)
+
+              if(isDayFull(day)) {
+                tipLines.unshift("Day Marked As Full")
+              }
+
               return (
-                <div data-tip={Array.from(orderMap).map(o => `${o[1]}x ${o[0]}`).join("<br>")}
+                <div data-tip={tipLines.join("<br>")}
                   //Below is some hacks to make this div take up the entire parent area.
                   //This is to have the data-tip take up the whole area
                   style={{ margin: '-8px', padding: '8px' }}>

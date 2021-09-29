@@ -62,6 +62,7 @@ const DayPickerEntry = ({ date, setDate, }: { date: Date, setDate: (day: Date) =
       captionElement={({ date, localeUtils }) =>
         <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth} />
       }
+      onMonthChange={setSelectedMonth}
       fromMonth={fromMonth}
       toMonth={toMonth}
       disabledDays={[{ daysOfWeek: [0, 6] }]}

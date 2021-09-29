@@ -61,8 +61,8 @@ const CutAnimalEntry = ({animal}: {animal: IAnimal}) => {
   return (
     <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md border border-gray-200 group" onClick={processAnimalToday}>
       <div className="flex flex-row">
-        #{animal.animalId}
-        <div>{animal.animalType == AnimalType.Beef ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+        <div>{animal.animalType == AnimalType.Beef ? <SvgCow className="mb-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
+        <p className="bg-gray-300 rounded-md text-xs py-1 px-2 text-gray-700">#{animal.animalId}</p>
         <div className="ml-1 font-semibold flex-grow">{user === DatabaseWait ? 'Loading...' : user.name}</div>
         <SvgArrow className="text-white group-hover:text-tomato-300 h-6 w-6 transform translate-y-2 rotate-180"/>
       </div>

@@ -117,11 +117,9 @@ const AnimalEntry = ({animal}: {animal: IAnimal}) => {
   const confirmedClasses = "bg-green-200 hover:bg-green-300"
   const unconfirmedClasses = "bg-tomato-200 hover:bg-tomato-300"
 
-  const confirmAnimal = () => {
-    if (!animal.confirmed) {
-      animal.confirmed = true
-      animal.save()
-    }
+  const toggleConfirmation = () => {
+    animal.confirmed = !animal.confirmed
+    animal.save()
   }
 
   return (
@@ -130,7 +128,7 @@ const AnimalEntry = ({animal}: {animal: IAnimal}) => {
         <p className="flex-grow text-xs font-bold">{animal.animalType === AnimalType.Beef ? "Beef " : "Pork "}</p>
         <div className={`text-xs rounded-sm shadow text-center mt-0.5 px-1 + ${animal.confirmed ? confirmedClasses : unconfirmedClasses}`} 
         onClick={e => {
-          confirmAnimal()
+          toggleConfirmation()
           e.stopPropagation()
         }}>{animal.confirmed?'Confirmed':'Not Confirmed'}</div>
       </div>

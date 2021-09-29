@@ -2,11 +2,12 @@ import { ObjectId } from "mongoose"
 import { SvgCow, SvgPig, SvgUser } from "../assets/Icons"
 import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal"
 import { useHistory } from 'react-router-dom';
-import { animalDetailsPage } from "../NavBar";
+import { animalDetailsPage, userDetailsPage } from "../NavBar";
 import User, { IUser, useUsers } from "../database/types/User";
 import { useMemo, useState } from "react";
 import { AnimalEntriesType } from "../pages/CalendarPage";
 import { DatabaseWait } from "../database/Database";
+import { formatDay } from "../Util";
 
 export const CalendarDayModal = ({ state }:
 { 
@@ -17,6 +18,8 @@ export const CalendarDayModal = ({ state }:
     dayData: AnimalEntriesType
   }
 }) => {
+  const history = useHistory()
+
   const { day, dayData } = state
 
   const [ [selectedUser, selectedType], setSelected ] = useState([state.selectedUserID, state.selectedType])
@@ -25,7 +28,7 @@ export const CalendarDayModal = ({ state }:
   const animalIds = useMemo(() => dayData.map(d => d.ids).reduce((a, b) => a.concat(b)), [dayData])
 
   const animals = useAnimals(Animal.where('_id').in(animalIds).select('confirmed animalType'), [animalIds])
-  const allUsers = useUsers(User.where('_id').in(users).select('name phoneNumbers'), [users])
+  const allUsers = useUsers(User.where('_id').in(users).select('name phoneNumbers emails notes'), [users])
 
   if(allUsers === DatabaseWait || animals === DatabaseWait) {
     return (<div>Loading users...</div>)
@@ -50,7 +53,7 @@ export const CalendarDayModal = ({ state }:
   return (
     <div style={{width:'750px', height:'400px'}}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
-        <span className="text-gray-300 font-semibold mt-1">Showing Events for {day.getMonth()}/{day.getDate()}/{day.getFullYear()}</span>
+        <span className="text-gray-300 font-semibold mt-1">Showing Events for {formatDay(day)}</span>
       </div>
       <div className="flex flex-row">
         <div className="flex flex-col px-2 pt-1 mt-1 w-1/3 border-r border-black" style={{height: '350px'}}>
@@ -65,20 +68,28 @@ export const CalendarDayModal = ({ state }:
             /> 
           ) }
         </div>
-        { selectedUser && 
-          <div className="p-2">
-            <div>{selectedUserModel.name}</div>
-            <div>
-              {selectedUserModel.phoneNumbers.map((pn, i) => <div key={i}>{pn.name}: {pn.number}</div>)}
-            </div>
-            <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={confirmAll}>Confirm all</div>
-            <div className="mt-5">
-              {selectedAnimalModels === undefined ? 'Loading...' : 
-                selectedAnimalModels.map((a, i) => <AnimalEntry key={i} animal={a} />)
-              }
-            </div>
+        <div className="w-1/3 p-2 border-r border-black">
+          <div>{selectedUserModel.name}</div>
+          <div>
+            {selectedUserModel.phoneNumbers.map((pn, i) => <div key={i}>{pn.name}: {pn.number}</div>)}
+            {selectedUserModel.emails.map((em, i) => <div key={i}>{em}</div>)}
+            {selectedUserModel.notes}
           </div>
-        }
+          <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={confirmAll}>Confirm all</div>
+          <div className="mt-5">
+            {selectedAnimalModels === undefined ? 'Loading...' : 
+              selectedAnimalModels.map((a, i) => <AnimalEntry key={i} animal={a} />)
+            }
+          </div>
+        </div>
+        <div className="w-1/3 p-2">
+          <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={() => {
+            if(selectedAnimalModels !== undefined) {
+              history.push(animalDetailsPage, selectedAnimalModels[0].id)
+            }
+          }}>Go to first animal</div>
+          <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow" onClick={() => history.push(userDetailsPage, selectedUser)}>Go to User</div>
+        </div>
       </div>
     </div>
   )

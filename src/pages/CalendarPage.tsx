@@ -40,7 +40,7 @@ export const CalendarPage = () => {
   const allUser = users === DatabaseWait ? DatabaseWait : users.reduce((map, u) => map.set(u.id, u.name), new Map<string, string>())
   const getUsername = (id: string) => allUser === DatabaseWait ? 'Loading' : allUser.get(id) ?? '???'
 
-  const [items, setItems] = useState<(() => JSX.Element)[]>([])
+  const [items, setItems] = useState<{ weekEntry: number, start: Date }[]>([])
   const config = useConfig("FullDays")
 
   const todayElement = useRef<HTMLDivElement>()
@@ -57,9 +57,7 @@ export const CalendarPage = () => {
     const date = normalizeDay(new Date())
     date.setDate(date.getDate() - date.getDay() + (num - 5) * 7)
     const len = items.length
-    items.push(
-      () => <GridWeekEntry ref={todayElement} key={len} weekEntry={len} start={date} config={config} getUsername={getUsername} />
-    )
+    items.push({ weekEntry: len, start: date })
     setItems([...items])
   }
 
@@ -91,12 +89,14 @@ export const CalendarPage = () => {
         <div ref={scrollParent} className="flex-grow" style={{ overflowY: 'overlay' as Property.OverflowY }}>
           <InfiniteScroll
             hasMore={true}
-            loader={<div className="loader" key={0}>Loading ...</div>}
+            loader={<div className="loader" key={-1}>Loading ...</div>}
             loadMore={loadMore}
             useWindow={false}
             getScrollParent={() => scrollParent.current}
           >
-            {items.map(f => f())}
+            {items.map((d, i) => 
+              <GridWeekEntry key={i} ref={todayElement} weekEntry={d.weekEntry} start={d.start} config={config} getUsername={getUsername} />
+            )}
           </InfiniteScroll>
         </div>
       </div>
@@ -217,7 +217,7 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
               </div>
               <EventItem eventType={DaysEnum.scheduledBeef} eventName={ numBeef + " Beef Scheduled"}/>
               <EventItem eventType={DaysEnum.scheduledPig} eventName={ numPork + " Pork Scheduled"} />
-              {allHolidays.map((holiday) => <EventItem eventType={DaysEnum.somethingElse} eventName={holiday} /> )}
+              {allHolidays.map((holiday, i) => <EventItem key={i} eventType={DaysEnum.somethingElse} eventName={holiday} /> )}
             </div>
           </div>
         </div>

@@ -51,7 +51,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 mb-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Contact Information</div>
-              <SvgTack className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => pinnedList.updatePinned(id.toHexString(), true)} />
+              <SvgTack className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300"  onClick={e => {pinnedList.updatePinned(user.id, true); e.stopPropagation()}} />
               <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(editUserDetails, id)} />
             </div>
             <div className="bg-white rounded-md p-2 mx-4 mb-1 mt-4 flex flex-row"><SvgUser className="mt-1 mr-1 text-gray-400" />{user.name}</div>

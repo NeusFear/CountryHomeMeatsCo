@@ -70,7 +70,7 @@ const NotesEdit = () => {
     return <span>Loading...</span>
   }
   return (
-    <textarea className="w-full" value={notes.globalNotes} onChange={v => {
+    <textarea className="w-full h-5/6" value={notes.globalNotes} onChange={v => {
       notes.globalNotes = v.currentTarget.value
       notes.save()
     }} />

@@ -50,7 +50,7 @@ export const InvoiceDetailsPage = () => {
         </div>
         <div className="flex-grow flex flex-col p-4 overflow-y-scroll">
             
-            <div className="flex flex-row h-40">
+            <div className="flex flex-row h-auto">
                 {/* <div className="bg-gray-300 rounded-md shadow-md flex-grow">
                     <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2">Invoice Details</div>
                     <div className="flex flex-row pl-2 pr-4">
@@ -102,6 +102,14 @@ export const InvoiceDetailsPage = () => {
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Dress Weight:</p>
                         <p className="text-right">{animal.dressWeight}lbs ({Math.round(animal.dressWeight / animal.liveWeight * 100)}% of live)</p>
+                    </div>
+                    <div className="flex flex-row pl-2 pr-4">
+                        <p className="font-semibold flex-grow">Liver Good:</p>
+                        <p className="text-right">{animal.liverGood ? "Yes" : "No"}</p>
+                    </div>
+                    <div className="flex flex-row pl-2 pr-4">
+                        <p className="font-semibold flex-grow">Older than 30 Months:</p>
+                        <p className="text-right">{animal.older30Months ? "Yes" : "No"}</p>
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Take Home Weight:</p>

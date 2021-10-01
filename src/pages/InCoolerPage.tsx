@@ -3,29 +3,31 @@ import { useHistory } from 'react-router-dom';
 import User, { useUsers } from "../database/types/User"
 import { animalDetailsPage } from "../NavBar"
 import { DatabaseWait } from "../database/Database";
+import { useState } from "react";
 
 export const InCoolerPage = () => {
+
+  const [tab, toggleTab] = useState(true);
+
   const animals = useAnimals(Animal.where("pickedUp", false).where("liveWeight").ne(null))
 
-  const cows: (IAnimal)[] = []
-  const pigs = []
+  const beef: (IAnimal)[] = []
+  const pork = []
   if (animals !== DatabaseWait) {
-    animals.forEach(a => (a.animalType === AnimalType.Beef ? cows : pigs).push(a))
+    animals.forEach(a => (a.animalType === AnimalType.Beef ? beef : pork).push(a))
   }
 
   return (
     <div className="w-full h-screen flex flex-col">
       <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
         <div className="text-white text-4xl font-bold ml-4">IN THE COOLER</div>
+        <div className="text-white h-8 px-2 py-1 mt-2 rounded-md bg-tomato-300 hover:bg-tomato-400 mx-4 cursor-pointer" onClick={() => toggleTab(true)}>View Beef</div>
+        <div className="text-white h-8 px-2 py-1 mt-2 rounded-md bg-green-300 hover:bg-green-400 cursor-pointer" onClick={() => toggleTab(false)}>View Pork</div>
       </div>
-      <div className="flex flex-row pt-4">
-        <div className="flex-grow bg-gray-200 mx-4 h-full rounded-lg">
-          <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1" >BEEF: {cows.length}</div>
-          {cows.map(c => <AnimalInfoEntry key={c.id} animal={c} />)}
-        </div>
-        <div className="flex-grow bg-gray-200 mx-4 h-full rounded-lg">
-          <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1" >PORK: {pigs.length}</div>
-          {pigs.map(c => <AnimalInfoEntry key={c.id} animal={c} />)}
+      <div className="pt-4">
+        <div className="w-auto bg-gray-200 mx-4 h-full rounded-lg">
+          <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1" >{tab ? "BEEF: " + beef.length : "PORK: " + pork.length}</div>
+          {(tab ? beef : pork).map(c => <AnimalInfoEntry key={c.id} animal={c} />)}
         </div>
       </div>
     </div>

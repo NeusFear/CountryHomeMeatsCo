@@ -224,13 +224,22 @@ export const AnimalDetailsPage = () => {
                 if(animal.invoices.length === 0 || confirm("This will remove all current invoices.")) {
                   const toRemove = animal.invoices.map(i => String(i))
                   animal.invoices = []
-                  eaters.forEach(e => {
+                  const toSave = new Set<IUser>()
+                  eaters.forEach((e, i) => {
                     e.foundUser.invoices = e.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
                     if(e.halfUser) {
                       e.halfUser.foundUser.invoices = e.halfUser.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
                     }
-                    generateInvoice(animal, e.foundUser, e.halfUser?.foundUser, priceData.currentPrices, e.cutInstruction, e.foundCutInstruction, databaseLength + 1, eaters.length > 1)
+                    generateInvoice(animal, e.foundUser, e.halfUser?.foundUser, priceData.currentPrices, e.cutInstruction, e.foundCutInstruction, databaseLength + 1 + i, eaters.length > 1)
+                    toSave.add(e.foundUser)
+                    if(e.halfUser) {
+                      toSave.add(e.halfUser?.foundUser)
+                    }
                   })
+                  Invoice.deleteMany().where("_id").in(toRemove).exec().then(r => console.log(r))
+                  console.log(toSave.size)
+                  toSave.forEach(u => u.save())
+                  animal.save()
                 }
               }}>Generate</button> }
             </div>

@@ -220,12 +220,9 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
     }
 
     animal.invoices.push(invoice.id)
-    animal.save()
     primaryUser.invoices.push(invoice.id)
-    primaryUser.save()
     if(secondaryUser !== undefined) {
         secondaryUser.invoices.push(invoice.id)
-        secondaryUser.save()
     }
 
     invoice.save()

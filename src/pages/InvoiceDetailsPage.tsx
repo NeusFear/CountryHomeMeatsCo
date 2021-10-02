@@ -3,6 +3,7 @@ import { FC, useEffect, useState } from "react"
 import { useHistoryListState } from "../AppHooks"
 import { SvgPlus, SvgPrint, SvgTrash } from "../assets/Icons"
 import { DatabaseWait } from "../database/Database"
+import { Link } from "react-router-dom";
 import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal"
 import { PriceDataNumbers } from "../database/types/Configs"
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
@@ -10,6 +11,7 @@ import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
 import Invoice, { AllCuredPorkDataPieces, BeefPricesList, IInvoice, PaymentType, PorkPricesList, useInvoice } from "../database/types/Invoices"
 import User, { useUsers } from "../database/types/User"
 import { formatDay, normalizeDay } from "../Util"
+import { animalDetailsPage, userDetailsPage } from "../NavBar"
 
 export const InvoiceDetailsPage = () => {
     const id = useHistoryListState()
@@ -71,7 +73,17 @@ export const InvoiceDetailsPage = () => {
                     </div>
                 </div> */}
                 <div className="bg-gray-300 rounded-md shadow-md flex-grow mr-2">
-                    <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2">User Details</div>
+                <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2 flex flex-row">
+                        <div className="mr-5">User Details</div>
+                        <Link className="text-blue-500"
+                            to={{
+                                pathname: userDetailsPage,
+                                state: userID.toHexString()
+                              }}
+                        >
+                            Go To User
+                        </Link>
+                    </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Name:</p>
                         <p className="text-right">{user.name}</p>
@@ -86,7 +98,17 @@ export const InvoiceDetailsPage = () => {
                     </div>
                 </div>
                 <div className="bg-gray-300 rounded-md shadow-md flex-grow">
-                    <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2">Animal Details</div>
+                    <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1 mb-2 flex flex-row">
+                        <div className="mr-5">Animal Details</div>
+                        <Link className="text-blue-500"
+                            to={{
+                                pathname: animalDetailsPage,
+                                state: animalID.toHexString()
+                              }}
+                        >
+                            Go To Animal
+                        </Link>
+                    </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Type:</p>
                         <p className="text-right">{invoice.half ? "Half " : ""}{animal.animalType}</p>
@@ -142,11 +164,11 @@ export const InvoiceDetailsPage = () => {
                     </tbody>
             </table>
             <div className="flex flex-row">
-                <div className="flex-grow">
+                <div className="flex-grow w-full ">
                     <CustomChargesPart invoice={invoice} />
                     <PaymentPart invoice={invoice}/>
                 </div>
-                <div className="flex-grow pl-4 pt-4">
+                <div className="flex-grow w-full pl-4 pt-4">
                     <div className="w-full bg-gray-300 rounded-b-md pb-2">
                         <div className="w-full bg-gray-800 rounded-t-md">
                             <p className="text-left font-semibold text-gray-200 p-2 rounded-tl-md">Totals</p>
@@ -156,12 +178,16 @@ export const InvoiceDetailsPage = () => {
                             <FormattedCharge name="Post Min Fee" data={"$" + total.toFixed(2)} />
                             <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
 
-                            {(invoice.customcharges ?? []).map((c, i) => <FormattedCharge key={i} name={"Charge: " + c.name} data={"$" + c.amount} />)}
-                            <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
+                            { invoice.customcharges.length !== 0 &&
+                                <>
+                                    { invoice.customcharges.map((c, i) => <FormattedCharge key={i} name={"Charge: " + c.name} data={"$" + c.amount} />) }
+                                    <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
+                                </>
+                            }
 
                             <FormattedCharge name="Sub Total" data={"$" + subTotal.toFixed(2)} />
 
-                            { invoice.paymentTypes.map((p, i) => <FormattedCharge name={"Payment: by " + p.type} data={"- $" + p.amount.toFixed(2)} />)} 
+                            { invoice.paymentTypes.map((p, i) => <FormattedCharge key={i} name={"Payment: by " + p.type} data={"- $" + p.amount.toFixed(2)} />)} 
 
                             <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
                             <FormattedCharge name="Total Due" data={"$" + (subTotal - amountPayed).toFixed(2)} />
@@ -217,12 +243,17 @@ const CustomChargesPart = ({invoice}: {invoice: IInvoice}) => {
                     }
                 </tbody>
                 <tfoot>
-                    <div className="py-1 flex flex-row text-green bg-gray-300 px-4 rounded-md text-gray-700 hover:text-black hover:bg-gray-200 cursor-pointer text-xs" onClick={() => {
-                        invoice.customcharges.push({name:"New Charge", amount:0})
-                        invoice.save()
-                    }}>
-                        <SvgPlus className="h-4 w-4 mr-2" /> Add Charge
-                    </div>
+                    <tr>
+                        <td>
+                            <span className="py-1 flex flex-row text-green bg-gray-300 px-4 rounded-md text-gray-700 hover:text-black hover:bg-gray-200 cursor-pointer text-xs" onClick={() => {
+                                invoice.customcharges.push({name:"New Charge", amount:0})
+                                invoice.save()
+                            }}>
+                                <SvgPlus className="h-4 w-4 mr-2" /> Add Charge
+                            </span>
+                        </td>
+                    </tr>
+                   
                 </tfoot>
             </table>
         </div>
@@ -301,7 +332,7 @@ const InvoicePaymentEntry = ({type, onDelete, onSave}: {type: PaymentType, onDel
     )
 }
 
-const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
+export const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
     const keyList = animal.animalType === AnimalType.Beef ? BeefPricesList : PorkPricesList
     const keyObject = animal.animalType === AnimalType.Beef ? invoice.beefprices : invoice.porkprices
     let total = 0

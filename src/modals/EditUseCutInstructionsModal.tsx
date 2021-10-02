@@ -109,7 +109,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   return (
     <div className="flex flex-col overflow-clip" style={{width:'900px', height:'620px'}}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
-          <span className="text-gray-300 font-semibold mt-1">Create new Cut Instruction</span>
+          <span className="text-gray-300 font-semibold mt-1">{instructionID === undefined ? "Create new Cut Instruction" : "Edit Cut Instructions"}</span>
       </div>
       <div className="grid grid-cols-5 bg-gray-200">
         { !dbInstructions && 

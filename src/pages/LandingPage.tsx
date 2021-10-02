@@ -9,7 +9,7 @@ import DayEvents, { ICustomEvent, useDayEvents } from "../database/types/DayEven
 import { normalizeDay } from "../Util";
 import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal";
 import { useCalandarDates } from "./CalendarPage";
-import { CSSProperties } from "./react"
+import { CSSProperties } from "react"
 
 export const LandingPage = () => {
   return (

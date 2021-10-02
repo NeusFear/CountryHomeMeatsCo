@@ -20,7 +20,15 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   const dbInstrucionObject = user !== DatabaseWait ? user.cutInstructions[dbInstructionIndex] : undefined
   const dbInstructions = dbInstrucionObject?.instructions
 
-  const [ animalType, setAnimalType ] = useState<AnimalType | DatabaseWaitType>(instructionID === undefined || dbInstructions === undefined ? DatabaseWait : dbInstructions.cutType)
+  const [ animalType, setAnimalType ] = useState<AnimalType | DatabaseWaitType>(() => {
+    if(instructionID === undefined) { //New instructions
+      return AnimalType.Beef
+    }
+    if(dbInstructions === undefined) { //Not New, but waiting on database result
+      return DatabaseWait
+    }
+    return dbInstructions.cutType
+  })
 
   if(dbInstructions !== undefined && animalType === DatabaseWait) {
     setAnimalType(dbInstructions.cutType)
@@ -130,7 +138,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
       <div className="p-4 overflow-y-scroll h-full flex flex-col">
         {animalType !== DatabaseWait && ( 
           animalType === AnimalType.Pork ? 
-            <PorkInstructions instructions={cutInstruction as PorkCutInstructions} refreshCanSubmit={refreshCanSubmit} /> : 
+            <PorkInstructions instructions={cutInstruction as PorkCutInstructions} refreshSubmit={refreshCanSubmit} /> : 
             <BeefInstructions instructions={cutInstruction as BeefCutInstructions}/> 
         ) }
         <div className="flex flex-col mt-5">
@@ -150,7 +158,12 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   )
 })
 
-const PorkInstructions = ({instructions, refreshCanSubmit}: {instructions: PorkCutInstructions, refreshCanSubmit: () => void}) => {
+const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutInstructions, refreshSubmit: () => void}) => {
+  const [state, setState] = useState(0)
+  const refreshCanSubmit = () => {
+    refreshSubmit()
+    setState(state + 1) //Just force a re-render. We *should* have a way that only the valid parts update, but thats to do another time
+  }
   return (
     <div className="flex-grow overflow-show h-full">
       <div className="flex flex-row">

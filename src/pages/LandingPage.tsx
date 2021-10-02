@@ -28,24 +28,6 @@ export const LandingPage = () => {
           <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1">Upcoming Events</div>
           <div className="flex flex-col mb-4 h-full">
             <UpcomingEvents />
-            {/* <EventDivider daysAway={0} />
-            <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
-            <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
-            <EventItem eventType={DaysEnum.somethingElse} eventName="Jessee's Birthday" />
-            <EventDivider daysAway={1} />
-            <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
-            <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
-            <EventItem eventType={DaysEnum.somethingElse} eventName="Someone's Birthday" />
-            <EventItem eventType={DaysEnum.somethingElse} eventName="Someone's Anniversary" />
-            <EventDivider daysAway={2} />
-            <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
-            <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
-            <EventDivider daysAway={3} />
-            <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
-            <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" />
-            <EventDivider daysAway={4} />
-            <EventItem eventType={DaysEnum.scheduledBeef} eventName="7 Beef Scheduled"/>
-            <EventItem eventType={DaysEnum.scheduledPig} eventName="7 Pork Scheduled" /> */}
           </div>
         </div>
         <div className="w-1/5 h-full flex flex-col">
@@ -112,7 +94,7 @@ const UpcomingEvents = () => {
         getScrollParent={() => scrollParent.current}
       >
         {dates.map((d, i) => 
-          <UpcomingDayOrEmpty key={i} date={d} customEvents={customEvents} scheduledAnimals={scheduledAnimals} />
+          <UpcomingDay key={i} date={d} customEvents={customEvents} scheduledAnimals={scheduledAnimals} />
         )}
       </InfiniteScroll>
     </div>
@@ -122,10 +104,6 @@ const UpcomingEvents = () => {
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-//Easiest way to do this is to just return nothing if it's a sunday or a saturday
-const UpcomingDayOrEmpty = ({date, customEvents, scheduledAnimals}: {date: Date, customEvents: ICustomEvent[], scheduledAnimals: IAnimal[]}) => {
-  return  <UpcomingDay date={date} customEvents={customEvents} scheduledAnimals={scheduledAnimals} />
-} //date.getDay() === 0 || date.getDay() === 6 ? null :
 const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, customEvents: ICustomEvent[], scheduledAnimals: IAnimal[]}) => {
   const isWeekend = date.getDay() === 0 || date.getDay() === 6
   const [daysAway, thisYear] = useMemo(() => {

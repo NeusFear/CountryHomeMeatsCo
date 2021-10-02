@@ -12,11 +12,10 @@ async function build(options) {
             outputDirectory: './build/installer',
             authors: 'Wyn Price, Brandon Davis',
             description: 'Made for country home meats (https://www.countryhomemeats.com/)',
-            exe: 'app.exe',
-            setupExe: 'setup.exe'
+            exe: './CountryHomeMeats.exe'
         });
 
-        console.log('💻 Installer is created in dist/installer');
+        console.log('💻 Installer is created in build/installer');
     } catch (e) {
         console.log(`The following error occured: ${e.message}`);
     }

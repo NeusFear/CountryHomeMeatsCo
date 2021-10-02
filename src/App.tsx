@@ -12,10 +12,9 @@ import { NavBar, routes } from './NavBar';
 import { connectToDB } from './database/Database';
 import { ModalManager } from './modals/ModalManager';
 import { ConnectingPage } from './pages/ConnectingPage';
-import { ipcRenderer } from 'electron/renderer';
-import { useMemo } from 'react-router/node_modules/@types/react';
+import { ipcRenderer } from 'electron';
 
-const defaultPinned = ipcRenderer.sendSync("get-pinned-users")
+const defaultPinned = (ipcRenderer.sendSync("get-pinned-users") as string[]).map(s => s.trim()).filter(s => s.length !== 0)
 
 export const AppContainer = () => {
   let connectState = connectToDB("localhost")

@@ -404,7 +404,7 @@ const GridHolidayEntry = ({ holiday }: { holiday: HolidayEntry }) =>
   </div>
 
 const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
-const useCalandarDates = (date: Date) => {
+export const useCalandarDates = (date: Date) => {
   const normalized = new Date(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
   const start = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0).toISOString()
   const end = new Date(date.getFullYear(), date.getMonth() + 1, -1, 59, 59, 59, 0).toISOString()

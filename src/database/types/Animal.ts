@@ -43,7 +43,7 @@ const CowSexes = ["Steer", "Heiffer", "Cow", "Bull"] as const
 const PigSexes = ["Barrow", "Gilt", "Sow", "Boar"] as const
 
 export const getSexes = (animal: IAnimal): AnimalSexes[] => {
-  return [...animal.animalType === AnimalType.Beef ? CowSexes : PigSexes]
+  return [...animal?.animalType === AnimalType.Beef ? CowSexes : PigSexes]
 }
 
 export type AnimalSexes = typeof CowSexes[number] | typeof PigSexes[number]

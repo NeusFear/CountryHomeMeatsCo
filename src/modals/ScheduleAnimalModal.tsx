@@ -118,7 +118,6 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
   useEffect(() => {
     ReactTooltip.rebuild()
-    console.log("rebyild")
   }, [selectedMonth.getTime()])
 
   return (

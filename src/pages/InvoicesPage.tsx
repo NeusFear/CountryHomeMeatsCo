@@ -77,7 +77,7 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
   const animal = useAnimals(Animal.findById(invoice.animal), [invoice.animal], invoice.animal)
   const userIds = [invoice.user, invoice.secondaryUser].filter(a => a != null)
   if(animal !== DatabaseWait) {
-    animal.eaters.forEach(eater => {
+    animal?.eaters?.forEach(eater => {
       userIds.push(eater.id)
       if(eater.halfUser) {
         userIds.push(eater.halfUser.id)
@@ -88,7 +88,7 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
 
   const totalCost = animal === DatabaseWait ? 0 : calculateTotal(animal, invoice).total
 
-  const foundEater = animal === DatabaseWait ? undefined : animal.eaters.find(e => e.id.toHexString() == invoice.user.toHexString())
+  const foundEater = animal === DatabaseWait ? undefined : animal?.eaters.find(e => e.id.toHexString() == invoice.user.toHexString())
 
   const mainUserName = users === DatabaseWait ? DatabaseWait : users.find(u => u._id == invoice.user.toHexString())?.name ?? "???"
   const subUserName = users === DatabaseWait || !invoice.secondaryUser ? DatabaseWait : users.find(u => u._id == invoice.secondaryUser.toHexString()).name ?? "???"

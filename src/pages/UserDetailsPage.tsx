@@ -16,7 +16,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
   const id = useHistoryListState() as ObjectId
   const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions invoices"), [id], id)
 
-  const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user.id : null).select("killDate animalType tagNumber animalId " + AnimalStateFields), [user, id])
+  const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user?.id : null).select("killDate animalType tagNumber animalId " + AnimalStateFields), [user, id])
   if (user === DatabaseWait || usersAnimals === DatabaseWait) {
     return (<div>Loading Info for user id {id}</div>)
   }

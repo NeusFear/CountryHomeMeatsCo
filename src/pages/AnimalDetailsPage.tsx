@@ -31,7 +31,7 @@ export const AnimalDetailsPage = () => {
   const id = useHistoryListState()
   const animal = useAnimals(Animal.findById(id).select(""), [id], id as ObjectId)
 
-  const bringer = animal === DatabaseWait ? null : animal.bringer
+  const bringer = animal === DatabaseWait ? null : animal?.bringer
   const user = useUsers(User.findById(bringer).select("name"), [bringer], bringer)
   const animalSexes = useMemo(() => animal === DatabaseWait ? [] : getSexes(animal), [animal])
   const users = useUsers(User.find().select('name cutInstructions invoices'))
@@ -42,6 +42,8 @@ export const AnimalDetailsPage = () => {
 
   const [eaters, setEaters] = useState<DummyEater[]>()
   const databaseLength = useInvoice(Invoice.countDocuments())
+
+  const history = useHistory()
 
   if(priceData === DatabaseWait) {
     return <div>Loading Price Data</div>
@@ -99,7 +101,7 @@ export const AnimalDetailsPage = () => {
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Schedule</div>
             </div>
-            <div className="p-4 font-semibold flex flex-row">
+            <div className="p-4 font-semibold flex flex-row relative">
               <div className="mr-2">
                 <span>Bringer</span>
                 <div className="bg-gray-100 p-2 font-semibold flex flex-row">{user.name}</div>
@@ -122,6 +124,20 @@ export const AnimalDetailsPage = () => {
                   animal.save()
                 }} />
               </div>
+              { animal && !animal.confirmed &&
+                <div className="font-semibold mx-2 absolute right-0">
+                  <button className="mt-1 rounded-md mr-2 bg-tomato-500 p-5" onClick={e => {
+                    if(confirm("Are you sure you to delete? This cannot be undone.")) {
+                      animal.delete()
+                      const toDelete = animal.invoices.map(i => i.toHexString())
+                      Invoice.deleteMany().where("_id").in(toDelete).exec()
+                      history.length = history.length - 1
+                      history.entries.pop()
+                      history.goBack()
+                    }
+                  }}>Delete Animal</button>
+                </div>
+              }
             </div>
           </div>
           <div className="bg-gray-200 rounded-lg mt-4">
@@ -236,8 +252,7 @@ export const AnimalDetailsPage = () => {
                       toSave.add(e.halfUser?.foundUser)
                     }
                   })
-                  Invoice.deleteMany().where("_id").in(toRemove).exec().then(r => console.log(r))
-                  console.log(toSave.size)
+                  Invoice.deleteMany().where("_id").in(toRemove).exec()
                   toSave.forEach(u => u.save())
                   animal.save()
                 }

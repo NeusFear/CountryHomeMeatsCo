@@ -333,6 +333,9 @@ const InvoicePaymentEntry = ({type, onDelete, onSave}: {type: PaymentType, onDel
 }
 
 export const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
+    if(animal == null || invoice == null) {
+        return { total: 0, calculateTotal: 0 }
+    }
     const keyList = animal.animalType === AnimalType.Beef ? BeefPricesList : PorkPricesList
     const keyObject = animal.animalType === AnimalType.Beef ? invoice.beefprices : invoice.porkprices
     let total = 0

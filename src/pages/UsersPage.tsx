@@ -9,7 +9,7 @@ import { DatabaseWait } from "../database/Database";
 import { formatPhoneNumber } from "../Util";
 import { useSearchState } from "../AppHooks";
 
-const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void, deleteUserDetails: () => void}) => {
+const UserEntry = ({ details, addPinnedUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void}) => {
   const history = useHistory()
   return (
     <div className="cursor-pointer bg-gray-100 hover:shadow-md rounded-lg px-2 py-2 shadow-sm flex flex-row mb-2" onClick={() => history.push(userDetailsPage, details.id)}>
@@ -22,9 +22,6 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
       <span className="hover:text-tomato-400 text-gray-600 h-6 w-6 mr-2 flex-shrink pt-1.5" onClick={e => {addPinnedUserDetails(details.id); e.stopPropagation()}}>
         <SvgTack />
       </span>
-      <span className="hover:text-tomato-400 text-gray-600 h-6 w-6 mr-1 flex-shrink pt-1" onClick={e => {deleteUserDetails(); e.stopPropagation()}}>
-        <SvgTrash />
-      </span>
     </div>
   )
 }
@@ -33,10 +30,10 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const [search, setSearch, regExp] = useSearchState()
   const users = useUsers(User.where('name').regex(regExp).select("name phoneNumbers emails notes"), [search])
 
-  const deleteEntry = (user: IUser) => {
-    user.delete()
-    pinnedList.updatePinned(user.id, false)
-  }
+  // const deleteEntry = (user: IUser) => {
+  //   user.delete()
+  //   pinnedList.updatePinned(user.id, false)
+  // }
 
   return (
     <div className="flex flex-col h-full">
@@ -59,7 +56,7 @@ export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <span className="w-24"></span>
       </div>
       <div className="px-4 mt-4 h-full overflow-y-scroll">
-        { users !== DatabaseWait && users.map(d => <UserEntry key={d.id} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} deleteUserDetails={() => deleteEntry(d)} />)}
+        { users !== DatabaseWait && users.map(d => <UserEntry key={d.id} details={d} addPinnedUserDetails={id => pinnedList.updatePinned(id, true)} />)}
       </div>
     </div>
   )

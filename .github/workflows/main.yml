@@ -26,7 +26,7 @@ jobs:
         with:
           draft: false
           prerelease: false
-          release_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ github.ref }} 
           tag_name: ${{ github.ref }}
           body: |
             New Version
@@ -38,6 +38,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/app-win32-ia32/app.exe
+          asset_path: ./build/installer/Setup.exe
           asset_name: app.exe
           asset_content_type: application/octet-stream

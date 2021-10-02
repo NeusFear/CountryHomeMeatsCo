@@ -7,7 +7,7 @@ import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
 import { ModalHandler, setModal } from "./ModalManager";
 import { SelectInputType } from "../components/SelectInputType";
-import { DatabaseWait } from "../database/Database";
+import { DatabaseWait, DatabaseWaitType } from "../database/Database";
 import ReactTooltip from "react-tooltip";
 
 
@@ -20,18 +20,20 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   const dbInstrucionObject = user !== DatabaseWait ? user.cutInstructions[dbInstructionIndex] : undefined
   const dbInstructions = dbInstrucionObject?.instructions
 
-  const [ animalType, setAnimalType ] = useState<AnimalType>(instructionID === undefined || dbInstructions === undefined ? AnimalType.Beef : dbInstructions.cutType)
+  const [ animalType, setAnimalType ] = useState<AnimalType | DatabaseWaitType>(instructionID === undefined || dbInstructions === undefined ? DatabaseWait : dbInstructions.cutType)
 
-  if(dbInstructions !== undefined && animalType === undefined) {
+  if(dbInstructions !== undefined && animalType === DatabaseWait) {
     setAnimalType(dbInstructions.cutType)
   }
+
+  console.log(animalType)
 
   const testFreshCured = (ins: { fresh: { amount: number }, cured: { amount: number } }) => ins.fresh.amount + ins.cured.amount === 2
   const testPigFreshCured = (ins: PorkCutInstructions) => 
     testFreshCured(ins.ham) && testFreshCured(ins.bacon) && testFreshCured(ins.jowl) && 
     testFreshCured(ins.loin) && testFreshCured(ins.butt) && testFreshCured(ins.picnic)
   
-  const genIfCanSubmit = () => animalType !== undefined && (animalType === AnimalType.Beef || testPigFreshCured(cutInstruction as PorkCutInstructions))
+  const genIfCanSubmit = () => animalType !== DatabaseWait && (animalType === AnimalType.Beef || testPigFreshCured(cutInstruction as PorkCutInstructions))
 
   const [canSubmit, setCanSubmit] = useState(genIfCanSubmit)
   const refreshCanSubmit = () => setCanSubmit(genIfCanSubmit())
@@ -67,7 +69,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
   }, [instructionID, id, animalType, user !== DatabaseWait])
 
   const submit = () => {
-    if(user === DatabaseWait || !canSubmit) {
+    if(user === DatabaseWait || !canSubmit || animalType === DatabaseWait) {
       return
     }
     if(dbInstructions === undefined) {
@@ -126,9 +128,11 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
         <div></div>
       </div>
       <div className="p-4 overflow-y-scroll h-full flex flex-col">
-        { animalType === AnimalType.Pork ? 
-          <PorkInstructions instructions={cutInstruction as PorkCutInstructions} refreshCanSubmit={refreshCanSubmit} /> : 
-          <BeefInstructions instructions={cutInstruction as BeefCutInstructions}/> }
+        {animalType !== DatabaseWait && ( 
+          animalType === AnimalType.Pork ? 
+            <PorkInstructions instructions={cutInstruction as PorkCutInstructions} refreshCanSubmit={refreshCanSubmit} /> : 
+            <BeefInstructions instructions={cutInstruction as BeefCutInstructions}/> 
+        ) }
         <div className="flex flex-col mt-5">
           Notes:
           <textarea className="w-full border-gray-300 border"

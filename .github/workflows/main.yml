@@ -16,12 +16,10 @@ jobs:
           fetch-depth: 0
       - name: install_yarn
         uses: actions/setup-node@v2
-        with:
-          cmd: npm install -g yarn && yarn install
+        run: npm install -g yarn && yarn install
       - name: build
         uses: actions/setup-node@v2
-        with:
-          cmd: yarn build
+        run: yarn build
       - name: release
         uses: actions/create-release@v1
         id: create_release

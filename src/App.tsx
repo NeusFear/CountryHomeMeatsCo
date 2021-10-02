@@ -12,6 +12,10 @@ import { NavBar, routes } from './NavBar';
 import { connectToDB } from './database/Database';
 import { ModalManager } from './modals/ModalManager';
 import { ConnectingPage } from './pages/ConnectingPage';
+import { ipcRenderer } from 'electron/renderer';
+import { useMemo } from 'react-router/node_modules/@types/react';
+
+const defaultPinned = ipcRenderer.sendSync("get-pinned-users")
 
 export const AppContainer = () => {
   let connectState = connectToDB("localhost")
@@ -22,7 +26,7 @@ export const AppContainer = () => {
 
 const App = () => {  
   const [pinnedList, setPinnedList] = useState<UserPinnedList>({ 
-    allPinned: [],
+    allPinned: defaultPinned,
     updatePinned: () => {},
   })
 
@@ -36,6 +40,8 @@ const App = () => {
     if(add) {
       newArray.unshift(id)
     }
+
+    ipcRenderer.send("save-pinned-users", newArray)
 
     setPinnedList({
       allPinned: newArray,

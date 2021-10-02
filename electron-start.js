@@ -1,4 +1,5 @@
 const electron = require("electron");
+const fs = require("fs")
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
@@ -34,6 +35,21 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+const pinnedUserPath = app.getPath("userData") + "/" + "CountryHomeMeatsPinnedUsers.txt"
+
+ipcMain.on("get-pinned-users", (evnt) => {
+  if(fs.existsSync(pinnedUserPath)) {
+    evnt.returnValue = fs.readFileSync(pinnedUserPath).toString().split("\n")
+  } else {
+    evnt.returnValue = []
+  }
+  
+})
+
+ipcMain.on("save-pinned-users", (_, list) => {
+  fs.writeFileSync(pinnedUserPath, list.join("\n"))
+})
 
 ipcMain.on("get-printers", (evnt) => {
   evnt.returnValue = mainWindow.webContents.getPrinters()

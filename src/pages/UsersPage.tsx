@@ -7,6 +7,7 @@ import { editUserDetails, setModal } from "../modals/ModalManager";
 import { useMemo, useState } from "react";
 import { DatabaseWait } from "../database/Database";
 import { formatPhoneNumber } from "../Util";
+import { useSearchState } from "../AppHooks";
 
 const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {details: IUser, addPinnedUserDetails: (id: string) => void, deleteUserDetails: () => void}) => {
   const history = useHistory()
@@ -29,8 +30,7 @@ const UserEntry = ({ details, addPinnedUserDetails, deleteUserDetails }: {detail
 }
 
 export const UsersPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
-  const [search, setSearch] = useState<string>('')
-  const regExp = useMemo(() => new RegExp(search.split(' ').filter(s => s.trim().length !== 0).map(s => `(${s})`).join('|'), 'i'), [search])
+  const [search, setSearch, regExp] = useSearchState()
   const users = useUsers(User.where('name').regex(regExp).select("name phoneNumbers emails notes"), [search])
 
   const deleteEntry = (user: IUser) => {

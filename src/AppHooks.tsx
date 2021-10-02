@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
 //Returns a state of the history list state
@@ -10,4 +10,16 @@ export const useHistoryListState = () => {
   useEffect(() => history.listen(d => setState(d.state)))
 
   return state
+}
+
+export const useSearchState = () => {
+  const [search, setSearch] = useState<string>('')
+  const regExp = useMemo(() => {
+    try {
+      return new RegExp(search.split(' ').filter(s => s.trim().length !== 0).map(s => `(${s})`).join('|'), 'i')
+    } catch {
+      return new RegExp("")
+    }
+  }, [search])
+  return [search, setSearch, regExp] as const
 }

@@ -2,7 +2,7 @@ import { ObjectID } from "bson";
 import { ObjectId } from "mongoose";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
-import { useMemo } from "react-router/node_modules/@types/react";
+import { useSearchState } from "../AppHooks";
 import { SvgSearch } from "../assets/Icons";
 import { DatabaseWait } from "../database/Database";
 import Animal, { Eater, useAnimals } from "../database/types/Animal";
@@ -13,8 +13,31 @@ import { invoiceDetails, userDetailsPage } from "../NavBar";
 import { calculateTotal, InvoiceDetailsPage } from "./InvoiceDetailsPage";
 
 export const InvoicesPage = () => {
-
+    const [search, setSearch, regExp] = useSearchState()
     const invoices = useInvoice(Invoice.find())
+    const users = useUsers(User.where('name').regex(regExp).select(""), [search])
+
+    const userIds = users === DatabaseWait ? DatabaseWait : users.map(u => u._id.toHexString())
+
+    const filteredInvoices = invoices === DatabaseWait ? DatabaseWait : invoices.filter(i => 
+      userIds.includes(i.user.toHexString()) || 
+      (i.secondaryUser !== undefined && userIds.includes(i.secondaryUser.toHexString())) || 
+      regExp.test(`#${i.invoiceId}`)
+    );
+
+    const notPaidInvoices: IInvoice[] = []
+    const paidInvoices: IInvoice[] = []
+
+    if(filteredInvoices !== DatabaseWait) {
+      filteredInvoices.forEach(i => (i.markedAsPaid ? paidInvoices : notPaidInvoices).push(i))
+    }
+
+    const sorter = (a: IInvoice, b: IInvoice) => a.invoiceId - b.invoiceId
+    notPaidInvoices.sort(sorter)
+    paidInvoices.sort(sorter)
+
+    const combined = Array<IInvoice>().concat(notPaidInvoices, paidInvoices)
+
 
     return (
       <div className="flex flex-col h-full">
@@ -25,7 +48,7 @@ export const InvoicesPage = () => {
                 <SvgSearch />
               </span>
             </div>
-            <input type="text" name="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
+            <input type="text" name="search" value={search} onChange={e => setSearch(e.target.value)} className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
           </div>
           <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
         </div>
@@ -39,13 +62,15 @@ export const InvoicesPage = () => {
           <span className="w-24"></span>
         </div>
         <div className="px-4 mt-4 h-full overflow-y-scroll">
-          { invoices !== DatabaseWait &&
-            invoices.map((invoice, i) => <InvoiceEntry key={i} invoice={invoice} />)
+          { 
+            combined.map((invoice, i) => <InvoiceEntry key={i} invoice={invoice} />)
           }
         </div>
       </div>
     )
   }
+
+// const SearchBar
 
 const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
   const history = useHistory()
@@ -69,10 +94,7 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
   const subUserName = users === DatabaseWait || !invoice.secondaryUser ? DatabaseWait : users.find(u => u._id == invoice.secondaryUser.toHexString()).name ?? "???"
   
   return (
-    <Link to={{
-      pathname: invoiceDetails,
-      state: invoice.id
-    }} className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(invoiceDetails, )}>
+    <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(invoiceDetails, invoice.id)}>
         <div className="text-gray-800 group-hover:text-gray-900 w-20 mr-2">
             <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">#{invoice.invoiceId}</p>
         </div>
@@ -121,13 +143,13 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
             }
           </div>
         </div>
-      </Link>
+      </div>
   )
 }
 
 const DataTag = ({ name, onClick }: { name: string, onClick?: () => void }) => {
     return (
-      <div className="flex" onClick={e => { e.stopPropagation(); onClick() }}>
+      <div className="flex" onClick={onClick ? e => { e.stopPropagation(); onClick() } : null}>
         <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">{name}</p>
       </div>
     )

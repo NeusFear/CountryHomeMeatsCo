@@ -18,6 +18,10 @@ jobs:
         uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
+      - name: create_dist
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: dist
       - name: build
         uses: borales/actions-yarn@v2.3.0
         with:

@@ -15,13 +15,13 @@ jobs:
         with:
           fetch-depth: 0
       - name: install_yarn
-        uses: borales/actions-yarn@v2.3.0
+        uses: actions/setup-node@v2
         with:
-          cmd: install
+          cmd: npm install -g yarn && yarn install
       - name: build
-        uses: borales/actions-yarn@v2.3.0
+        uses: actions/setup-node@v2
         with:
-          cmd: build
+          cmd: yarn build
       - name: release
         uses: actions/create-release@v1
         id: create_release

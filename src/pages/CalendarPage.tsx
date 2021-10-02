@@ -170,7 +170,7 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
         return DatabaseWait
       }
       const date = addDay(day)
-      return customDays.filter(d => date.getTime() >= d.startDate.getTime() && date.getTime() < d.endDate.getTime())
+      return customDays.filter(d => date.getTime() >= d.startDate.getTime() && date.getTime() <= d.endDate.getTime())
     }
 
     const animals = useAnimals(

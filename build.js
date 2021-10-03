@@ -16,7 +16,7 @@ async function build(options) {
             description: 'Made for country home meats (https://www.countryhomemeats.com/)',
             exe: 'app.exe',
             noMsi: true,
-            setupExe: "countryhomemeats.exe",
+            setupExe: "chm_installer-" + process.env.GITHUB_RUN_NUMBER + ".exe",
             version: "1.0." + process.env.GITHUB_RUN_NUMBER,
         });
 

@@ -38,6 +38,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/installer/Setup.exe
-          asset_name: app.exe
+          asset_path: ./build/installer/countryhomemeats.exe
+          asset_name: countryhomemeats.exe
           asset_content_type: application/octet-stream

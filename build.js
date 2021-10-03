@@ -8,11 +8,15 @@ async function build(options) {
 
     try {
         await electronInstaller.createWindowsInstaller({
+            title: 'countryhomemeats',
+            name: "countryhomemeats",
             appDirectory: './build/app-win32-ia32',
             outputDirectory: './build/installer',
             authors: 'Wyn Price, Brandon Davis',
             description: 'Made for country home meats (https://www.countryhomemeats.com/)',
-            exe: './CountryHomeMeats.exe'
+            exe: 'app.exe',
+            noMsi: true,
+            setupExe: "countryhomemeats.exe"
         });
 
         console.log('💻 Installer is created in build/installer');

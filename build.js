@@ -17,7 +17,7 @@ async function build(options) {
             exe: 'app.exe',
             noMsi: true,
             setupExe: "countryhomemeats.exe",
-            version: process.env.GITHUB_RUN_NUMBER,
+            version: "1.0." + process.env.GITHUB_RUN_NUMBER,
         });
 
         console.log('💻 Installer is created in build/installer');

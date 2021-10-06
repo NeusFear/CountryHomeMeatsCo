@@ -7,6 +7,9 @@ export const NavPinnedUserEntry = ({id, onClick, onRemove, selected} : {id: stri
   if(details === DatabaseWait) {
     return (<div>Loading Info...</div>)
   }
+  if(details === null) {
+    return null
+  }
   return (
       <div className={"group bg-gray-200 shadow-sm hover:shadow-lg p-1 ml-1 mr-2 my-2 rounded-lg flex flex-row cursor-pointer" + (selected?" bg-tomato-400" : "")} onClick={onClick}>
         <SvgUser className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 float-left" />

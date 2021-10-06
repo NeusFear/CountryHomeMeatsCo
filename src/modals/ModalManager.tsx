@@ -12,6 +12,7 @@ import { useHistory } from 'react-router-dom';
 import { VendorNotesModal } from './VendorNotesModal';
 import { CustomCalendarEntryModal } from './CustomCalendarEntryModal';
 import { PrintTimeSheetModal } from './PrintTimeSheetModal';
+import { GenericPrintModal } from './GenericPrintModal';
 
 Modal.setAppElement("#root")
 const customStyles = {
@@ -31,6 +32,7 @@ export const calendarDayEntry = "calendar-day-entry"
 export const vendorNotes = "vendor-notes"
 export const customDay = "custom-day"
 export const printTimeSheet = "print-time-sheet"
+export const printGenericSheet = "print-generic-sheet"
 
 const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>) => JSX.Element} = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
@@ -42,7 +44,8 @@ const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>)
   [calendarDayEntry]: (state) => <CalendarDayModal state={state} />,
   [vendorNotes]: (state, ref) => <VendorNotesModal ref={ref} value={state.value} setValue={state.setValue} />,
   [customDay]: (state, ref) => <CustomCalendarEntryModal ref={ref} objectId={state.objectId} date={state.date}  />,
-  [printTimeSheet]: () => <PrintTimeSheetModal />
+  [printTimeSheet]: () => <PrintTimeSheetModal />,
+  [printGenericSheet]: (state) => <GenericPrintModal {...state} />
 }
 
 

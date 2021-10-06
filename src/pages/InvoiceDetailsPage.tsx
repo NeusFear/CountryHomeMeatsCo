@@ -9,19 +9,24 @@ import { PriceDataNumbers } from "../database/types/Configs"
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
 import Invoice, { AllCuredPorkDataPieces, BeefPricesList, IInvoice, PaymentType, PorkPricesList, useInvoice } from "../database/types/Invoices"
-import User, { useUsers } from "../database/types/User"
+import User, { IUser, useUsers } from "../database/types/User"
 import { formatDay, normalizeDay } from "../Util"
 import { animalDetailsPage, userDetailsPage } from "../NavBar"
+import { printGenericSheet, setModal } from "../modals/ModalManager"
+import { GenericPrintModal } from "../modals/GenericPrintModal"
+import { PosPrintData } from "electron-pos-printer"
 
 export const InvoiceDetailsPage = () => {
     const id = useHistoryListState()
     const invoice = useInvoice(Invoice.findById(id), [id], id as string)
     const userID = invoice === DatabaseWait ? null : invoice.user
+    const subUserId = invoice === DatabaseWait ? null : invoice.secondaryUser
     const animalID = invoice === DatabaseWait ? null : invoice.animal
     const user = useUsers(User.findById(userID), [userID], userID)
+    const subUser = useUsers(User.findById(subUserId), [subUserId], subUserId)
     const animal = useAnimals(Animal.findById(animalID), [animalID], animalID)
 
-    if(invoice === DatabaseWait || user === DatabaseWait || animal == DatabaseWait) {
+    if(invoice === DatabaseWait || user === DatabaseWait || animal == DatabaseWait || subUser === DatabaseWait) {
         return <div>Loading...</div>
     }
 
@@ -48,7 +53,7 @@ export const InvoiceDetailsPage = () => {
         <div className="w-full h-screen flex flex-col">
         <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
             <div className="text-white text-4xl font-bold ml-4 flex-grow">INVOICE</div>
-            <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 mr-4 mt-1 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgPrint /></div>
+            <div onClick={() => doPrint(invoice, user, animal, subUser)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 mr-4 mt-1 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgPrint /></div>
         </div>
         <div className="flex-grow flex flex-col p-4 overflow-y-scroll">
             
@@ -846,3 +851,133 @@ const EditableCutInstructionEntry = ({title, cutInstructions, editableValue, set
     )
 }
 
+const elementDiv = (value: any, key: string, grow = false) => {
+    return `
+    <div style="${grow ? "flex-grow: 1; " : "text-align: center;"} margin: 5px 10px;">
+        <div style="font-size: large;">${value}</div>
+        ${key}
+    </div>
+`
+}
+
+const formatEater = (user: IUser, tag?: string) => {
+    return `
+    <div style="margin-left: 5px">
+        <div style="font-size: x-large;">
+            ${user.name}${(tag) ? ` (${tag})` : ""}
+        </div>
+        <div>
+            ${user.emails.join("<br>")}<br>
+            ${user.phoneNumbers.map(u => u.name + ": " + u.number).join("<br>")}
+        </div>
+    </div>
+    `
+}
+
+const instructionDiv = (part: string, value: string) => {
+    return `
+    <div style="font-size: large; margin: 10px 0px">
+        ${part}: <span style="font-size: x-large; font-weight: bold;">${value}</span>
+    </div>
+    `
+}
+
+
+const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUser) => {
+    const eater = animal.eaters.find(e => e.id.toHexString() == user.id)
+    if(!eater) {
+        console.error(`Unable to find cut instruction for user ${user.id} in animal ${animal.id}(${animal.animalId}). Found ${animal.eaters.map(e => e.id)} instead `)
+        // alert(`Unable to find user identifier. `)
+    }
+
+    const c = invoice.cutInstruction as BeefCutInstructions
+    const pork = invoice.cutInstruction as PorkCutInstructions
+    const data: PosPrintData[] = [
+        //The top part of the invoice, containing the invoice id, and the animal id
+        {
+            type: "text",
+            value: `
+            <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; text-align: center; ">
+                ${elementDiv(animal.animalId, "Animal ID")}
+                <div style="flex-grow: 1; font-size: xx-large;">
+                    Cutting Sheet
+                </div>
+                ${elementDiv(invoice.invoiceId, "Invoice ID")}
+            </div>
+            `
+        },
+
+        //The information about the bringer and the animal
+        {
+            type: "text",
+            value:  `
+            <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; ">
+                ${elementDiv(user.name, "Bringer", true)}
+                ${elementDiv(`<span style="font-size: large; font-weight: bold;">${invoice.half ? "Half" : "Whole"}</span>`, "Portion")}
+                ${elementDiv(formatDay(animal.killDate), "Date Killed")}
+                ${elementDiv(animal.color, "Color")}
+                ${elementDiv(animal.sex, "Sex")}
+                ${elementDiv(animal.tagNumber, "Tag")}
+                ${elementDiv(animal.penLetter, "Pen")}
+                ${elementDiv(animal.liveWeight, "Live Weight")}
+                ${elementDiv("__________", "Dressed Weight")}
+            </div>
+            `
+        },
+
+        //The information about the eaters
+        {
+            type: "text",
+            value:  `
+            <div style="display: flex; flex-direction: row; width: 100%; padding-bottom: 20px">
+                <div style="width: 100%">
+                    Main Eater:
+                    ${formatEater(user, eater?.tag)}
+                </div>
+                <div style="width: 100%">
+                    Sharer (If Half of Half)
+                    ${subUser ? formatEater(subUser, eater?.halfUser?.tag) : `<div style="margin-left: 5px; font-size: xx-large">No Half of Half</div>`}
+                </div>
+            </div>
+            `
+        },
+
+        //The actual cut instructions: 
+        animal.animalType === AnimalType.Beef ? 
+        {
+            type: "text",
+            value: `
+                <div style="display: flex; flex-direction: row">
+                    <div style="width: 100%">
+                        ${instructionDiv("Round", `${c.round.tenderizedAmount} ${c.round.size} ${c.round.perPackage}`)}
+                        ${instructionDiv("Sirloin Tip", `${c.sirlointip.size} ${c.sirlointip.amount}`)}
+                        ${instructionDiv("Flank", c.flank)}
+                        ${instructionDiv("Sirloin", `${c.sirloin.size} ${c.sirloin.amount}`)}
+                        ${instructionDiv("T-Bone", `${c.tbone.bone} ${c.tbone.size} ${c.tbone.amount}`)}
+                        ${instructionDiv("Rump", c.rump)}
+                        ${instructionDiv("Pikes Peak", c.pikespeak)}
+
+                        ${instructionDiv("Stew Meat", `${c.stewmeat.amount} ${c.stewmeat.size}`)}
+                        ${instructionDiv("Patties", `${c.patties.weight} ${c.patties.amount}`)}
+
+                    </div>
+                    <div style="width: 100%">
+                        ${instructionDiv("Soup Bones", c.soupbones)}
+                        ${instructionDiv("Ground Beef", c.groundbeef)}
+                        ${instructionDiv("Chunk", c.chuck)}
+                        ${instructionDiv("Arm", c.arm)}
+                        ${instructionDiv("Ribs", c.ribs)}
+                        ${instructionDiv("Club", `${c.club.bone} ${c.club.size} ${c.club.amount}`)}
+                        ${instructionDiv("Brisket", c.brisket)}
+                    </div>
+                </div>
+            `
+        } : {
+            type: "text"
+        }
+    ]
+    setModal(printGenericSheet, {
+        title: "Print Invoice",
+        data
+    })
+}

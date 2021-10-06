@@ -7,6 +7,7 @@ import { ipcRenderer, webContents } from "electron";
 import { PosPrintData, PosPrintOptions } from "electron-pos-printer";
 import { PrinterInfo } from "electron/main";
 import { DatabaseWait } from "../database/Database";
+import { PrinterDropdownBox } from "./GenericPrintModal";
 
 export const PrintTimeSheetModal = () => {
   const employees = useEmployees(Employee.find().select("firstName lastName clockInEvents"))
@@ -70,34 +71,7 @@ const DayPickerEntry = ({ date, setDate, }: { date: Date, setDate: (day: Date) =
   )
 }
 
-const PrinterDropdownBox = ({ setPrinter }: { setPrinter: (p: PrinterInfo) => void }) => {
-  const getPrinter = (): PrinterInfo[] => ipcRenderer.sendSync("get-printers")
-  const [printers, setPrinters] = useState(getPrinter)
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout
-    const periodicRun = () => {
-      setPrinters(getPrinter());
-      timer = setTimeout(periodicRun, 1000)
-    }
-    timer = setTimeout(periodicRun, 1000)
-    return () => clearTimeout(timer)
-  })
-
-  const defaultPrinterIndex = printers.findIndex(p => p.isDefault)
-  useEffect(() => {
-    if (defaultPrinterIndex !== -1) {
-      setPrinter(printers[defaultPrinterIndex])
-    }
-  }, [])
-
-  return (
-    <select defaultValue={defaultPrinterIndex} onChange={e => setPrinter(printers[e.currentTarget.value])} className="bg-gray-200">
-      <option className="hidden">Select A Printer</option>
-      {printers.map((p, i) => <option key={i} value={i}>{p.name}</option>)}
-    </select>
-  )
-}
 
 const perRow = 5
 const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Date) => {

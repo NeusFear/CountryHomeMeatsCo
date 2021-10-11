@@ -4,13 +4,17 @@ import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons"
 import Animal, { AnimalStateFields, AnimalType, IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
 import User, { IUser, useUsers } from "../database/types/User"
-import { hangingAnimals, scheduleAnimal, setModal } from "../modals/ModalManager"
+import { hangingAnimals, printGenericSheet, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
-import { getDayNumber, normalizeDay, printPage } from "../Util"
+import { formatDay, getDayNumber, normalizeDay, printPage } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
 import { useMemo } from "react";
 import { DatabaseWait } from "../database/Database";
 import UserTag from "../components/UserTag";
+import { PosPrintData } from "electron-pos-printer";
+import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
+import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
+import Invoice, { IInvoice } from "../database/types/Invoices";
 
 export const TodayPage = () => {
   const today = useMemo(() => new Date(), [])
@@ -37,7 +41,6 @@ const TodaysCutList = () => {
   const animals = useAnimals(Animal
     .where('processDate').ne(undefined)
     .where('pickedUp', false)
-    .select("bringer animalType eaters animalId")
   )
 
   return (
@@ -45,7 +48,7 @@ const TodaysCutList = () => {
       <div className="h-full bg-gray-200 rounded-lg">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
-          <SvgPrint className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => printPage("test.pdf")}/>
+          <SvgPrint className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => animals !== DatabaseWait && doPrintAll(animals)}/>
           <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(hangingAnimals)}/>
         </div>
         {animals !== DatabaseWait && animals.map(a => <SelectedCutList key={a.id} animal={a} />)}
@@ -155,3 +158,240 @@ const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
   )
 }
 
+
+const elementDiv = (value: any, key: string, grow = false) => {
+  return `
+  <div style="${grow ? "flex-grow: 1; " : "text-align: center;"} margin: 5px 10px;">
+      <div style="font-size: large;">${value}</div>
+      ${key}
+  </div>
+`
+}
+
+const formatEater = (user: IUser, tag?: string) => {
+  return `
+  <div style="margin-left: 5px">
+      <div style="font-size: x-large;">
+          ${user.name}${(tag) ? ` (${tag})` : ""}
+      </div>
+      <div>
+          ${user.emails.join("<br>")}<br>
+          ${user.phoneNumbers.map(u => u.name + ": " + u.number).join("<br>")}
+      </div>
+  </div>
+  `
+}
+
+const instructionDiv = (part: string, value: string) => {
+  return `
+  <div style="font-size: large; margin: 10px 0px">
+      ${part}: <span style="font-size: xx-large; font-weight: bold;">${value}</span>
+  </div>
+  `
+}
+
+
+const doPrintAll = async(animals: IAnimal[]) => {
+  const data: PosPrintData[] = [{
+    type: "text",
+    value: `
+      <style>
+        @media print {
+          .page-break  { 
+            display:block; 
+            page-break-before:always; 
+          }
+        }
+        * {
+          font-family: Arial, Helvetica, sans-serif;
+        }
+      </style>
+    `
+  }]
+
+  for (let i = 0; i < animals.length; i++) {
+    const animal = animals[i];
+    for (let j = 0; j < animal.invoices.length; j++) {
+      const invoice = await Invoice.findById(animal.invoices[j]);
+      if(!invoice) {
+        alert("Unable to find invoice data.")
+        continue
+
+      }
+      
+      const user = await User.findById(invoice.user)
+      if(!user) {
+        alert("Unable to find main user")
+        continue
+      }
+
+      let subUser: IUser
+      if(invoice.secondaryUser) {
+        subUser = await User.findById(invoice.secondaryUser)
+        if(!subUser) {
+          alert("Unable to find subUser")
+          continue
+        }
+      }
+      doPrint(data, animal, invoice, user, subUser)
+    }
+  }
+
+  //Remove the last page break
+  data.splice(data.length - 1, 1);
+
+  setModal(printGenericSheet, {
+    title: "Print Invoice",
+    data
+  })
+
+}
+
+const doPrint = async(data: PosPrintData[], animal: IAnimal, invoice: IInvoice, user: IUser, subUser?: IUser) => {
+  const eater = animal.eaters.find(e => e.id.toHexString() == user.id)
+  if(!eater) {
+      console.error(`Unable to find cut instruction for user ${user.id} in animal ${animal.id}(${animal.animalId}). Found ${animal.eaters.map(e => e.id)} instead `)
+  }
+
+  const beef = invoice.cutInstruction as BeefCutInstructions
+  const pork = invoice.cutInstruction as PorkCutInstructions
+
+  //The top part of the invoice, containing the invoice id, and the animal id
+  data.push({
+    type: "text",
+    value: `
+    <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; text-align: center; ">
+        ${elementDiv(animal.animalId, "Animal ID")}
+        <div style="flex-grow: 1; font-size: 4em;">
+            Cutting Sheet
+        </div>
+        ${elementDiv(invoice.invoiceId, "Invoice ID")}
+    </div>
+    `
+  })
+  
+  //The information about the bringer and the animal
+  data.push({
+    type: "text",
+    value:  `
+    <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; ">
+        ${elementDiv(user.name, "Bringer", true)}
+        ${elementDiv(`<span style="font-size: large; font-weight: bold;">${invoice.half ? "Half" : "Whole"}</span>`, "Portion")}
+        ${elementDiv(formatDay(animal.killDate), "Date Killed")}
+        ${elementDiv(animal.color, "Color")}
+        ${elementDiv(animal.sex, "Sex")}
+        ${elementDiv(animal.tagNumber, "Tag")}
+        ${elementDiv(animal.penLetter, "Pen")}
+        ${elementDiv(animal.liveWeight, "Live Weight")}
+        ${elementDiv("__________", "Dressed Weight")}
+    </div>
+    `
+  })
+
+  //The information about the eaters
+  data.push({
+    type: "text",
+    value:  `
+    <div style="display: flex; flex-direction: row; width: 100%; padding-bottom: 20px">
+        <div style="width: 100%">
+            Main Eater:
+            ${formatEater(user, eater?.tag)}
+        </div>
+        <div style="width: 100%">
+            Sharer (If Half of Half)
+            ${subUser ? formatEater(subUser, eater?.halfUser?.tag) : `<div style="margin-left: 5px; font-size: xx-large">No Half of Half</div>`}
+        </div>
+    </div>
+    `
+  })
+
+  const footer: PosPrintData[] = [
+    {
+      type: "text",
+      value: `
+      <br><br><br>
+      <span style="style="font-size: large;"">Take Home Weight: _______________</span>
+      `
+    },
+    {
+      type: "text",
+      value: `<div class="page-break"></div>`
+    }
+  ] 
+
+
+  if(animal.animalType === AnimalType.Beef) {
+      data.push(
+          {
+              type: "text",
+              value: `
+                  <div>
+                      ${instructionDiv("Round", `${beef.round.tenderizedAmount} ${beef.round.size} ${beef.round.perPackage}`)}
+                      ${instructionDiv("Sirloin Tip", `${beef.sirlointip.size} ${beef.sirlointip.amount}`)}
+                      ${instructionDiv("Flank", beef.flank)}
+                      ${instructionDiv("Sirloin", `${beef.sirloin.size} ${beef.sirloin.amount}`)}
+                      ${instructionDiv("T-Bone", `${beef.tbone.bone} ${beef.tbone.size} ${beef.tbone.amount}`)}
+                      ${instructionDiv("Rump", beef.rump)}
+                      ${instructionDiv("Pikes Peak", beef.pikespeak)}
+
+                      ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
+                      ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
+                  </div>
+              `
+          }
+      )
+      data.push(...footer)
+  } else {
+
+      const getHalf = (n: number) => n + (n === 1 ? " Half" : " Halves")
+
+      const generatePorkText = (fresh: boolean): PosPrintData => {
+          const mapper = <T,>(obj: {fresh: T, cured: T}) => fresh ? obj.fresh : obj.cured
+
+          const hamIns = mapper(pork.ham)
+          const baconIns = mapper(pork.bacon)
+          const jowlIns = mapper(pork.jowl)
+          const loinIns = mapper(pork.loin)
+          const buttIns = mapper(pork.butt)
+          const picnicIns = mapper(pork.picnic)
+          return {
+              type: "text",
+              value: `
+              <div>
+                  <div style="font-size: x-large; font-weight: bold;">${fresh ? "Fresh" : "Cured"}</div>
+                  <div>
+                      ${instructionDiv("Ham", `${getHalf(hamIns.amount)} ${hamIns.type} ${hamIns.cutType} ${hamIns.size} ${hamIns.amountPerPackage}`)}
+                      ${instructionDiv("Bacon", `${getHalf(baconIns.amount)} ${baconIns.cutType} ${baconIns.size}`)}
+                      ${instructionDiv("Jowl", `${getHalf(jowlIns.amount)} ${jowlIns.type}`)}
+                      ${instructionDiv("Loin", `${getHalf(loinIns.amount)} ${loinIns.size} ${loinIns.packageAmount}`)}
+                      ${instructionDiv("Butt", `${getHalf(buttIns.amount)} ${buttIns.type} ${buttIns.packageAmount}`)}
+                      ${instructionDiv("Picnic", `${getHalf(picnicIns.amount)} ${picnicIns.type} ${picnicIns.packageAmount}`)}
+                      <br>
+                      ${
+                          fresh ? `
+                              ${instructionDiv("Ribs", pork.rib)}
+                              ${instructionDiv("Head", pork.head)}
+                              ${instructionDiv("Feet", pork.feet)}
+                              ${instructionDiv("Heart", pork.heart)}
+                              ${instructionDiv("Fat", pork.fat)}
+                          ` : `
+                              ${instructionDiv("Sausage", pork.sausage)}
+                          `
+                      }
+                  </div>
+              </div>
+          `
+          }
+      }
+
+      const copiedHeader = Array.from(data)
+
+      data.push(generatePorkText(true))
+      data.push(...footer)
+
+      data.push(...copiedHeader)
+      data.push(generatePorkText(false))
+      data.push(...footer)
+
+  }
+}

@@ -241,7 +241,7 @@ const doPrintAll = async(animals: IAnimal[]) => {
   data.splice(data.length - 1, 1);
 
   setModal(printGenericSheet, {
-    title: "Print Invoice",
+    title: "Print Cut Lists",
     data
   })
 

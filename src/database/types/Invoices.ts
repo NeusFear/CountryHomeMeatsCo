@@ -9,7 +9,7 @@ import { PriceData, PriceDataNumbers, PriceDataSchema } from './Configs';
 
 export const BeefPricesList: (keyof IInvoice['beefprices'])[] = [
     "slaughter", "processing", "halving", "quatering", "tenderized", "patties", 
-    "cutstewmeat", "extraboning", "cubedsteaks", "boneoutrimerib", "boneoutloin",
+    "cutstewmeat", "extraboning", "cubedsteaks", "boneoutprimerib", "boneoutloin",
 ]
 
 export const PorkPricesList: (keyof IInvoice['porkprices'])[] = [ "slaughter", "processing", "cured", "sausage", ]
@@ -51,7 +51,7 @@ export interface IInvoice extends Document {
         cutstewmeat?: number
         extraboning?: number
         cubedsteaks?: number
-        boneoutrimerib?: number
+        boneoutprimerib?: number
         boneoutloin?: number
     }
 
@@ -112,7 +112,7 @@ const invoiceSchema = new Schema({
         patties: { type: Number },
         cutstewmeat: { type: Number },
         cubedsteaks: { type: Number },
-        boneoutrimerib: { type: Number },
+        boneoutprimerib: { type: Number },
         boneoutloin: { type: Number },
     }},
 

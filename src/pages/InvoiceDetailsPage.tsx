@@ -650,8 +650,8 @@ const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
             title={`Bone Out Prime Rib`}
             price={`${price.boneOutPrimeRib.toFixed(2)} per half`}
             quantity="???"
-            value={invoice.beefprices.boneoutrimerib}
-            setValue={runThenSave(v => invoice.beefprices.boneoutrimerib = v)}
+            value={invoice.beefprices.boneoutprimerib}
+            setValue={runThenSave(v => invoice.beefprices.boneoutprimerib = v)}
         />
         <ChargesEntry 
             title={`Bone Out Loin`}
@@ -850,3 +850,278 @@ const EditableCutInstructionEntry = ({title, cutInstructions, editableValue, set
         </tr>
     )
 }
+
+const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUser) => {
+    const data: PosPrintData[] = [
+        {
+            type: "text",
+            value: `
+              <style>
+                @media print {
+                  .page-break  { 
+                    display:block; 
+                    page-break-before:always; 
+                  }
+                }
+                * {
+                  font-family: Arial, Helvetica, sans-serif;
+                }
+              </style>
+            `
+        },
+        {
+            type: "text",
+            value: `
+                <div style="position: absolute">${logoImgString}</div>
+
+                <div style="width: 100%; text-align: right; margin-top: 25px; margin-right: 50px; ">
+                    <div style="font-size: 5em; font-weight: bold;">INVOICE</div>
+                    <div>Todays Date: ${formatDay(new Date())}</div>
+                    <div>Invoice #${invoice.invoiceId}</div>
+                    <div>Animal #${animal.animalId}</div>
+                </div>
+                <div>
+                    <span style="font-weight: bold">Country Home Meat Co</span><br>
+                    2775 E. Waterloo Road<br>
+                    Edmond<br>
+                    Oklahoma<br>
+                    73034<br>
+                    USA<br>
+                    (405) 341-0267
+                </div>
+                <br><br>
+                Bill To:
+                <div>
+                    <span style="font-weight: bold">${user.name}</span><br>
+                    ${user.emails.map(e => `${e}<br>`).join("")}
+                    ${user.phoneNumbers.map(p => `${p.name}: ${p.number}<br>`).join("")}
+                </div>
+            `
+        }
+    ]
+
+    data.push({
+        type: "text",
+        value: `
+        <style>
+        td {
+            text-align: left !important;
+            border: 0.5px solid #ddd;
+            padding: 0;
+            margin: 0;
+        }
+        th, td {
+            padding: 5px !important;
+        }
+        </style>
+        `
+    })
+
+    const formatWeight = (num?: number) => {
+        if(num === undefined || num === null) {
+            return "..."
+        }
+        return num + "lbs"
+    }
+
+    if(animal.animalType === AnimalType.Beef) {
+        const beef = invoice.cutInstruction as BeefCutInstructions
+        data.push({
+            type: "table",
+
+            tableHeader: ["Part", "Instruction Given", "Weight"],
+            tableBody: [
+                [ "Round", `${beef.round.tenderizedAmount} ${beef.round.size} ${beef.round.perPackage}`, "..." ],
+                [ "Sirloin Tip", `${beef.sirlointip.size} ${beef.sirlointip.amount}`, "..." ],
+                [ "Flank", beef.flank, "..." ],
+                [ "Sirloin", `${beef.sirloin.size} ${beef.sirloin.amount}`, "..." ],
+                [ "T-Bone", `${beef.tbone.bone} ${beef.tbone.size} ${beef.tbone.amount}`, "..." ],
+                [ "Rump", beef.rump, "..." ],
+                [ "Pikes Peak", beef.pikespeak, "..." ],
+                [ "Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`, formatWeight(invoice.beefdata.stewmeat) ],
+                [ "Patties", `${beef.patties.weight} ${beef.patties.amount}`, formatWeight(invoice.beefdata.patties) ]
+            ],
+            tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
+            tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+        })
+    } else {
+        const getHalf = (n: number) => n + (n === 1 ? " Half" : " Halves")
+
+        const pork = invoice.cutInstruction as PorkCutInstructions
+        data.push({
+            type: "table",
+
+            tableHeader: ["Part", "Fresh Instruction Given", "Cured Instruction Given", "Cured Weight"],
+            tableBody: [
+                [ 
+                    "Ham", 
+                    `${getHalf(pork.ham.fresh.amount)} ${pork.ham.fresh.type} ${pork.ham.fresh.cutType} ${pork.ham.fresh.size} ${pork.ham.fresh.amountPerPackage}`, 
+                    `${getHalf(pork.ham.cured.amount)} ${pork.ham.cured.type} ${pork.ham.cured.cutType} ${pork.ham.cured.size} ${pork.ham.cured.amountPerPackage}`,
+                    formatWeight(invoice.porkdata.curedham)
+                ], 
+                [
+                    "Bacon",
+                    `${getHalf(pork.bacon.fresh.amount)} ${pork.bacon.fresh.cutType} ${pork.bacon.fresh.size}`,
+                    `${getHalf(pork.bacon.cured.amount)} ${pork.bacon.cured.cutType} ${pork.bacon.cured.size}`,
+                    formatWeight(invoice.porkdata.curedbacon)
+                ],
+                [
+                    "Jowl",
+                    `${getHalf(pork.jowl.fresh.amount)} ${pork.jowl.fresh.type}`,
+                    `${getHalf(pork.jowl.cured.amount)} ${pork.jowl.cured.type}`,
+                    formatWeight(invoice.porkdata.curedjowl)
+                ],
+                [
+                    "Loin",
+                    `${getHalf(pork.loin.fresh.amount)} ${pork.loin.fresh.size} ${pork.loin.fresh.packageAmount}`,
+                    `${getHalf(pork.loin.cured.amount)} ${pork.loin.cured.size} ${pork.loin.cured.packageAmount}`,
+                    formatWeight(invoice.porkdata.curedloin)
+                ], 
+                [
+                    "Butt",
+                    `${getHalf(pork.butt.fresh.amount)} ${pork.butt.fresh.type} ${pork.butt.fresh.packageAmount}`,
+                    `${getHalf(pork.butt.cured.amount)} ${pork.butt.cured.type} ${pork.butt.cured.packageAmount}`,
+                    formatWeight(invoice.porkdata.curedbutt)
+                ],
+                [
+                    "Picnic",
+                    `${getHalf(pork.picnic.fresh.amount)} ${pork.picnic.fresh.type} ${pork.picnic.fresh.packageAmount}`,
+                    `${getHalf(pork.picnic.cured.amount)} ${pork.picnic.cured.type} ${pork.picnic.cured.packageAmount}`,
+                    formatWeight(invoice.porkdata.curedpicnic)
+                ]
+            ],
+            tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
+            tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+        })
+        data.push({
+            type: "table",
+            tableHeader: ["Part", "Instruction Given", "Weight"],
+            tableBody: [
+                [ "Sausage", pork.sausage, formatWeight(invoice.porkdata.sausage)],
+                [ "Ribs", pork.rib, "..." ],
+                [ "Head", pork.head, "..." ],
+                [ "Feet", pork.feet, "..." ],
+                [ "Heart", pork.heart, "..." ],
+                [ "Fat", pork.fat, "..." ],
+            ],
+            tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
+            tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+        })
+    }
+
+    const makeCharge = (name: string, rate: number, unit: string, quantity: string, charge: number) => {
+        return [ 
+            name, 
+            `$${rate.toFixed(2)} ${unit}`.trim(),
+            quantity,
+            `$${(charge ?? 0).toFixed(2)}`     
+        ]
+    }
+    if(animal.animalType === AnimalType.Beef) {
+        const price = invoice.priceData.beef
+        const costs = invoice.beefprices
+        const beefdata = invoice.beefdata
+        data.push({
+            type: "table",
+            tableHeader: ["Charge Name", "Rate", "Quantity", "Charge"],
+            tableBody: [
+                makeCharge("Slaughter Fee", price.slaughter, "", "1 Slaughter", costs.slaughter),
+                makeCharge("Processing Fee", price.processing, "per lbs of dress weight. (Min $200.00)", `${animal.dressWeight}lbs`, costs.processing),
+                makeCharge("Split into halves", price.halves, "per half", invoice.half ? "1 Half" : "N/A", costs.halving),
+                makeCharge("Divide a half in half", price.halvesToQuaters, "per quater", invoice.secondaryUser ? "2 Quaters" : "N/A", costs.quatering),
+                makeCharge("Patties", price.patties, "per lbs", `${beefdata.patties ?? 0}lbs`, costs.patties),
+                makeCharge("Cut Stew Meat", price.cutStewMeat, "per lbs", `${beefdata.stewmeat ?? 0}lbs`, costs.cutstewmeat),
+                makeCharge("Bone and Tenderized", price.boneAndTenderizeRoundSteaks, "per half", beefdata.hasTenderized ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.tenderized),
+                makeCharge("Make Cubes Steaks", price.makeCubedSteaks, "per half", beefdata.makeCubedSteaks ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.cubedsteaks),
+                makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", `???`, costs.boneoutprimerib),
+                makeCharge("Bone Out Loin", price.boneOutLoin, "per half", `???`, costs.boneoutloin),
+
+                ...invoice.customcharges.map(c => [ c.name, "", "", String(c.amount) ])
+            ],
+            tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
+            tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+        })
+    } else {
+        const price = invoice.priceData.pork
+        const costs = invoice.porkprices
+        const porkdata = invoice.porkdata
+        data.push({
+            type: "table",
+            tableHeader: ["Charge Name", "Rate", "Quantity", "Charge"],
+            tableBody: [
+                makeCharge(`Slaughter Fee (${porkdata.over350lbs ? "Over 350lbs" : "Under 350lbs"})`, price.slaughter, "", "1 Slaughter", costs.slaughter),
+                makeCharge("Processing Fee", price.processing, "per lbs of dress weight", `${animal.dressWeight}lbs`, costs.processing),
+                makeCharge("Curing Fee", price.cure, "per lbs of cured pork", `${porkdata.totalcured}lbs`, costs.cured),
+                makeCharge("Sausage Fee", price.sausage, "per lbs of sausage", `${porkdata.sausage}lbs`, costs.sausage),
+            ],
+            tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
+            tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+        })
+    }
+
+    const { total, calcualtedTotal } = calculateTotal(animal, invoice)
+    const amountPayed = invoice.paymentTypes.map(t => t.amount).reduce((a, b) => a + b, 0)
+
+    const subTotal = calculateSubTotal(animal, invoice)
+
+    const formatPaymentMethod = (type: PaymentType) => {
+        switch(type.type) {
+            case "card":
+                return `Card (####-####-####-${type.additionalData}) $${type.amount.toFixed(2)}`
+            case "cash":
+                return `Cash $${type.amount.toFixed(2)}`
+            case "check":
+                return `Check (#${type.additionalData}) $${type.amount.toFixed(2)}`
+        }
+    }
+
+    data.push({
+        type: "text",
+        value: `
+            <div style="margin-left: 50%; margin-top: 10px">
+                <div style="display: flex; flex-direction: row;">
+                    <span style="flex-grow: 1">Calculated Cost:</span>
+                    <span>$${calcualtedTotal.toFixed(2)}</span>
+                </div>
+                <div style="display: flex; flex-direction: row; margin:">
+                    <span style="flex-grow: 1">Post Min:</span>
+                    <span>$${total.toFixed(2)}</span>
+                </div>
+                <div style="display: flex; flex-direction: row; border-top: solid 1px black">
+                    <span style="flex-grow: 1">Sub Total:</span>
+                    <span>$${subTotal.toFixed(2)}</span>
+                </div>
+                <div style="display: flex; flex-direction: row;">
+                    <span style="flex-grow: 1">Amount Paid:</span>
+                    <span>$${amountPayed.toFixed(2)}</span>
+                </div>
+                <div style="display: flex; flex-direction: row;">
+                    <span style="flex-grow: 1">Total Due:</span>
+                    <span>$${(subTotal - amountPayed).toFixed(2)}</span>
+                </div>
+                
+                <div style="display: flex; flex-direction: row; border-top: solid 1px black; margin-top: 0px">
+                    <div style="flex-grow: 1">
+                        Payment Methods
+                    </div>
+                    <div style="text-align: right;">
+                        ${invoice.paymentTypes.map(t => formatPaymentMethod(t) + "<br>").join("")}
+                    </div>
+                </div>
+            </div>
+        `
+    })
+
+
+    setModal(printGenericSheet, {
+      title: "Print Invoice",
+      data
+    })
+}
+
+const logoImgString = `placeholder`

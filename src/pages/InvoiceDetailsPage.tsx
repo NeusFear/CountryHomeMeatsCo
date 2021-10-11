@@ -877,7 +877,7 @@ const formatEater = (user: IUser, tag?: string) => {
 const instructionDiv = (part: string, value: string) => {
     return `
     <div style="font-size: large; margin: 10px 0px">
-        ${part}: <span style="font-size: x-large; font-weight: bold;">${value}</span>
+        ${part}: <span style="font-size: xx-large; font-weight: bold;">${value}</span>
     </div>
     `
 }
@@ -890,16 +890,28 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
         // alert(`Unable to find user identifier. `)
     }
 
-    const c = invoice.cutInstruction as BeefCutInstructions
-    const pork = invoice.cutInstruction as PorkCutInstructions
+    const beef = invoice.cutInstruction as BeefCutInstructions
+    const c = invoice.cutInstruction as PorkCutInstructions
+
     const data: PosPrintData[] = [
         //The top part of the invoice, containing the invoice id, and the animal id
         {
             type: "text",
             value: `
+            <style>
+                @media print {
+                    .page-break  { 
+                        display:block; 
+                        page-break-before:always; 
+                    }
+                }
+                * {
+                    font-family: Arial, Helvetica, sans-serif;
+                }
+            </style>
             <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; text-align: center; ">
                 ${elementDiv(animal.animalId, "Animal ID")}
-                <div style="flex-grow: 1; font-size: xx-large;">
+                <div style="flex-grow: 1; font-size: 4em;">
                     Cutting Sheet
                 </div>
                 ${elementDiv(invoice.invoiceId, "Invoice ID")}
@@ -941,41 +953,96 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
             </div>
             `
         },
+    ]
 
-        //The actual cut instructions: 
-        animal.animalType === AnimalType.Beef ? 
-        {
-            type: "text",
-            value: `
-                <div style="display: flex; flex-direction: row">
-                    <div style="width: 100%">
-                        ${instructionDiv("Round", `${c.round.tenderizedAmount} ${c.round.size} ${c.round.perPackage}`)}
-                        ${instructionDiv("Sirloin Tip", `${c.sirlointip.size} ${c.sirlointip.amount}`)}
-                        ${instructionDiv("Flank", c.flank)}
-                        ${instructionDiv("Sirloin", `${c.sirloin.size} ${c.sirloin.amount}`)}
-                        ${instructionDiv("T-Bone", `${c.tbone.bone} ${c.tbone.size} ${c.tbone.amount}`)}
-                        ${instructionDiv("Rump", c.rump)}
-                        ${instructionDiv("Pikes Peak", c.pikespeak)}
+    const footer: PosPrintData = {
+        type: "text",
+        value: `
+        <br><br><br><span style="style="font-size: large;"">Take Home Weight: _______________</span>
+        `
+    }
 
-                        ${instructionDiv("Stew Meat", `${c.stewmeat.amount} ${c.stewmeat.size}`)}
-                        ${instructionDiv("Patties", `${c.patties.weight} ${c.patties.amount}`)}
+    if(animal.animalType === AnimalType.Beef) {
+        data.push(
+            {
+                type: "text",
+                value: `
+                    <div>
+                        ${instructionDiv("Round", `${beef.round.tenderizedAmount} ${beef.round.size} ${beef.round.perPackage}`)}
+                        ${instructionDiv("Sirloin Tip", `${beef.sirlointip.size} ${beef.sirlointip.amount}`)}
+                        ${instructionDiv("Flank", beef.flank)}
+                        ${instructionDiv("Sirloin", `${beef.sirloin.size} ${beef.sirloin.amount}`)}
+                        ${instructionDiv("T-Bone", `${beef.tbone.bone} ${beef.tbone.size} ${beef.tbone.amount}`)}
+                        ${instructionDiv("Rump", beef.rump)}
+                        ${instructionDiv("Pikes Peak", beef.pikespeak)}
 
+                        ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
+                        ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
                     </div>
-                    <div style="width: 100%">
-                        ${instructionDiv("Soup Bones", c.soupbones)}
-                        ${instructionDiv("Ground Beef", c.groundbeef)}
-                        ${instructionDiv("Chunk", c.chuck)}
-                        ${instructionDiv("Arm", c.arm)}
-                        ${instructionDiv("Ribs", c.ribs)}
-                        ${instructionDiv("Club", `${c.club.bone} ${c.club.size} ${c.club.amount}`)}
-                        ${instructionDiv("Brisket", c.brisket)}
+                `
+            }
+        )
+        data.push(footer)
+    } else {
+
+        const getHalf = (n: number) => n + (n === 1 ? " Half" : " Halves")
+
+        const generatePorkText = (fresh: boolean): PosPrintData => {
+            const mapper = <T,>(obj: {fresh: T, cured: T}) => fresh ? obj.fresh : obj.cured
+
+            const hamIns = mapper(c.ham)
+            const baconIns = mapper(c.bacon)
+            const jowlIns = mapper(c.jowl)
+            const loinIns = mapper(c.loin)
+            const buttIns = mapper(c.butt)
+            const picnicIns = mapper(c.picnic)
+            return {
+                type: "text",
+                value: `
+                <div>
+                    <div style="font-size: x-large; font-weight: bold;">${fresh ? "Fresh" : "Cured"}</div>
+                    <div>
+                        ${instructionDiv("Ham", `${getHalf(hamIns.amount)} ${hamIns.type} ${hamIns.cutType} ${hamIns.size} ${hamIns.amountPerPackage}`)}
+                        ${instructionDiv("Bacon", `${getHalf(baconIns.amount)} ${baconIns.cutType} ${baconIns.size}`)}
+                        ${instructionDiv("Jowl", `${getHalf(jowlIns.amount)} ${jowlIns.type}`)}
+                        ${instructionDiv("Loin", `${getHalf(loinIns.amount)} ${loinIns.size} ${loinIns.packageAmount}`)}
+                        ${instructionDiv("Butt", `${getHalf(buttIns.amount)} ${buttIns.type} ${buttIns.packageAmount}`)}
+                        ${instructionDiv("Picnic", `${getHalf(picnicIns.amount)} ${picnicIns.type} ${picnicIns.packageAmount}`)}
+                        <br>
+                        ${
+                            fresh ? `
+                                ${instructionDiv("Ribs", c.rib)}
+                                ${instructionDiv("Head", c.head)}
+                                ${instructionDiv("Feet", c.feet)}
+                                ${instructionDiv("Heart", c.heart)}
+                                ${instructionDiv("Fat", c.fat)}
+                            ` : `
+                                ${instructionDiv("Sausage", c.sausage)}
+                            `
+                        }
                     </div>
                 </div>
             `
-        } : {
-            type: "text"
+            }
         }
-    ]
+
+        const copiedHeader = Array.from(data)
+
+        data.push(generatePorkText(true))
+        data.push(footer)
+        data.push({
+            type: "text",
+            value: `<div class="page-break"></div>`
+        })
+
+        data.push(...copiedHeader)
+        data.push(generatePorkText(false))
+        data.push(footer)
+
+    }
+
+    data.push()
+    
     setModal(printGenericSheet, {
         title: "Print Invoice",
         data

@@ -408,6 +408,7 @@ const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
 
 
 export const useCalandarDates = (date: Date) => {
+  date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   const normalized = Date.UTC(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
   const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 0, 23, 59, 59, 0)).toISOString()
   const end = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 0)).toISOString()

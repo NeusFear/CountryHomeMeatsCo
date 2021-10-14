@@ -93,7 +93,7 @@ export const AnimalDetailsPage = () => {
         <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 5 ? "text-green-300" : "text-gray-400"}`} />
         <div className={`flex-grow p-2 rounded-md shadow-md m-1 border-4 ${currentState >= 5 ? "border-green-500" : "border-gray-600"}`}>Ready to Pickup</div>
         <SvgArrow className={`mx-2 h-6 w-8 transform translate-y-2/3 ${currentState >= 6 ? "text-green-300" : "text-gray-400"}`} />
-        <div className={`flex-grow p-2 rounded-md shadow-md my-1 ml-1 mr-2 border-4 ${currentState >= 7 ? "border-green-500" : "border-gray-600"}`}>Delivered</div>
+        <div className={`flex-grow p-2 rounded-md shadow-md my-1 ml-1 mr-2 border-4 ${currentState >= 6 ? "border-green-500" : "border-gray-600"}`}>Delivered</div>
       </div>
       <div className="flex-grow flex flex-row w-full">
         <div className="flex-grow pl-4 pr-2 py-4 flex flex-col">
@@ -254,6 +254,7 @@ export const AnimalDetailsPage = () => {
                   })
                   Invoice.deleteMany().where("_id").in(toRemove).exec()
                   toSave.forEach(u => u.save())
+                  animal.processDate = normalizeDay()
                   animal.save()
                 }
               }}>Generate</button> }

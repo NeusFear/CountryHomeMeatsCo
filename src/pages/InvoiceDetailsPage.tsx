@@ -205,6 +205,8 @@ export const InvoiceDetailsPage = () => {
                             onClick={() => {
                                 invoice.markedAsPaid = !invoice.markedAsPaid
                                 invoice.dateTimePaid = invoice.markedAsPaid ? new Date() : null
+                                animal.pickedUp = invoice.markedAsPaid
+                                animal.save()
                                 invoice.save()
                             }}
                         >

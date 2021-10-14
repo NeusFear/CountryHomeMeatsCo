@@ -133,7 +133,7 @@ export const computeAnimalState = (animal: IAnimal | undefined) => {
   if (animal.dressWeight === undefined) return 2
   if (!validateEaters(animal)) return 3
   if (animal.processDate === undefined) return 4
-  if (animal.pickedUp) return 5
+  if (!animal.pickedUp) return 5
   return 6
 }
 

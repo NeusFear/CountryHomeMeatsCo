@@ -404,10 +404,14 @@ const GridHolidayEntry = ({ holiday }: { holiday: HolidayEntry }) =>
   </div>
 
 const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
+
+const toISO = (date: Date) => {
+  return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+}
 export const useCalandarDates = (date: Date) => {
   const normalized = new Date(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
-  const start = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0).toISOString()
-  const end = new Date(date.getFullYear(), date.getMonth() + 1, -1, 59, 59, 59, 0).toISOString()
+  const start = toISO(new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0))
+  const end = toISO(new Date(date.getFullYear(), date.getMonth() + 1, -1, 59, 59, 59, 0))
 
   if (!calandarCache.has(normalized.getTime())) {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"

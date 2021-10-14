@@ -45,6 +45,9 @@ export const InvoiceDetailsPage = () => {
 
     const amountPayed = invoice.paymentTypes.map(t => t.amount).reduce((a, b) => a + b, 0)
     
+    const amountLeft = subTotal - amountPayed
+
+
     const cutInstruction = invoice.cutInstruction
 
     const paid = invoice.markedAsPaid
@@ -171,7 +174,7 @@ export const InvoiceDetailsPage = () => {
             <div className="flex flex-row">
                 <div className="flex-grow w-full ">
                     <CustomChargesPart invoice={invoice} />
-                    <PaymentPart invoice={invoice}/>
+                    <PaymentPart invoice={invoice} amountLeft={amountLeft}/>
                 </div>
                 <div className="flex-grow w-full pl-4 pt-4">
                     <div className="w-full bg-gray-300 rounded-b-md pb-2">
@@ -195,7 +198,7 @@ export const InvoiceDetailsPage = () => {
                             { invoice.paymentTypes.map((p, i) => <FormattedCharge key={i} name={"Payment: by " + p.type} data={"- $" + p.amount.toFixed(2)} />)} 
 
                             <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
-                            <FormattedCharge name="Total Due" data={"$" + (subTotal - amountPayed).toFixed(2)} />
+                            <FormattedCharge name="Total Due" data={"$" + amountLeft.toFixed(2)} />
                         </div>
                         <div 
                             className={(paid ? "bg-green-200 hover:bg-green-300" : "bg-tomato-200 hover:bg-tomato-300") + " mx-5 rounded-md p-2"}
@@ -265,7 +268,7 @@ const CustomChargesPart = ({invoice}: {invoice: IInvoice}) => {
     )
 }
 
-const PaymentPart = ({invoice}: {invoice: IInvoice}) => {
+const PaymentPart = ({invoice, amountLeft}: {invoice: IInvoice, amountLeft: number}) => {
     const paid = invoice.markedAsPaid
 
     return (
@@ -291,7 +294,7 @@ const PaymentPart = ({invoice}: {invoice: IInvoice}) => {
                     <div className="flex-grow">
                         <div className="float-left bg-gray-300">
                             <div className="py-1 flex flex-row text-green bg-gray-300 px-2 rounded-md text-gray-700 hover:text-black hover:bg-gray-200 cursor-pointer text-xs" onClick={() => {
-                                invoice.paymentTypes.push({ type:"cash", amount:0 })
+                                invoice.paymentTypes.push({ type:"cash", amount:amountLeft })
                                 invoice.save()
                             }}>
                                 <SvgPlus className="h-4 w-4 mr-2" /> Add Payment

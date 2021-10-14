@@ -411,8 +411,8 @@ const toISO = (date: Date) => {
 }
 export const useCalandarDates = (date: Date) => {
   const normalized = new Date(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
-  const start = toISO(new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0))
-  const end = toISO(new Date(date.getFullYear(), date.getMonth() + 1, -1, 23, 59, 59, 0))
+  const start = toISO(new Date(date.getFullYear(), date.getMonth(), 0, 23, 59, 59, 999))
+  const end = toISO(new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999))
   
 
   if (!calandarCache.has(normalized.getTime())) {

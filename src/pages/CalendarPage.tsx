@@ -405,21 +405,18 @@ const GridHolidayEntry = ({ holiday }: { holiday: HolidayEntry }) =>
 
 const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
 
-const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-const toISO = (date: Date) => {
-  return (new Date(date.getTime() - tzoffset)).toISOString()
-}
-export const useCalandarDates = (date: Date) => {
-  const normalized = new Date(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
-  const start = toISO(new Date(date.getFullYear(), date.getMonth(), 0, 23, 59, 59, 999))
-  const end = toISO(new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999))
-  
 
-  if (!calandarCache.has(normalized.getTime())) {
+
+export const useCalandarDates = (date: Date) => {
+  const normalized = Date.UTC(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
+  const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 0, 23, 59, 59, 0)).toISOString()
+  const end = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 0)).toISOString()
+
+  if (!calandarCache.has(normalized)) {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"
     const key = "AIzaSyDAPB2hFIxAtXgD1KEIJvoNJg6J-JWm64s"
 
-    console.log(`fetched ${start} -> ${end}`)
+    console.log(`fetching: ${start} ==> ${end}`)
     const promise = fetch(`${url}?key=${key}&timeMin=${start}&timeMax=${end}`)
       .then(r => r.json())
       .then(json => {
@@ -437,12 +434,12 @@ export const useCalandarDates = (date: Date) => {
         promise['resolvedArray'] = arr
         return arr
       })
-    calandarCache.set(normalized.getTime(), promise)
+    calandarCache.set(normalized, promise)
   }
 
   const getDatesFromMonth = (dates: HolidayEntry[]) => dates.filter(d => d.date.getDate() == date.getDate())
 
-  const promise = calandarCache.get(normalized.getTime())
+  const promise = calandarCache.get(normalized))
   const resolved = promise['resolvedArray'] !== undefined
   const [state, setState] = useState(() => {
     if (resolved) {

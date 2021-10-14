@@ -68,7 +68,7 @@ const UpcomingEvents = () => {
 
   const time = normalizeDay().getTime()
   const customEvents = useDayEvents(DayEvents.where("endDate").gte(time))
-  const scheduledAnimals = useAnimals(Animal.where("killDate").gte(time).select("killDate"))
+  const scheduledAnimals = useAnimals(Animal.where("killDate").gte(time).select("killDate animalType"))
 
   const [dates, setDates] = useState<Date[]>([])
 

@@ -409,11 +409,11 @@ const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
 
 export const useCalandarDates = (date: Date) => {
   date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  const normalized = Date.UTC(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
-  const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 0, 23, 59, 59, 0)).toISOString()
+  const normalized = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)
+  const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)).toISOString()
   const end = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 0)).toISOString()
 
-  if (!calandarCache.has(normalized)) {
+  if (!calandarCache.has(normalized.getTime())) {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"
     const key = "AIzaSyDAPB2hFIxAtXgD1KEIJvoNJg6J-JWm64s"
 
@@ -435,12 +435,12 @@ export const useCalandarDates = (date: Date) => {
         promise['resolvedArray'] = arr
         return arr
       })
-    calandarCache.set(normalized, promise)
+    calandarCache.set(normalized.getTime(), promise)
   }
 
   const getDatesFromMonth = (dates: HolidayEntry[]) => dates.filter(d => d.date.getDate() == date.getDate())
 
-  const promise = calandarCache.get(normalized)
+  const promise = calandarCache.get(normalized.getTime())
   const resolved = promise['resolvedArray'] !== undefined
   const [state, setState] = useState(() => {
     if (resolved) {

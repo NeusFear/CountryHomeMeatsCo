@@ -48,12 +48,12 @@ const TodaysCutList = () => {
       <div className="h-full bg-gray-200 rounded-lg">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
-          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2">
-            <SvgPrint className="mt-1 mr-1" onClick={() => animals !== DatabaseWait && doPrintAll(animals)}/>
+          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2" onClick={() => animals !== DatabaseWait && doPrintAll(animals)}>
+            <SvgPrint className="mt-1 mr-1"/>
             Print Cut List
           </div>
-          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2">
-            <SvgEdit className="mt-0.5 mr-1" onClick={() => setModal(hangingAnimals)}/>
+          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2" onClick={() => setModal(hangingAnimals)}>
+            <SvgEdit className="mt-0.5 mr-1"/>
             Edit Cut List
           </div>
         </div>

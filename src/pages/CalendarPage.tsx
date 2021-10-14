@@ -406,6 +406,7 @@ const GridHolidayEntry = ({ holiday }: { holiday: HolidayEntry }) =>
 const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+console.log(tzoffset)
 const toISO = (date: Date) => {
   return (new Date(date.getTime() - tzoffset)).toISOString()
 }

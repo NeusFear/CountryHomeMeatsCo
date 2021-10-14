@@ -438,7 +438,7 @@ export const useCalandarDates = (date: Date) => {
     calandarCache.set(normalized.getTime(), promise)
   }
 
-  const getDatesFromMonth = (dates: HolidayEntry[]) => dates.filter(d => d.date.getDate() == date.getDate())
+  const getDatesFromMonth = (dates: HolidayEntry[]) => dates.filter(d => d.date.getTime() == date.getTime())
 
   const promise = calandarCache.get(normalized.getTime())
   const resolved = promise['resolvedArray'] !== undefined

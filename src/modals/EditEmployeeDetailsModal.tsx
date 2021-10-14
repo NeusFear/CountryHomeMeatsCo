@@ -16,6 +16,7 @@ const isValidPhoneNum = (text: string) => {
 }
 
 const dateRegex = /^\d\d?\/\d\d?\/\d\d\d\d$/
+const zipRegex = /^\d{5}(?:[-\s]\d{4})?$/
 export const EditEmployeeDetailsModal = forwardRef<ModalHandler, {objectId: string}>(({objectId}, ref) => {
   return objectId === undefined ? 
   (<EditUserDetailsModalWithUser ref={ref} user={new Employee({
@@ -143,13 +144,16 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
         <div className="pt-5">
           <span className="ml-2 pr-2 text-gray-700"><SvgEmail className="float-left mx-2" />Address:</span>
           <div>
-            <EditorValidateInput label="Address 1" example="123 S Street St." current={user.address[0]} predicate={t => t.length >= 5} onChange={d => {address[0] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Address 1" example="123 N Road St." current={user.address[0]} predicate={t => t.length >= 5} onChange={d => {address[0] = d; setAddress([...address])}} />
           </div>
           <div>
-            <EditorValidateInput label="Address 2" example="Town, Ok" current={user.address[1]} predicate={t => t.length >= 5} onChange={d => {address[1] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Address 2 (optional)" example="Apt D" current={user.address[1]} onChange={d => {address[1] = d; setAddress([...address])}} />
           </div>
           <div>
-            <EditorValidateInput label="Address 3" example="Appt. 200" current={user.address[2]} predicate={t => t.length >= 5} onChange={d => {address[2] = d; setAddress([...address])}} />
+            <EditorValidateInput label="City and State" example="Oklahoma City, OK" current={user.address[2]} predicate={t => t.length >= 5} onChange={d => {address[2] = d; setAddress([...address])}} />
+          </div>
+          <div>
+            <EditorValidateInput label="Zip" example="73034" current={user.address[3]} predicate={t => zipRegex.test(t)} onChange={d => {address[3] = d; setAddress([...address])}} />
           </div>
          </div>
 

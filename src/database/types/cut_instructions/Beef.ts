@@ -19,6 +19,9 @@ export type BeefCutInstructions = {
   brisket: string
   stewmeat: { amount: string, size: string }
   patties: { weight: string, amount: string }
+  
+  boneOutPrimeRib: boolean
+  boneOutLoin: boolean
 }
 
 export const BeefCutInstructionsSchema: SchemaDefinition = {
@@ -38,4 +41,7 @@ export const BeefCutInstructionsSchema: SchemaDefinition = {
   brisket: String,
   stewmeat: { amount: String, size: String },
   patties: { weight: String, amount: String },
+
+  boneOutPrimeRib: Boolean,
+  boneOutLoin: Boolean,
 }

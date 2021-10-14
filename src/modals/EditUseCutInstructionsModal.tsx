@@ -34,8 +34,6 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
     setAnimalType(dbInstructions.cutType)
   }
 
-  console.log(animalType)
-
   const testFreshCured = (ins: { fresh: { amount: number }, cured: { amount: number } }) => ins.fresh.amount + ins.cured.amount === 2
   const testPigFreshCured = (ins: PorkCutInstructions) => 
     testFreshCured(ins.ham) && testFreshCured(ins.bacon) && testFreshCured(ins.jowl) && 
@@ -45,6 +43,9 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
 
   const [canSubmit, setCanSubmit] = useState(genIfCanSubmit)
   const refreshCanSubmit = () => setCanSubmit(genIfCanSubmit())
+
+  //Make sure that when the animalType goes from DatabaseWait to whatever, we refresh the submit status
+  useEffect(() => refreshCanSubmit(), [ animalType ])
 
   //Can be undefined if is a new instruction
   const cutInstruction: CutInstructions = useMemo(() => {
@@ -59,6 +60,8 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
           club: {},
           stewmeat: {},
           patties: {},
+          boneOutPrimeRib: false,
+          boneOutLoin: false
         } as BeefCutInstructions
       } else {
         const freshCuredObj = () => { return { fresh: { amount: 0 }, cured: { amount: 0 } } }
@@ -531,7 +534,6 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
         <div className="flex-grow flex flex-row">
           <div className="flex flex-col w-7/12">
             <span className="ml-2 pr-2 text-gray-800 font-bold">HIND QUATER</span>
-
             <div className="pt-4 flex flex-row">
               <span className="ml-2 pr-2 text-gray-700 w-1/4">Round:</span>
               <div className="flex flex-col">
@@ -671,6 +673,15 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 width={65}
               />
             </div>
+
+            <div className="pt-4 flex flex-row">
+              <span className="ml-2 pr-2 text-gray-700">Bone Out Prime Rib:</span>
+              <Checkbox checked={instructions.boneOutPrimeRib} onChange={v => instructions.boneOutPrimeRib = v} />
+            </div>
+            <div className="pt-4 flex flex-row">
+              <span className="ml-2 pr-2 text-gray-700">Bone Out Loin:</span>
+              <Checkbox checked={instructions.boneOutLoin} onChange={v => instructions.boneOutLoin = v} />
+            </div>
           </div>
 
           <div className="flex flex-col mr-4 w-5/12">
@@ -767,6 +778,17 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
         </div>
       </div>
     </div>
+  )
+}
+
+const Checkbox = ({checked, onChange}: {checked: boolean, onChange: (val: boolean) => void}) => {
+  const [state, setState] = useState(checked)
+  return (
+    <input className="mt-1 h-5 w-5 rounded-md mr-2" type="checkbox" checked={state} onChange={e => {
+      const val = e.target.checked
+      setState(val)
+      onChange(val)
+    }} />
   )
 }
 

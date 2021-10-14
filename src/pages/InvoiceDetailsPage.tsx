@@ -649,14 +649,14 @@ const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
         <ChargesEntry 
             title={`Bone Out Prime Rib`}
             price={`${price.boneOutPrimeRib.toFixed(2)} per half`}
-            quantity="???"
+            quantity={invoice.beefdata.boneoutprimerib ? "Yes" : "No"}
             value={invoice.beefprices.boneoutprimerib}
             setValue={runThenSave(v => invoice.beefprices.boneoutprimerib = v)}
         />
         <ChargesEntry 
             title={`Bone Out Loin`}
             price={`${price.boneOutLoin.toFixed(2)} per half`}
-            quantity="???"
+            quantity={invoice.beefdata.boneoutloin ? "Yes" : "No"}
             value={invoice.beefprices.boneoutloin}
             setValue={runThenSave(v => invoice.beefprices.boneoutloin = v)}
         />
@@ -1036,8 +1036,8 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 makeCharge("Cut Stew Meat", price.cutStewMeat, "per lbs", `${beefdata.stewmeat ?? 0}lbs`, costs.cutstewmeat),
                 makeCharge("Bone and Tenderized", price.boneAndTenderizeRoundSteaks, "per half", beefdata.hasTenderized ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.tenderized),
                 makeCharge("Make Cubes Steaks", price.makeCubedSteaks, "per half", beefdata.makeCubedSteaks ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.cubedsteaks),
-                makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", `???`, costs.boneoutprimerib),
-                makeCharge("Bone Out Loin", price.boneOutLoin, "per half", `???`, costs.boneoutloin),
+                makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", beefdata.boneoutprimerib ? "Yes" : "No", costs.boneoutprimerib),
+                makeCharge("Bone Out Loin", price.boneOutLoin, "per half", beefdata.boneoutloin ? "Yes" : "No", costs.boneoutloin),
 
                 ...invoice.customcharges.map(c => [ c.name, "", "", String(c.amount) ])
             ],

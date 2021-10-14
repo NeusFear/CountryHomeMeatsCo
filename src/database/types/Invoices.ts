@@ -40,6 +40,8 @@ export interface IInvoice extends Document {
         hasTenderized: boolean
         stewmeat?: number,
         patties?: number,
+        boneoutprimerib: boolean
+        boneoutloin: boolean
     }
     beefprices?: {
         slaughter?: number
@@ -102,6 +104,8 @@ const invoiceSchema = new Schema({
         hasTenderized: { type: Boolean, required: true },
         stewmeat: { type: Number },
         patties: { type: Number },
+        boneoutprimerib: { type: Boolean, required: true },
+        boneoutloin: { type: Boolean, required: true },
     }},
     beefprices: { type: {
         slaughter: { type: Number },
@@ -182,7 +186,9 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
     if(cutInstruction.cutType === AnimalType.Beef) {
         invoice.beefdata = {
             makeCubedSteaks: cutInstruction.round.size.toLowerCase() == "chicken fry" || cutInstruction.sirlointip.size.toLowerCase() == "chicken fry" || cutInstruction.flank.toLowerCase() == "chicken fry",
-            hasTenderized: false
+            hasTenderized: false,
+            boneoutprimerib: cutInstruction.boneOutPrimeRib,
+            boneoutloin: cutInstruction.boneOutLoin,
         }
         invoice.beefprices = {}
 
@@ -203,6 +209,13 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         )
         if(invoice.beefdata.makeCubedSteaks) {
             invoice.beefprices.cubedsteaks = numHalves * priceData.beef.makeCubedSteaks
+        }
+
+        if(cutInstruction.boneOutPrimeRib) {
+            invoice.beefprices.boneoutprimerib = priceData.beef.boneOutPrimeRib
+        }
+        if(cutInstruction.boneOutLoin) {
+            invoice.beefprices.boneoutloin = priceData.beef.boneOutLoin
         }
     } else {
         invoice.porkdata = {

@@ -407,12 +407,13 @@ const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
 const toISO = (date: Date) => {
-  return (new Date(date.getTime() - tzoffset)).toISOString().slice(0, -1)
+  return (new Date(date.getTime() - tzoffset)).toISOString()
 }
 export const useCalandarDates = (date: Date) => {
   const normalized = new Date(date.getFullYear(), date.getMonth(), 0, 0, 0, 0, 0)
   const start = toISO(new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0))
   const end = toISO(new Date(date.getFullYear(), date.getMonth() + 1, -1, 59, 59, 59, 0))
+  
 
   if (!calandarCache.has(normalized.getTime())) {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"

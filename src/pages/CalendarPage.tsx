@@ -405,7 +405,19 @@ const GridHolidayEntry = ({ holiday }: { holiday: HolidayEntry }) =>
 
 const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
 
-
+const disabledDays = [
+  "First Day of Women's History Month",
+  "First Day of Asian American and Pacific Islander Heritage Month",
+  "Juneteenth",
+  "Day off for Christmas Day",
+  "Day off for New Year's Day",
+  "First Day of Black History Month",
+  "Easter Monday",
+  "Native American Heritage Day",
+  "Day off for Juneteenth",
+  "First Day of Hispanic Heritage Month",
+  "Indigenous Peoples' Day"
+]
 
 export const useCalandarDates = (date: Date) => {
   date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
@@ -424,7 +436,7 @@ export const useCalandarDates = (date: Date) => {
         const arr: HolidayEntry[] = []
 
         json.items.forEach(item => {
-          if (item.summary !== "First Day of Women's History Month" && item.summary !== "First Day of Asian American and Pacific Islander Heritage Month" && item.summary !== "Juneteenth" && item.summary !== "Day off for Christmas Day" && item.summary !== "Day off for New Year's Day" && item.summary !== "First Day of Black History Month" && item.summary !== "Easter Monday" && item.summary !== "Native American Heritage Day") {
+          if (!disabledDays.includes(item.summary)) {
             arr.push({
               name: item.summary.replace("(regional holiday)", "").replace("Martin Luther King Jr. Day", "MLK Jr. Day").replace("Thanksgiving Day", "Thanksgiving"),
               date: new Date(item.start.date)

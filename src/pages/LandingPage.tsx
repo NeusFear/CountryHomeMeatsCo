@@ -164,7 +164,7 @@ const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, custom
 
 const EventItem = ({ eventName, eventType, eventStyle }: { eventName: string, eventType?: string, eventStyle?: CSSProperties }) => {
   return (
-    <div className="flex flex-row bg-white hover:bg-gray-100 h-5 mx-4 rounded-sm group mb-2 shadow-sm hover:shadow-md">
+    <div className="flex flex-row bg-white hover:bg-gray-100 h-5 mx-4 rounded-md group mb-2 shadow-sm hover:shadow-md">
       <div className={`${eventType ?? ""} w-2 rounded-l-md mr-2`} style={eventStyle}></div>
       <div className="text-sm">{eventName}</div>
     </div>

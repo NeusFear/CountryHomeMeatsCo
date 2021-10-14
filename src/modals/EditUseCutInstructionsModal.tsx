@@ -17,6 +17,8 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
     user.cutInstructions.findIndex(c => c.id === instructionID) :
     undefined
 
+  const [nickname, setNickname] = useState("New Cut Instruction")
+
   const dbInstrucionObject = user !== DatabaseWait ? user.cutInstructions[dbInstructionIndex] : undefined
   const dbInstructions = dbInstrucionObject?.instructions
 
@@ -32,6 +34,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
 
   if(dbInstructions !== undefined && animalType === DatabaseWait) {
     setAnimalType(dbInstructions.cutType)
+    setNickname(dbInstrucionObject.nickname)
   }
 
   const testFreshCured = (ins: { fresh: { amount: number }, cured: { amount: number } }) => ins.fresh.amount + ins.cured.amount === 2
@@ -39,7 +42,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
     testFreshCured(ins.ham) && testFreshCured(ins.bacon) && testFreshCured(ins.jowl) && 
     testFreshCured(ins.loin) && testFreshCured(ins.butt) && testFreshCured(ins.picnic)
   
-  const genIfCanSubmit = () => animalType !== DatabaseWait && (animalType === AnimalType.Beef || testPigFreshCured(cutInstruction as PorkCutInstructions))
+  const genIfCanSubmit = (nick = nickname) => nick !== "" && animalType !== DatabaseWait && (animalType === AnimalType.Beef || testPigFreshCured(cutInstruction as PorkCutInstructions))
 
   const [canSubmit, setCanSubmit] = useState(genIfCanSubmit)
   const refreshCanSubmit = () => setCanSubmit(genIfCanSubmit())
@@ -93,12 +96,13 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
         }
       }
       cutInstruction.cutType = animalType
-      user.cutInstructions.push({ id, instructions: cutInstruction })
+      user.cutInstructions.push({ id, instructions: cutInstruction, nickname })
     } else {
       //We need to update the field so it's actually synced
       user.cutInstructions[dbInstructionIndex] = {
         id: dbInstrucionObject.id,
-        instructions: cutInstruction
+        instructions: cutInstruction, 
+        nickname
       }
     }
     user.save()
@@ -137,6 +141,13 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
         }
         <div></div>
         <div></div>
+      </div>
+      <div className="p-4 overflow-y-scroll">
+        Nickname: <input className={nickname === "" ? "bg-tomato-200" : "bg-blue-200"} value={nickname} onChange={e => {
+          const val = e.target.value
+          setNickname(val)
+          setCanSubmit(genIfCanSubmit(val))
+        }} />
       </div>
       <div className="p-4 overflow-y-scroll h-full flex flex-col">
         {animalType !== DatabaseWait && ( 

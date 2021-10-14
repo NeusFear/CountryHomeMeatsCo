@@ -34,7 +34,7 @@ export default ({invoice}: {invoice: IInvoice}) => {
           <p className="font-semibold">Cut List:</p>
           <div className="flex flex-row">
             <div className="px-2 ml-2 bg-gray-200 rounded-md p-0.5">{mainUser.name}</div>
-            <div className="bg-gray-200 rounded-md px-2 ml-1 text-xs p-0.5 pt-1.5">#{invoice.cutInstructionId}</div>
+            <div className="bg-gray-200 rounded-md px-2 ml-1 text-xs p-0.5 pt-1.5">{mainUser?.cutInstructions?.find(c => c.id === invoice.cutInstructionId)?.nickname ?? `#${invoice.cutInstructionId}`}</div>
           </div>
         </div>
         {

@@ -15,6 +15,7 @@ export interface IUser extends Document {
   emails: string[],
   cutInstructions: {
     id: number,
+    nickname: string,
     instructions: CutInstructions
   }[],
   notes: string
@@ -37,6 +38,7 @@ const userSchmea = new Schema({
   emails: {type: [String], required: true },
   cutInstructions: { type: [{ 
     id: { type: Number, required: true },
+    nickname: { type: String, required: true },
     instructions: { type: CutInstructionsSchema, required: true }
    }], required: true},
    notes: { type: String, default: '' },

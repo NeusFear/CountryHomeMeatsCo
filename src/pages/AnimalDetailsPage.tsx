@@ -361,7 +361,7 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
         <div className="flex flex-row font-semibold">
           <p className="w-44">Eater Name</p>
           <p className="w-36 ml-2">Identifier</p>
-          <p className="w-36 ml-2">Record Number</p>
+          <p className="w-36 ml-2">Record Name</p>
         </div>
         {eaters && eaters.map((eater, i) =>
           <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState} animalType={animal.animalType}/>
@@ -391,7 +391,7 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
             eater.foundUser.cutInstructions.slice()
               .sort((a, b) => a.id - b.id)
               .filter(a => a.instructions.cutType === animalType)
-              .map(c => <option key={c.id} value={c.id}>{c.id}</option>)
+              .map(c => <option key={c.id} value={c.id}>{c.nickname} - #{c.id}</option>)
           }
         </select>
       </div>

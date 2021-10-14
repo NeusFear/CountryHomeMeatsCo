@@ -84,15 +84,16 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
       }
     })
   }
-  const users = useUsers(User.where("_id").in(userIds).select("name"), [invoice.user, invoice.secondaryUser, animal])
+  const users = useUsers(User.where("_id").in(userIds).select("name cutInstructions"), [invoice.user, invoice.secondaryUser, animal])
 
   const totalCost = animal === DatabaseWait ? 0 : calculateTotal(animal, invoice).total
 
   const foundEater = animal === DatabaseWait ? undefined : animal?.eaters.find(e => e.id.toHexString() == invoice.user.toHexString())
 
-  const mainUserName = users === DatabaseWait ? DatabaseWait : users.find(u => u._id == invoice.user.toHexString())?.name ?? "???"
+  const mainUser = users === DatabaseWait ? DatabaseWait : users.find(u => u._id == invoice.user.toHexString())
+  const mainUserName = mainUser === DatabaseWait ? DatabaseWait : mainUser?.name ?? "???"
   const subUserName = users === DatabaseWait || !invoice.secondaryUser ? DatabaseWait : users.find(u => u._id == invoice.secondaryUser.toHexString()).name ?? "???"
-  
+
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(invoiceDetails, invoice.id)}>
         <div className="text-gray-800 group-hover:text-gray-900 w-20 mr-2">
@@ -124,12 +125,12 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
         </div>
         <div className="flex-grow text-gray-800 group-hover:text-gray-900">
           <div className="flex flex-row">
-          { mainUserName !== DatabaseWait && foundEater !== undefined && 
+          { mainUser !== DatabaseWait && mainUserName !== DatabaseWait && foundEater !== undefined && 
               <>
                 <EaterTag 
                   name={mainUserName} 
                   tag={foundEater.tag} 
-                  cutInstruction={foundEater.cutInstruction} 
+                  cutInstruction={mainUser?.cutInstructions?.find(c => c.id === foundEater.cutInstruction)?.nickname ?? `#${foundEater.cutInstruction}`} 
                   onClick={() => history.push(userDetailsPage, invoice.user.toHexString())}
                   onInstructionClicked={() => setModal(editCutInstructions, { id: invoice.user.toHexString(), instructionID: foundEater.cutInstruction })}
                 />
@@ -155,12 +156,12 @@ const DataTag = ({ name, onClick }: { name: string, onClick?: () => void }) => {
     )
 }
 
-const EaterTag = ({name, tag, cutInstruction, onClick, onInstructionClicked}: {name: string, tag: string, cutInstruction?: number, onClick?: () => void, onInstructionClicked?: () => void }) => {
+const EaterTag = ({name, tag, cutInstruction, onClick, onInstructionClicked}: {name: string, tag: string, cutInstruction?: string, onClick?: () => void, onInstructionClicked?: () => void }) => {
   return(
         <div className="flex flex-row" onClick={e => { e.stopPropagation(); onClick() }}>
             <div className="px-2 ml-2 bg-gray-200 rounded-md p-0.5 cursor-pointer hover:bg-gray-300">{name + (tag.length === 0 ? "" : `(${tag})` )}</div>
             { cutInstruction !== undefined &&
-              <div onClick={e => { e.stopPropagation(); onInstructionClicked() }} className="bg-gray-200 rounded-md px-2 mr-2 text-xs p-0.5 pt-1.5 cursor-pointer hover:bg-gray-300">#{cutInstruction}</div>
+              <div onClick={e => { e.stopPropagation(); onInstructionClicked() }} className="bg-gray-200 rounded-md px-2 mr-2 text-xs p-0.5 pt-1.5 cursor-pointer hover:bg-gray-300">{cutInstruction}</div>
             }
         </div>
     )

@@ -84,7 +84,7 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
               {user.cutInstructions.map((i, _id) => <CutInstructionEntry onDelete={() => {
                 user.cutInstructions.splice(_id, 1);
                 user.save()
-              }} key={_id} id={id} instructionID={i.id} instruction={i.instructions} />)}
+              }} key={_id} id={id} instructionNickname={i.nickname} instructionID={i.id} instruction={i.instructions} />)}
             </div>
           </div>
         </div>
@@ -127,9 +127,10 @@ const InvoiceList = ({user}: {user: IUser}) => {
   </>)
 }
 
-const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
+const CutInstructionEntry = ({ id, instructionNickname, instructionID, instruction, onDelete }:
   {
     id: ObjectId,
+    instructionNickname: string,
     instructionID: number,
     instruction: CutInstructions,
     onDelete: () => void,
@@ -138,6 +139,7 @@ const CutInstructionEntry = ({ id, instructionID, instruction, onDelete }:
     <div className="bg-white rounded-md p-2 mx-3 mt-1 flex flex-row hover:shadow-md" onClick={() => setModal(editCutInstructions, { id, instructionID })}>
       <div >{instruction.cutType === AnimalType.Beef ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
       <div className="px-2 ml-2 bg-gray-200 rounded-md">{instruction.cutType === AnimalType.Beef ? "Beef" : "Pork"}</div>
+      <div className="bg-gray-200 rounded-md px-2 ml-1 text-xs pt-1">{instructionNickname}</div>
       <div className="bg-gray-200 rounded-md px-2 ml-1 text-xs pt-1">#{instructionID}</div>
       <div className="flex-grow"></div>
       {instruction.notes != undefined && instruction.notes.length > 0 && <SvgNotes className="mt-0.5 h-4 w-4 text-gray-600" />}

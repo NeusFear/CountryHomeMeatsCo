@@ -406,7 +406,6 @@ const GridHolidayEntry = ({ holiday }: { holiday: HolidayEntry }) =>
 const calandarCache = new Map<number, Promise<HolidayEntry[]>>()
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-console.log(tzoffset)
 const toISO = (date: Date) => {
   return (new Date(date.getTime() - tzoffset)).toISOString()
 }
@@ -420,7 +419,7 @@ export const useCalandarDates = (date: Date) => {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"
     const key = "AIzaSyDAPB2hFIxAtXgD1KEIJvoNJg6J-JWm64s"
 
-    console.log(`updated`)
+    console.log(`fetched ${start} -> ${end}`)
     const promise = fetch(`${url}?key=${key}&timeMin=${start}&timeMax=${end}`)
       .then(r => r.json())
       .then(json => {

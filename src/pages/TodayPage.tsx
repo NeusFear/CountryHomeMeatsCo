@@ -44,12 +44,18 @@ const TodaysCutList = () => {
   )
 
   return (
-    <div className="h-full flex-grow pl-4 pr-2 py-4">
+    <div className="w-1/2 h-full flex-grow pl-4 pr-2 py-4">
       <div className="h-full bg-gray-200 rounded-lg">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
-          <SvgPrint className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => animals !== DatabaseWait && doPrintAll(animals)}/>
-          <SvgEdit className="mt-1 mr-1 text-gray-600 cursor-pointer hover:text-tomato-300" onClick={() => setModal(hangingAnimals)}/>
+          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2">
+            <SvgPrint className="mt-1 mr-1" onClick={() => animals !== DatabaseWait && doPrintAll(animals)}/>
+            Print Cut List
+          </div>
+          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2">
+            <SvgEdit className="mt-0.5 mr-1" onClick={() => setModal(hangingAnimals)}/>
+            Edit Cut List
+          </div>
         </div>
         {animals !== DatabaseWait && animals.map(a => <SelectedCutList key={a.id} animal={a} />)}
       </div>
@@ -102,7 +108,7 @@ const ScheduledSlaughterList = () => {
   }
 
   return (
-    <div className="h-full pl-2 pr-4 py-4 flex-grow">
+    <div className="w-1/2 h-full pl-2 pr-4 py-4 flex-grow">
       <div className="h-full bg-gray-200 rounded-lg pb-14">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Scheduled Slaughters</div>

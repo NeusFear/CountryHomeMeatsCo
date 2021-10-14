@@ -345,7 +345,7 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays
         <div className="absolute bottom-0 right-1">
           {day.getDate()}
         </div>
-        {hovering && <div className="absolute -left-0 -bottom-0" onClick={() => setModal(customDay, { date: day })}><SvgPlus /></div>}
+        {hovering && <div className="absolute -left-0 -bottom-0 cursor-pointer bg-blue-300 p-1 rounded-sm text-white" onClick={() => setModal(customDay, { date: day })}><SvgPlus /></div>}
       </div>
     </div>
   )
@@ -399,7 +399,7 @@ const GridDayAnimalEntry = ({ name, animalIds, id, type, allConfirmed, arrived, 
 }
 
 const GridHolidayEntry = ({ holiday }: { holiday: HolidayEntry }) =>
-  <div className="flex flex-row cursor-pointer mt-0.5 rounded-sm bg-green-200 hover:bg-green-100">
+  <div className="flex flex-row mt-0.5 rounded-sm bg-green-200">
     <div>{holiday.name}</div>
   </div>
 

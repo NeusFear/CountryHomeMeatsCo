@@ -201,7 +201,7 @@ export const InvoiceDetailsPage = () => {
                             <FormattedCharge name="Total Due" data={"$" + amountLeft.toFixed(2)} />
                         </div>
                         <div 
-                            className={(paid ? "bg-green-200 hover:bg-green-300" : "bg-tomato-200 hover:bg-tomato-300") + " mx-5 rounded-md p-2"}
+                            className={(paid ? "bg-green-200 hover:bg-green-300" : "bg-tomato-200 hover:bg-tomato-300") + " mx-5 rounded-md p-2 cursor-pointer"}
                             onClick={() => {
                                 invoice.markedAsPaid = !invoice.markedAsPaid
                                 invoice.dateTimePaid = invoice.markedAsPaid ? new Date() : null

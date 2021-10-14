@@ -142,9 +142,13 @@ const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, custom
       <div className="bg-gray-300 px-6 mb-1 group w-full">
         <div className="w-full text-sm">{dayLabel}</div>
       </div>
-      { !isWeekend &&  
+      { !isWeekend && animals.beef > 0 &&
         <>
           <EventItem eventName={`${animals.beef} Beef Scheduled`} eventType="bg-tomato-400 group-hover:bg-tomato-300" />
+        </>
+      }
+      { !isWeekend && animals.pork > 0 &&
+        <>
           <EventItem eventName={`${animals.pork} Pork Scheduled`} eventType="bg-blue-300 group-hover:bg-blue-200" />
         </>
       }
@@ -153,7 +157,7 @@ const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, custom
       { holidays.map((e, i) => <EventItem key={i} eventName={e.name} eventType="bg-green-300 group-hover:bg-green-200" />) }
 
       {/* Maybe just move this to a minimum height ?? */}
-      { isWeekend && events.length === 0 && holidays.length === 0 && <div className="h-5 rounded-sm group mt-3 mb-2 text-xs pl-8">Empty</div>}
+      { ((isWeekend && events.length === 0 && holidays.length === 0 ) || (animals.beef <= 0 && animals.pork <= 0)) && <div className="h-5 rounded-sm group mt-3 mb-2 text-xs pl-8">Empty</div>}
     </div>
   )
 }

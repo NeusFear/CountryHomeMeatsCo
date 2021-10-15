@@ -429,7 +429,7 @@ export const useCalandarDates = (date: Date) => {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"
     const key = "AIzaSyDAPB2hFIxAtXgD1KEIJvoNJg6J-JWm64s"
 
-    console.log(`fetching: ${start} ==> ${end}`)
+    console.log(`${url}?key=${key}&timeMin=${start}&timeMax=${end}`)
     const promise = fetch(`${url}?key=${key}&timeMin=${start}&timeMax=${end}`)
       .then(r => r.json())
       .then(json => {

@@ -215,17 +215,23 @@ const doPrintAll = async(animals: IAnimal[]) => {
     `
   }]
 
+  console.log(`animals: ${animals.length}`)
   for (let i = 0; i < animals.length; i++) {
     const animal = animals[i];
+    console.log(`animal #${i} -- invoices ${animal.invoices.length}`)
     for (let j = 0; j < animal.invoices.length; j++) {
+      console.log("Searching For Invoice")
       const invoice = await Invoice.findById(animal.invoices[j]);
+      console.log("Found: ", invoice)
       if(!invoice) {
         alert("Unable to find invoice data.")
         continue
 
       }
       
+      console.log("Searching for User")
       const user = await User.findById(invoice.user)
+      console.log("Found User")
       if(!user) {
         alert("Unable to find main user")
         continue
@@ -233,15 +239,20 @@ const doPrintAll = async(animals: IAnimal[]) => {
 
       let subUser: IUser
       if(invoice.secondaryUser) {
+        console.log("Searching for SubUser")
         subUser = await User.findById(invoice.secondaryUser)
+        console.log("Found SubUser")
         if(!subUser) {
           alert("Unable to find subUser")
           continue
         }
       }
+      console.log("Running Print")
       doPrint(data, animal, invoice, user, subUser)
     }
   }
+
+  console.log("after", data)
 
   //Remove the last page break
   data.splice(data.length - 1, 1);

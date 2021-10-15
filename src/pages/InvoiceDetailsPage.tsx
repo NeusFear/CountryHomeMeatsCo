@@ -188,7 +188,7 @@ export const InvoiceDetailsPage = () => {
 
                             { invoice.customcharges.length !== 0 &&
                                 <>
-                                    { invoice.customcharges.map((c, i) => <FormattedCharge key={i} name={"Charge: " + c.name} data={"$" + c.amount} />) }
+                                    { invoice.customcharges.map((c, i) => <FormattedCharge key={i} name={"Charge: " + c.name} data={"$" + c.amount.toFixed(2)} />) }
                                     <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
                                 </>
                             }
@@ -353,9 +353,6 @@ export const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
         total += keyObject[key] ?? 0
     }
 
-    (invoice.customcharges ?? []).forEach(c => total += c.amount)
-
-
     const minTotal = (animal.animalType === AnimalType.Beef ? invoice.priceData.beef : invoice.priceData.pork).minPrice
     const calcualtedTotal = total;
     if(total < minTotal) {
@@ -368,6 +365,8 @@ export const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
 const calculateSubTotal = (animal: IAnimal, invoice: IInvoice) => {
     
     let total = calculateTotal(animal, invoice).total;
+
+    (invoice.customcharges ?? []).forEach(c => total += c.amount)
 
     return total;
 }
@@ -1044,8 +1043,6 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 makeCharge("Make Cubes Steaks", price.makeCubedSteaks, "per half", beefdata.makeCubedSteaks ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.cubedsteaks),
                 makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", beefdata.boneoutprimerib ? "Yes" : "No", costs.boneoutprimerib),
                 makeCharge("Bone Out Loin", price.boneOutLoin, "per half", beefdata.boneoutloin ? "Yes" : "No", costs.boneoutloin),
-
-                ...invoice.customcharges.map(c => [ c.name, "---", "---", `$${c.amount.toFixed(2)}` ])
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
@@ -1086,6 +1083,8 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
         }
     }
 
+    const charges = invoice.customcharges ?? []
+
     data.push({
         type: "text",
         value: `
@@ -1098,6 +1097,21 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                     <span style="flex-grow: 1">Post Min:</span>
                     <span>$${total.toFixed(2)}</span>
                 </div>
+                ${ charges.length === 0 ? "" : 
+                `
+                <div style="display: flex; flex-direction: row; border-top: solid 1px black">
+                    <div style="flex-grow: 1">Custom Cost${charges.length === 1 ? "" : "s"}:</div>
+                    <div style="flex-grow: 1;">
+                        ${charges.map(charge => `
+                            <div style="display: flex; flex-direction: row">
+                                <span style="flex-grow: 1">${charge.name}:</span>
+                                <span>$${charge.amount.toFixed(2)}</span>
+                            </div>  
+                        `).join("")}
+                    </div>
+                </div>
+                `
+                }
                 <div style="display: flex; flex-direction: row; border-top: solid 1px black">
                     <span style="flex-grow: 1">Sub Total:</span>
                     <span>$${subTotal.toFixed(2)}</span>

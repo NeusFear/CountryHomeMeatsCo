@@ -423,7 +423,7 @@ export const useCalandarDates = (date: Date) => {
   date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   const normalized = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)
   const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)).toISOString()
-  const end = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 0)).toISOString()
+  const end = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 1, 0, 0, 0, 0)).toISOString()
 
   if (!calandarCache.has(normalized.getTime())) {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"

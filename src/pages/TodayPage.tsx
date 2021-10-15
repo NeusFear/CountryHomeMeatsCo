@@ -268,7 +268,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
     <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; text-align: center; ">
         ${elementDiv(animal.animalId, "Animal ID")}
         <div style="flex-grow: 1; font-size: 4em;">
-            Cutting Sheet
+            ${animal.animalType} Cutting Sheet
         </div>
     </div>
     `

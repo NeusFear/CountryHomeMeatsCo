@@ -2,8 +2,8 @@ import { ObjectId } from "mongoose"
 import ReactTooltip from "react-tooltip"
 import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons"
-import Animal, { AnimalStateFields, AnimalType, IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
-import User, { IUser, useUsers } from "../database/types/User"
+import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
+import User, { CutInstructions, IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, printGenericSheet, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
 import { formatDay, getDayNumber, normalizeDay, printPage } from "../Util"
@@ -215,44 +215,37 @@ const doPrintAll = async(animals: IAnimal[]) => {
     `
   }]
 
-  console.log(`animals: ${animals.length}`)
   for (let i = 0; i < animals.length; i++) {
     const animal = animals[i];
-    console.log(`animal #${i} -- invoices ${animal.invoices.length}`)
-    for (let j = 0; j < animal.invoices.length; j++) {
-      console.log("Searching For Invoice")
-      const invoice = await Invoice.findById(animal.invoices[j]);
-      console.log("Found: ", invoice)
-      if(!invoice) {
-        alert("Unable to find invoice data.")
-        continue
+    if(animal.eaters.length === 0) {
+      alert("Animals has no eaters.")
+    }
+    for (let j = 0; j < animal.eaters.length; j++) {
+      const eater = animal.eaters[j]
 
-      }
-      
-      console.log("Searching for User")
-      const user = await User.findById(invoice.user)
-      console.log("Found User")
+      const user = await User.findById(eater.id)
       if(!user) {
         alert("Unable to find main user")
         continue
       }
 
       let subUser: IUser
-      if(invoice.secondaryUser) {
-        console.log("Searching for SubUser")
-        subUser = await User.findById(invoice.secondaryUser)
-        console.log("Found SubUser")
+      if(eater.halfUser) {
+        subUser = await User.findById(eater.halfUser.id)
         if(!subUser) {
           alert("Unable to find subUser")
           continue
         }
       }
-      console.log("Running Print")
-      doPrint(data, animal, invoice, user, subUser)
+
+      const cutInstruction = user.cutInstructions.find(c => c.id === eater.cutInstruction)
+      if(!cutInstruction) {
+        alert("Unable to find cutInstruction with id " + eater.cutInstruction + " for user " + user.name + ". Page will be skipped.")
+      } else {
+        doPrint(data, animal, animal.eaters.length !== 1, cutInstruction.instructions, eater, user, subUser)
+      }
     }
   }
-
-  console.log("after", data)
 
   //Remove the last page break
   data.splice(data.length - 1, 1);
@@ -264,14 +257,9 @@ const doPrintAll = async(animals: IAnimal[]) => {
 
 }
 
-const doPrint = async(data: PosPrintData[], animal: IAnimal, invoice: IInvoice, user: IUser, subUser?: IUser) => {
-  const eater = animal.eaters.find(e => e.id.toHexString() == user.id)
-  if(!eater) {
-      console.error(`Unable to find cut instruction for user ${user.id} in animal ${animal.id}(${animal.animalId}). Found ${animal.eaters.map(e => e.id)} instead `)
-  }
-
-  const beef = invoice.cutInstruction as BeefCutInstructions
-  const pork = invoice.cutInstruction as PorkCutInstructions
+const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutInstruction: CutInstructions, eater: Eater, user: IUser, subUser?: IUser) => {
+  const beef = cutInstruction as BeefCutInstructions
+  const pork = cutInstruction as PorkCutInstructions
 
   //The top part of the invoice, containing the invoice id, and the animal id
   data.push({
@@ -282,7 +270,6 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, invoice: IInvoice, 
         <div style="flex-grow: 1; font-size: 4em;">
             Cutting Sheet
         </div>
-        ${elementDiv(invoice.invoiceId, "Invoice ID")}
     </div>
     `
   })
@@ -293,7 +280,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, invoice: IInvoice, 
     value:  `
     <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; ">
         ${elementDiv(user.name, "Bringer", true)}
-        ${elementDiv(`<span style="font-size: large; font-weight: bold;">${invoice.half ? "Half" : "Whole"}</span>`, "Portion")}
+        ${elementDiv(`<span style="font-size: large; font-weight: bold;">${half ? "Half" : "Whole"}</span>`, "Portion")}
         ${elementDiv(formatDay(animal.killDate), "Date Killed")}
         ${elementDiv(animal.color, "Color")}
         ${elementDiv(animal.sex, "Sex")}

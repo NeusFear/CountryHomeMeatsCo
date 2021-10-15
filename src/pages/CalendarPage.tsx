@@ -13,6 +13,7 @@ import { animalDetailsPage } from '../NavBar';
 import { calendarDayEntry, customDay, setModal } from '../modals/ModalManager';
 import DayEvents, { useDayEvents, ICustomEvent } from '../database/types/DayEvents';
 import { DatabaseWait, DatabaseWaitType } from '../database/Database';
+import { copyFileSync } from 'original-fs';
 
 
 const daysEqual = (d1: Date, d2: Date) => {
@@ -437,9 +438,11 @@ export const useCalandarDates = (date: Date) => {
 
         json.items.forEach(item => {
           if (!disabledDays.includes(item.summary)) {
+            
+            const d = new Date(item.start.date)
             arr.push({
               name: item.summary.replace("(regional holiday)", "").replace("Martin Luther King Jr. Day", "MLK Jr. Day").replace("Thanksgiving Day", "Thanksgiving"),
-              date: new Date(item.start.date)
+              date: new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
             })
           }
         })

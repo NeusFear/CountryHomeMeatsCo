@@ -55,7 +55,7 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
     middleName !== null && middleName.valid && 
     lastName !== null && lastName.valid && 
     phoneNumbers.every(d => d.name.valid && d.number.valid) && 
-    address.length === 3 && address.every(a => a.valid) &&
+    address.length === 4 && address.every(a => a.valid) &&
     startDate !== null && startDate.valid && 
     birthday !== null && birthday.valid 
   

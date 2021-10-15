@@ -441,6 +441,7 @@ export const useCalandarDates = (date: Date) => {
             const d = new Date(item.start.date)
             arr.push({
               name: item.summary.replace("(regional holiday)", "").replace("Martin Luther King Jr. Day", "MLK Jr. Day").replace("Thanksgiving Day", "Thanksgiving"),
+              raw: item.start.date,
               date: new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
             })
           }

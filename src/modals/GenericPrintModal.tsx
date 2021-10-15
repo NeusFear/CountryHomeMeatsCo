@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { ipcRenderer, webContents } from "electron";
 
 export const GenericPrintModal = ({title, data}: {title: string, data: PosPrintData[]}) => {
+    console.log(data)
+  
     const [printer, setPrinter] = useState<PrinterInfo>(null)
 
     return (

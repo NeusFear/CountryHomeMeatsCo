@@ -188,7 +188,10 @@ export const InvoiceDetailsPage = () => {
 
                             { invoice.customcharges.length !== 0 &&
                                 <>
-                                    { invoice.customcharges.map((c, i) => <FormattedCharge key={i} name={"Charge: " + c.name} data={"$" + c.amount.toFixed(2)} />) }
+                                    { (() => {
+                                        var counter = total;
+                                        return invoice.customcharges.map((c, i) => <FormattedCharge key={i} name={"Charge: " + c.name + " ($" + c.amount.toFixed(2) + ")"} data={"$" + (counter+=c.amount).toFixed(2)} />)
+                                    })() }
                                     <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
                                 </>
                             }
@@ -1043,6 +1046,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 makeCharge("Make Cubes Steaks", price.makeCubedSteaks, "per half", beefdata.makeCubedSteaks ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.cubedsteaks),
                 makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", beefdata.boneoutprimerib ? "Yes" : "No", costs.boneoutprimerib),
                 makeCharge("Bone Out Loin", price.boneOutLoin, "per half", beefdata.boneoutloin ? "Yes" : "No", costs.boneoutloin),
+                ...invoice.customcharges.map(c => [ c.name, "---", "---", `$${c.amount.toFixed(2)}` ])
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
@@ -1060,6 +1064,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 makeCharge("Processing Fee", price.processing, "per lbs of dress weight", `${animal.dressWeight}lbs`, costs.processing),
                 makeCharge("Curing Fee", price.cure, "per lbs of cured pork", `${porkdata.totalcured}lbs`, costs.cured),
                 makeCharge("Sausage Fee", price.sausage, "per lbs of sausage", `${porkdata.sausage}lbs`, costs.sausage),
+                ...invoice.customcharges.map(c => [ c.name, "---", "---", `$${c.amount.toFixed(2)}` ])
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
@@ -1084,7 +1089,10 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
     }
 
     const charges = invoice.customcharges ?? []
+    const payments = invoice.paymentTypes ?? []
 
+    let chargeCounter = total
+    let paymentCounter = subTotal
     data.push({
         type: "text",
         value: `
@@ -1104,8 +1112,8 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                     <div style="flex-grow: 1;">
                         ${charges.map(charge => `
                             <div style="display: flex; flex-direction: row">
-                                <span style="flex-grow: 1">${charge.name}:</span>
-                                <span>$${charge.amount.toFixed(2)}</span>
+                                <span style="flex-grow: 1">${charge.name} ($${charge.amount.toFixed(2)}):</span>
+                                <span>$${(chargeCounter+=charge.amount).toFixed(2)}</span>
                             </div>  
                         `).join("")}
                     </div>
@@ -1113,25 +1121,27 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 `
                 }
                 <div style="display: flex; flex-direction: row; border-top: solid 1px black">
-                    <span style="flex-grow: 1">Sub Total:</span>
+                    <span style="flex-grow: 1">Total:</span>
                     <span>$${subTotal.toFixed(2)}</span>
                 </div>
-                <div style="display: flex; flex-direction: row;">
-                    <span style="flex-grow: 1">Amount Paid:</span>
-                    <span>$${amountPayed.toFixed(2)}</span>
+                ${ payments.length === 0 ? "" : 
+                `
+                <div style="display: flex; flex-direction: row; border-top: solid 1px black">
+                    <div style="flex-grow: 1">Payment${payments.length === 1 ? "" : "s"}:</div>
+                    <div style="flex-grow: 1;">
+                        ${payments.map(payment => `
+                            <div style="display: flex; flex-direction: row">
+                                <span style="flex-grow: 1">${formatPaymentMethod(payment)}</span>
+                                <span>$${(paymentCounter-=payment.amount).toFixed(2)}</span>
+                            </div>  
+                        `).join("")}
+                    </div>
                 </div>
+                `
+                }
                 <div style="display: flex; flex-direction: row;">
-                    <span style="flex-grow: 1">Total Due:</span>
+                    <span style="flex-grow: 1">Remaining Amount:</span>
                     <span>$${(subTotal - amountPayed).toFixed(2)}</span>
-                </div>
-                
-                <div style="display: flex; flex-direction: row; border-top: solid 1px black; margin-top: 0px">
-                    <div style="flex-grow: 1">
-                        Payment Methods
-                    </div>
-                    <div style="text-align: right;">
-                        ${invoice.paymentTypes.map(t => formatPaymentMethod(t) + "<br>").join("")}
-                    </div>
                 </div>
             </div>
         `

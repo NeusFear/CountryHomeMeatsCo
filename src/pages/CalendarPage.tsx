@@ -422,9 +422,9 @@ const disabledDays = [
 
 export const useCalandarDates = (date: Date) => {
   // const utc = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-  const normalized = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)
-  const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)).toISOString()
-  const end = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 1, 0, 0, 0, 0)).toISOString()
+  const normalized = new Date(date.getUTCFullYear(), date.getUTCMonth(), 1, 0, 0, 0, 0)
+  const start = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1, 0, 0, 0, 0)).toISOString()
+  const end = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1, 0, 0, 0, 0)).toISOString()
 
   if (!calandarCache.has(normalized.getTime())) {
     const url = "https://www.googleapis.com/calendar/v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events"
@@ -438,10 +438,13 @@ export const useCalandarDates = (date: Date) => {
         json.items.forEach(item => {
           if (!disabledDays.includes(item.summary)) {
             
-            const d = 
+            const d = new Date(item.start.date)
+            const ms = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
             arr.push({
               name: item.summary.replace("(regional holiday)", "").replace("Martin Luther King Jr. Day", "MLK Jr. Day").replace("Thanksgiving Day", "Thanksgiving"),
-              date: new Date(item.start.date)
+              date: d,
+              ms,
+              diff: ms - d.getTime(),
             })
           }
         })

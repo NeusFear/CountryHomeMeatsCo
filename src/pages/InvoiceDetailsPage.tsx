@@ -353,6 +353,9 @@ export const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
         total += keyObject[key] ?? 0
     }
 
+    (invoice.customcharges ?? []).forEach(c => total += c.amount)
+
+
     const minTotal = (animal.animalType === AnimalType.Beef ? invoice.priceData.beef : invoice.priceData.pork).minPrice
     const calcualtedTotal = total;
     if(total < minTotal) {
@@ -365,8 +368,6 @@ export const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
 const calculateSubTotal = (animal: IAnimal, invoice: IInvoice) => {
     
     let total = calculateTotal(animal, invoice).total;
-
-    (invoice.customcharges ?? []).forEach(c => total += c.amount)
 
     return total;
 }
@@ -916,7 +917,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
             margin: 0;
         }
         th, td {
-            padding: 5px !important;
+            padding: 4px !important;
         }
         </style>
         `
@@ -1044,7 +1045,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", beefdata.boneoutprimerib ? "Yes" : "No", costs.boneoutprimerib),
                 makeCharge("Bone Out Loin", price.boneOutLoin, "per half", beefdata.boneoutloin ? "Yes" : "No", costs.boneoutloin),
 
-                ...invoice.customcharges.map(c => [ c.name, "", "", String(c.amount) ])
+                ...invoice.customcharges.map(c => [ c.name, "---", "---", `$${c.amount.toFixed(2)}` ])
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',

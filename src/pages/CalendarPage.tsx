@@ -436,21 +436,14 @@ export const useCalandarDates = (date: Date) => {
 
         json.items.forEach(item => {
           if (!disabledDays.includes(item.summary)) {
-            
-            const d = new Date(item.start.date)
-            const ms = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
             arr.push({
               name: item.summary.replace("(regional holiday)", "").replace("Martin Luther King Jr. Day", "MLK Jr. Day").replace("Thanksgiving Day", "Thanksgiving"),
-              date: d,
-              utcd: d.getUTCDate()
+              date: new Date(item.start.date),
             })
           }
         })
 
         promise['resolvedArray'] = arr
-        console.log(start + " --> " + end)
-        arr.forEach(a => console.log(a))
-        console.log("\n")
         return arr
       })
     calandarCache.set(normalized.getTime(), promise)

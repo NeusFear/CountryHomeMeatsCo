@@ -2,6 +2,7 @@ import { SvgCow, SvgPig, SvgArrow } from "../assets/Icons"
 import { DatabaseWait } from "../database/Database"
 import Animal, { AnimalType, IAnimal, useAnimals, validateEaters, ValidateEatersFields } from "../database/types/Animal"
 import User, { useUsers } from "../database/types/User"
+import { normalizeDay } from "../Util"
 import { hangingAnimals, setModal } from "./ModalManager"
 
 export const EditCutListModal = () => {
@@ -35,7 +36,7 @@ const HangingAnimalEntry = ({animal}: {animal: IAnimal}) => {
   const eatersValid = validateEaters(animal);
   const processAnimalToday = () => {
     if (eatersValid) {
-      animal.processDate = new Date()
+      animal.processDate = normalizeDay()
       animal.save().then(() => setModal(hangingAnimals))
     }
   }

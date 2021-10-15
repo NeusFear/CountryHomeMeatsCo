@@ -421,7 +421,7 @@ const disabledDays = [
 ]
 
 export const useCalandarDates = (date: Date) => {
-  date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  const utc = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
   const normalized = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)
   const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)).toISOString()
   const end = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 1, 0, 0, 0, 0)).toISOString()
@@ -441,8 +441,7 @@ export const useCalandarDates = (date: Date) => {
             const d = new Date(item.start.date)
             arr.push({
               name: item.summary.replace("(regional holiday)", "").replace("Martin Luther King Jr. Day", "MLK Jr. Day").replace("Thanksgiving Day", "Thanksgiving"),
-              raw: item.start.date,
-              date: new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
+              date: Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
             })
           }
         })
@@ -456,7 +455,7 @@ export const useCalandarDates = (date: Date) => {
     calandarCache.set(normalized.getTime(), promise)
   }
 
-  const getDatesFromMonth = (dates: HolidayEntry[]) => dates.filter(d => d.date.getTime() == date.getTime())
+  const getDatesFromMonth = (dates: HolidayEntry[]) => dates.filter(d => d.date === utc)
 
   const promise = calandarCache.get(normalized.getTime())
   const resolved = promise['resolvedArray'] !== undefined

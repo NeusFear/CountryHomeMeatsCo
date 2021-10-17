@@ -585,7 +585,8 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 initial={instructions.sirlointip.amount}
                 onChange={v => instructions.sirlointip.amount=v}
                 values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']} 
-                width={65} 
+                width={65}
+                defaultValue="4/Pkg"
               />
             </div>
                     
@@ -605,13 +606,14 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 initial={instructions.sirloin.size}
                 onChange={v => instructions.sirloin.size=v}
                 values={['1/2"', '3/4"', '1"', '1 1/4"']} 
-                width={65} 
+                width={65}
+                defaultValue='1"'
               />
               <SelectInputType
                 initial={instructions.sirloin.amount}
                 onChange={v => instructions.sirloin.amount=v}
                 values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']}
-                width={65} 
+                width={65}
               />
             </div>
                     
@@ -621,19 +623,22 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 initial={instructions.tbone.bone}
                 onChange={v => instructions.tbone.bone=v}
                 values={['Bone Out', 'Bone In']} 
-                width={65} 
+                width={65}
+                defaultValue=""
               />
               <SelectInputType
                 initial={instructions.tbone.size}
                 onChange={v => instructions.tbone.size=v}
                 values={['1/2"', '3/4"', '1"', '1 1/4"']} 
-                width={65} 
+                width={65}
+                defaultValue='1"'
               />
               <SelectInputType
                 initial={instructions.tbone.amount}
                 onChange={v => instructions.tbone.amount=v}
                 values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']} 
                 width={65} 
+                defaultValue="2/Pkg"
               />
             </div>
                     
@@ -644,6 +649,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.rump=v}
                 values={['2lb', '2.5lb', '3lb', '3.5lb', '4lb', 'Hamburger']} 
                 width={100} 
+                defaultValue='3lb'
               />
             </div>
                     
@@ -654,6 +660,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.pikespeak=v}
                 values={['2lb', '2.5lb', '3lb', '3.5lb', '4lb', 'Hamburger']}
                 width={100}
+                defaultValue='3lb'
               />
             </div>
                     
@@ -664,6 +671,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.groundbeef=v}
                 values={['1lb', '1.5lb', '2lb', '5lb', '10lb', 'half 1lb half 2lb']}
                 width={100} 
+                defaultValue='1lb'
               />
             </div>
 
@@ -674,12 +682,14 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.patties.weight=v}
                 values={['20lb', '30lb', '40lb', '25%', '33%', '50%']}
                 width={65}
+                defaultValue=""
               />
               <SelectInputType
                 initial={instructions.patties.amount}
                 onChange={v => instructions.patties.amount=v}
                 values={['3/Pkg', '4/Pkg', '5/Pkg', '6/Pkg']}
                 width={65}
+                defaultValue=""
               />
             </div>
           </div>
@@ -694,6 +704,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.chuck=v}
                 values={['2lb', '2.5lf', '3lb', '3.5lb', '4lb', 'Hamburger']}
                 width={100}
+                defaultValue="3lb"
               />
             </div>
                     
@@ -704,6 +715,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.arm=v}
                 values={['2lb', '2.5lf', '3lb', '3.5lb', '4lb', 'Hamburger']}
                 width={100}
+                defaultValue="3lb"
               />
             </div>
                     
@@ -713,7 +725,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 initial={instructions.ribs}
                 onChange={v => instructions.ribs=v}
                 values={['Keep All', 'Keep Part', 'All Hamburger', 'Hamburger if Possible']}
-                width={100} 
+                width={100}
               />
             </div>
                     
@@ -730,12 +742,14 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.club.size=v}
                 values={['1/2"', '3/4"', '1"', '1 1/4"']}
                 width={65}
+                defaultValue='1"'
               />
               <SelectInputType
                 initial={instructions.club.amount}
                 onChange={v => instructions.club.amount=v}
                 values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']}
                 width={65} 
+                defaultValue="2/Pkg"
               />
             </div>
                     
@@ -746,6 +760,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 onChange={v => instructions.brisket=v}
                 values={['Whole', 'Two Pieces', 'Hamburger']}
                 width={100}
+                defaultValue="Two Pieces"
               />
             </div>
                     

@@ -302,9 +302,14 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
             }
           }
         })
+  
     animal.save()
-  }
+  
 
+    eaters.forEach(eat => {
+      eat.foundCutInstruction = eat.foundUser?.cutInstructions?.find(c => c.id === eat.cutInstruction)?.instructions
+    })
+  }
   useEffect(() => {
     const eaters: DummyEater[] = []
     eaters.length = numEaters === 2 ? 2 : Math.round(numEaters / 2)
@@ -334,7 +339,7 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
       }
     })
     setEaters(eaters)
-  }, [numEaters, allUsers, String(eaters?.map(e => e.cutInstruction))])
+  }, [numEaters, allUsers])
 
   if (eaters === undefined) {
     return (<div>Loading eaters...</div>)
@@ -383,8 +388,17 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
   return (
     <div>
       <div className="flex flex-row">
-        <EaterSelectPart save={save} part={eater} allUsers={allUsers} currentState={currentState} user={user} setUser={setUser} />
-        <select className="w-48 border-gray-700 border rounded-md ml-2 px-1" 
+        <EaterSelectPart save={save} part={eater} allUsers={allUsers} currentState={currentState} user={user} setUser={u => {
+          if(!u) {
+            eater.cutInstruction = undefined
+            eater.foundCutInstruction = undefined
+            eater.foundUser = undefined
+          }
+          setUser(u)
+        }} />
+        <select 
+        key={user?.id?? "null"}
+        className="w-48 border-gray-700 border rounded-md ml-2 px-1" 
         disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} 
         onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
           <option hidden disabled value="__default"></option>
@@ -423,10 +437,14 @@ const EaterSelectPart = ({ save, part, allUsers, currentState, user, setUser }: 
       <WrappedAutoSuggest
         suggestion={allUsers}
         intial={part.foundUser}
-        disabled={currentState < 3}
         mappingFunc={(user: IUser) => user.name}
         save={save}
-        onChange={u => setUser(u)}
+        onChange={u => {
+          if(!u) {
+            part.tag = ""
+          }
+          setUser(u)
+        }}
       />
 
       <input
@@ -443,9 +461,9 @@ const EaterSelectPart = ({ save, part, allUsers, currentState, user, setUser }: 
 }
 
 //Export this to a util function
-const WrappedAutoSuggest = ({ suggestion, disabled, intial, mappingFunc, save, onChange }: {
+const WrappedAutoSuggest = ({ suggestion, disabled = false, intial, mappingFunc, save, onChange }: {
   suggestion: any[],
-  disabled: boolean,
+  disabled?: boolean,
   intial: any,
   mappingFunc: (t: any) => string,
   save: () => void,
@@ -453,7 +471,6 @@ const WrappedAutoSuggest = ({ suggestion, disabled, intial, mappingFunc, save, o
 }) => {
   const [suggestions, setSuggestions] = useState(suggestion)
   const [value, setValue] = useState(intial ? mappingFunc(intial) : '')
-
   const onValueChanged = (_, { newValue }: { newValue: string }) => {
     setValue(newValue)
     onChange(suggestions.find(s => mappingFunc(s).toLowerCase() == newValue.toLowerCase()), newValue)

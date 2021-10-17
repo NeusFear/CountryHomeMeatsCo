@@ -187,8 +187,8 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         invoice.beefdata = {
             makeCubedSteaks: cutInstruction.round.size.toLowerCase() == "chicken fry" || cutInstruction.sirlointip.size.toLowerCase() == "chicken fry" || cutInstruction.flank.toLowerCase() == "chicken fry",
             hasTenderized: false,
-            boneoutprimerib: cutInstruction.boneOutPrimeRib,
-            boneoutloin: cutInstruction.boneOutLoin,
+            boneoutprimerib: cutInstruction.club.bone.toLowerCase() == "ribeye",
+            boneoutloin: cutInstruction.tbone.bone.toLowerCase() == "bone out",
         }
         invoice.beefprices = {}
 
@@ -211,10 +211,10 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
             invoice.beefprices.cubedsteaks = numHalves * priceData.beef.makeCubedSteaks
         }
 
-        if(cutInstruction.boneOutPrimeRib) {
+        if(invoice.beefdata.boneoutprimerib) {
             invoice.beefprices.boneoutprimerib = priceData.beef.boneOutPrimeRib
         }
-        if(cutInstruction.boneOutLoin) {
+        if(invoice.beefdata.boneoutloin) {
             invoice.beefprices.boneoutloin = priceData.beef.boneOutLoin
         }
     } else {

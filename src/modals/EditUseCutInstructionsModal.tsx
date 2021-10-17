@@ -62,9 +62,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
           tbone: {},
           club: {},
           stewmeat: {},
-          patties: {},
-          boneOutPrimeRib: false,
-          boneOutLoin: false
+          patties: {}
         } as BeefCutInstructions
       } else {
         const freshCuredObj = () => { return { fresh: { amount: 0 }, cured: { amount: 0 } } }
@@ -683,15 +681,6 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                 values={['3/Pkg', '4/Pkg', '5/Pkg', '6/Pkg']}
                 width={65}
               />
-            </div>
-
-            <div className="pt-4 flex flex-row">
-              <span className="ml-2 pr-2 text-gray-700">Bone Out Prime Rib:</span>
-              <Checkbox checked={instructions.boneOutPrimeRib} onChange={v => instructions.boneOutPrimeRib = v} />
-            </div>
-            <div className="pt-4 flex flex-row">
-              <span className="ml-2 pr-2 text-gray-700">Bone Out Loin:</span>
-              <Checkbox checked={instructions.boneOutLoin} onChange={v => instructions.boneOutLoin = v} />
             </div>
           </div>
 

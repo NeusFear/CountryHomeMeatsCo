@@ -341,6 +341,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                       ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
                       ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
                   </div>
+                  ${instructionDiv("Notes", cutInstruction.notes)}
               `
           }
       )
@@ -383,6 +384,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                           `
                       }
                   </div>
+                  ${instructionDiv("Notes", cutInstruction.notes)}
               </div>
           `
           }

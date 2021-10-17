@@ -338,9 +338,6 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                         ${instructionDiv("T-Bone", `${beef.tbone.bone} ${beef.tbone.size} ${beef.tbone.amount}`)}
                         ${instructionDiv("Rump", beef.rump)}
                         ${instructionDiv("Pikes Peak", beef.pikespeak)}
-
-                        ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
-                        ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
                     </div>
                     <div style="width: 100%">
                       ${instructionDiv("Chuck", beef.chuck)}
@@ -348,8 +345,16 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                       ${instructionDiv("Ribs", beef.ribs)}
                       ${instructionDiv("Club", `${beef.club.bone} ${beef.club.size} ${beef.club.amount}`)}
                       ${instructionDiv("Brisket", beef.brisket)}
+                      ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
                       ${instructionDiv("Soup Bones", beef.soupbones )}
-
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row;">
+                    <div style="width: 100%">
+                        ${instructionDiv("Ground Beef", beef.groundbeef)}
+                    </div>
+                    <div style="width: 100%">
+                      ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
                     </div>
                   </div>
                   ${instructionDiv("Notes", cutInstruction.notes)}

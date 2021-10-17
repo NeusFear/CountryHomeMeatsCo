@@ -800,7 +800,7 @@ const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: IInvoic
                 cutInstructions={c.groundbeef}
             />
             <NonEditableCutInstructionEntry 
-                title="Chunk"
+                title="Chuck"
                 cutInstructions={c.chuck}
             />
             <NonEditableCutInstructionEntry 

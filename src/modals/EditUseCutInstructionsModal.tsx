@@ -360,7 +360,7 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
             <SelectInputType 
               initial={instructions.jowl.cured.type}
               onChange={v => instructions.jowl.cured.type=v}
-              values={['Chunk', 'Whole', 'Slice']} 
+              values={['Chuck', 'Whole', 'Slice']} 
               width={70} 
             />
           </div>

@@ -796,17 +796,6 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
   )
 }
 
-const Checkbox = ({checked, onChange}: {checked: boolean, onChange: (val: boolean) => void}) => {
-  const [state, setState] = useState(checked)
-  return (
-    <input className="mt-1 h-5 w-5 rounded-md mr-2" type="checkbox" checked={state} onChange={e => {
-      const val = e.target.checked
-      setState(val)
-      onChange(val)
-    }} />
-  )
-}
-
 const PorkFreshCuredOptions = ({obj, refreshCanSubmit}: { obj: { amount: number }, refreshCanSubmit: () => void}) => {
   const [value, setValue] = useState(obj.amount)
 

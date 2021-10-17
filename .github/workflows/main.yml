@@ -30,6 +30,11 @@ jobs:
             New Version
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - name: create zip
+        uses: papeloto/action-zip@v1
+        with:
+          files: mongo_server
+          dest: mongo_server.zip
       - name: upload artifact
         uses: actions/upload-release-asset@v1
         env:
@@ -39,3 +44,12 @@ jobs:
           asset_path: ./build/installer/installer.exe
           asset_name: chm_installer-${{ github.run_number }}.exe
           asset_content_type: application/octet-stream
+      - name: upload mongodb server zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: mongo_server.zip
+          asset_name: mongo_server.zip
+          asset_content_type: application/gzip

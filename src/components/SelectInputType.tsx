@@ -2,14 +2,19 @@ import React, { useMemo } from "react"
 import { useState } from "react";
 import Autosuggest from 'react-autosuggest';
 
-export const SelectInputType = ({initial, onChange, values, width}: {
+export const SelectInputType = ({initial, onChange, values, width, defaultValue}: {
   initial: string,
   onChange: (value: string) => void,
   values: string[], 
-  width: number
+  width: number,
+  defaultValue?: string
 }) => {
 
   const computedInitial = useMemo(() => {
+    if(defaultValue !== undefined) {
+      onChange(defaultValue)
+      return defaultValue
+    }
     if(initial === undefined) {
       onChange(values[0])
       return values[0]

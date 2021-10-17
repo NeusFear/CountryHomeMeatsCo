@@ -123,7 +123,15 @@ export const InvoiceDetailsPage = () => {
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Date Killed:</p>
-                        <p className="text-right">{animal.killDate.toDateString()}</p>
+                        <p className="text-right">{formatDay(animal.killDate)}</p>
+                    </div>
+                    <div className="flex flex-row pl-2 pr-4">
+                        <p className="font-semibold flex-grow">Date Processed:</p>
+                        <p className="text-right">{formatDay(animal.processDate)}</p>
+                    </div>
+                    <div className="flex flex-row pl-2 pr-4">
+                        <p className="font-semibold flex-grow">Date Invoice Generated:</p>
+                        <p className="text-right">{formatDay(animal.invoiceGeneratedDate)}</p>
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Live Weight:</p>

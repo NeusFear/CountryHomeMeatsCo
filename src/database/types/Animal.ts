@@ -69,6 +69,7 @@ export interface IAnimal extends Document {
   sex: AnimalSexes,
   penLetter: PenLetter
   processDate: Date,
+  invoiceGeneratedDate: Date
   tagNumber: number,
   liverGood: boolean,
   older30Months: boolean
@@ -108,6 +109,7 @@ const animalSchmea = new Schema({
   sex: { type: String },
   penLetter: { type: String, uppercase: true, enum: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] },
   processDate: { type: Schema.Types.Date },
+  invoiceGeneratedDate: { type: Schema.Types.Date },
   tagNumber: { type: Number },
   liverGood: { type: Boolean },
   older30Months: { type: Boolean },
@@ -125,14 +127,14 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
-export const AnimalStateFields = "confirmed liveWeight color sex tagNumber penLetter dressWeight processDate pickedUp " + ValidateEatersFields
+export const AnimalStateFields = "confirmed liveWeight color sex tagNumber penLetter dressWeight invoiceGeneratedDate pickedUp " + ValidateEatersFields
 export const computeAnimalState = (animal: IAnimal | undefined) => {
   if (!animal || !animal.confirmed) return 0
   if ([animal.liveWeight, animal.color, animal.sex,
   animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
   if (animal.dressWeight === undefined) return 2
   if (!validateEaters(animal)) return 3
-  if (animal.processDate === undefined) return 4
+  if (animal.invoiceGeneratedDate === undefined) return 4
   if (!animal.pickedUp) return 5
   return 6
 }
@@ -182,7 +184,7 @@ export const useComputedAnimalState = (animalWithWait: IAnimal | undefined | Dat
     JSON.stringify(animal?.eaters?.map(e => { return [e.id, e.halfUser, e.cutInstruction] })),
 
     //To get from ready-to-cut to ready-for-pickup
-    animal?.processDate,
+    animal?.invoiceGeneratedDate,
 
     //To get from ready-for-pickup to archived
     animal?.pickedUp

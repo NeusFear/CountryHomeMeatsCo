@@ -254,7 +254,7 @@ export const AnimalDetailsPage = () => {
                   })
                   Invoice.deleteMany().where("_id").in(toRemove).exec()
                   toSave.forEach(u => u.save())
-                  animal.processDate = normalizeDay()
+                  animal.invoiceGeneratedDate = normalizeDay()
                   animal.save()
                 }
               }}>Generate</button> }

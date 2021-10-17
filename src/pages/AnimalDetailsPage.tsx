@@ -481,7 +481,7 @@ const WrappedAutoSuggest = ({ suggestion, disabled = false, intial, mappingFunc,
       suggestions={suggestions}
       onSuggestionsFetchRequested={({ value }: { value: string }) => {
         const lowerValue = value.toLowerCase().trim()
-        setSuggestions(suggestion.filter(s => mappingFunc(s).toLowerCase().startsWith(lowerValue)))
+        setSuggestions(suggestion.filter(s => mappingFunc(s).toLowerCase().includes(lowerValue)))
       }}
       onSuggestionsClearRequested={() => setSuggestions([])}
       getSuggestionValue={t => mappingFunc(t)}

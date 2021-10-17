@@ -7,7 +7,8 @@ export const normalizeDay = (date: Date = new Date()) =>
 
 export const formatDay = (date: Date) => date === undefined ? "???" : date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear() //America moment
 
-export const formatPhoneNumber = (numStr: String) => {
+export const formatPhoneNumber = (numStr: string) => {
+    numStr = numStr.replace(/-/g, "")
     return "(" + numStr.substr(0, 3) + ") " + numStr.substr(3, 3) + "-" + numStr.substr(6);
 }
 

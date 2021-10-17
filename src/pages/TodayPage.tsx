@@ -329,17 +329,28 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
           {
               type: "text",
               value: `
-                  <div>
-                      ${instructionDiv("Round", `${beef.round.tenderizedAmount} ${beef.round.size} ${beef.round.perPackage}`)}
-                      ${instructionDiv("Sirloin Tip", `${beef.sirlointip.size} ${beef.sirlointip.amount}`)}
-                      ${instructionDiv("Flank", beef.flank)}
-                      ${instructionDiv("Sirloin", `${beef.sirloin.size} ${beef.sirloin.amount}`)}
-                      ${instructionDiv("T-Bone", `${beef.tbone.bone} ${beef.tbone.size} ${beef.tbone.amount}`)}
-                      ${instructionDiv("Rump", beef.rump)}
-                      ${instructionDiv("Pikes Peak", beef.pikespeak)}
+                  <div style="display: flex; flex-direction: row;">
+                    <div style="width: 100%">
+                        ${instructionDiv("Round", `${beef.round.tenderizedAmount} ${beef.round.size} ${beef.round.perPackage}`)}
+                        ${instructionDiv("Sirloin Tip", `${beef.sirlointip.size} ${beef.sirlointip.amount}`)}
+                        ${instructionDiv("Flank", beef.flank)}
+                        ${instructionDiv("Sirloin", `${beef.sirloin.size} ${beef.sirloin.amount}`)}
+                        ${instructionDiv("T-Bone", `${beef.tbone.bone} ${beef.tbone.size} ${beef.tbone.amount}`)}
+                        ${instructionDiv("Rump", beef.rump)}
+                        ${instructionDiv("Pikes Peak", beef.pikespeak)}
 
-                      ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
-                      ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
+                        ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
+                        ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
+                    </div>
+                    <div style="width: 100%">
+                      ${instructionDiv("Chuck", beef.chuck)}
+                      ${instructionDiv("Arm", beef.arm)}
+                      ${instructionDiv("Ribs", beef.ribs)}
+                      ${instructionDiv("Club", `${beef.club.bone} ${beef.club.size} ${beef.club.amount}`)}
+                      ${instructionDiv("Brisket", beef.brisket)}
+                      ${instructionDiv("Soup Bones", beef.soupbones )}
+
+                    </div>
                   </div>
                   ${instructionDiv("Notes", cutInstruction.notes)}
               `

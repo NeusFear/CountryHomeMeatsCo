@@ -10,7 +10,7 @@ import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
 import Invoice, { AllCuredPorkDataPieces, BeefPricesList, IInvoice, PaymentType, PorkPricesList, useInvoice } from "../database/types/Invoices"
 import User, { IUser, useUsers } from "../database/types/User"
-import { formatDay, normalizeDay } from "../Util"
+import { formatDay, formatPhoneNumber, normalizeDay } from "../Util"
 import { animalDetailsPage, userDetailsPage } from "../NavBar"
 import { printGenericSheet, setModal } from "../modals/ModalManager"
 import { GenericPrintModal } from "../modals/GenericPrintModal"
@@ -98,7 +98,7 @@ export const InvoiceDetailsPage = () => {
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Phone Number:</p>
-                        { user.phoneNumbers.map((num, i) => <div key={i} className="text-right">{num.number}</div> ) }
+                        { user.phoneNumbers.map((num, i) => <div key={i} className="text-right">{formatPhoneNumber(num.number)}</div> ) }
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Email:</p>
@@ -912,7 +912,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 <div>
                     <span style="font-weight: bold">${user.name}</span><br>
                     ${user.emails.map(e => `${e}<br>`).join("")}
-                    ${user.phoneNumbers.map(p => `${p.name}: ${p.number}<br>`).join("")}
+                    ${user.phoneNumbers.map(p => `${p.name}: ${formatPhoneNumber(p.number)}<br>`).join("")}
                 </div>
             `
         }

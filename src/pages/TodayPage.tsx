@@ -6,7 +6,7 @@ import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, useAnimals, useC
 import User, { CutInstructions, IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, printGenericSheet, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
-import { formatDay, getDayNumber, normalizeDay } from "../Util"
+import { formatDay, formatPhoneNumber, getDayNumber, normalizeDay } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
 import { useMemo } from "react";
 import { DatabaseWait } from "../database/Database";
@@ -188,7 +188,7 @@ const formatEater = (user: IUser, tag?: string) => {
       </div>
       <div>
           ${user.emails.join("<br>")}<br>
-          ${user.phoneNumbers.map(u => u.name + ": " + u.number).join("<br>")}
+          ${user.phoneNumbers.map(u => u.name + ": " + formatPhoneNumber(u.number)).join("<br>")}
       </div>
   </div>
   `

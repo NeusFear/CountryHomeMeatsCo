@@ -72,7 +72,7 @@ export interface IAnimal extends Document {
   invoiceGeneratedDate: Date
   tagNumber: number,
   liverGood: boolean,
-  older30Months: boolean
+  older30Months?: boolean
   pigTatooNumber?: number,
 
   pickedUp: boolean

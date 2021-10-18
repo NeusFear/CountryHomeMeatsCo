@@ -145,10 +145,12 @@ export const InvoiceDetailsPage = () => {
                         <p className="font-semibold flex-grow">Liver Good:</p>
                         <p className="text-right">{animal.liverGood ? "Yes" : "No"}</p>
                     </div>
-                    <div className="flex flex-row pl-2 pr-4">
-                        <p className="font-semibold flex-grow">Older than 30 Months:</p>
-                        <p className="text-right">{animal.older30Months ? "Yes" : "No"}</p>
-                    </div>
+                    { animal.animalType === AnimalType.Beef &&
+                        <div className="flex flex-row pl-2 pr-4">
+                            <p className="font-semibold flex-grow">Older than 30 Months:</p>
+                            <p className="text-right">{animal.older30Months ? "Yes" : "No"}</p>
+                        </div>
+                    }
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Take Home Weight:</p>
                         <p className="text-right"><RightFacingNumberInput value={invoice.takeHomeWeight} setValue={v => {

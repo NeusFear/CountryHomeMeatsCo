@@ -70,7 +70,9 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
             <DataTag name={animal.sex} />
             <DataTag name={"Tag #" + animal.tagNumber.toString()} />
             <DataTag name={"Pen " + animal.penLetter} />
-            <HilightTag name={animal.older30Months ? "> 30 Months" : "< 30 Months"} good={!animal.older30Months} />
+            { animal.animalType === AnimalType.Beef &&
+              <HilightTag name={animal.older30Months ? "> 30 Months" : "< 30 Months"} good={!animal.older30Months} />
+            }
             <HilightTag name={animal.liverGood ? "Liver Good" : "Liver Bad"} good={animal.liverGood} />
           </div>
         </div>

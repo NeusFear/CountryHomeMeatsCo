@@ -219,13 +219,15 @@ export const AnimalDetailsPage = () => {
                   setAnimalArriveDateAndSave()
                 }} />
               </div>
-              <div className="font-semibold flex flex-row p-1">
-                <span>Older than 30 Months</span>
-                <input className="mt-1 h-8 w-8 rounded-md mr-2" type="checkbox" checked={animal.older30Months} onChange={e => {
-                  animal.older30Months = e.target.checked
-                  setAnimalArriveDateAndSave()
-                }} />
-              </div>
+              { animal.animalType === AnimalType.Beef &&
+                <div className="font-semibold flex flex-row p-1">
+                  <span>Older than 30 Months</span>
+                  <input className="mt-1 h-8 w-8 rounded-md mr-2" type="checkbox" checked={animal.older30Months} onChange={e => {
+                    animal.older30Months = e.target.checked
+                    setAnimalArriveDateAndSave()
+                  }} />
+                </div>
+              }
             </div>
           </div>
           <div className="bg-gray-200 rounded-lg mt-4">

@@ -14,6 +14,7 @@ import { DatabaseWait } from "../database/Database";
 import Invoice, { generateInvoice, IInvoice, useInvoice } from "../database/types/Invoices";
 import { useConfig } from "../database/types/Configs";
 import InvoiceListItem from "../components/InvoiceListItem";
+import { SelectInputType } from "../components/SelectInputType";
 
 type DummyEater = {
   _rand: number
@@ -154,10 +155,21 @@ export const AnimalDetailsPage = () => {
               </div>
               <div className="font-semibold flex flex-col p-1">
                 <span>Color</span>
-                <input className="border-gray-700 border rounded-md px-2" type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
+                <SelectInputType 
+                  className="border-gray-700 border rounded-md px-2"
+                  values={animal.animalType === AnimalType.Beef ? ["black", "red", "white", "white face", "holstien", "jersey"] : ["black", "white", "red", "spot", "hamp"]}
+                  onChange={val => {
+                    animal.color = val
+                    setAnimalArriveDateAndSave()
+                  }}
+                  disabled={currentState < 1}
+                  initial=""
+                  removeEmpty
+                />
+                {/* <input className="border-gray-700 border rounded-md px-2" type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {
                   animal.color = e.target.value
                   setAnimalArriveDateAndSave()
-                }} />
+                }} /> */}
               </div>
               <div className="font-semibold flex flex-col p-1">
                 <span>Sex</span>

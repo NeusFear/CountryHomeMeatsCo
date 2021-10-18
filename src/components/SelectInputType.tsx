@@ -2,16 +2,20 @@ import React, { useMemo } from "react"
 import { useState } from "react";
 import Autosuggest from 'react-autosuggest';
 
-export const SelectInputType = ({initial, onChange, values, width, defaultValue, disabled = false}: {
+export const SelectInputType = ({initial, onChange, values, width, defaultValue, disabled = false, className, removeEmpty}: {
   initial: string,
   onChange: (value: string) => void,
   values: string[], 
-  width: number,
+  width?: number,
   defaultValue?: string,
-  disabled?: boolean
+  disabled?: boolean,
+  className?: string,
+  removeEmpty?: boolean
 }) => {
   const insertedValues = values.slice()
-  insertedValues.unshift("")
+  if(!removeEmpty) {
+    insertedValues.unshift("")
+  }
   const computedInitial = useMemo(() => {
     if(defaultValue !== undefined) {
       onChange(defaultValue)
@@ -42,7 +46,7 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue,
   const widthInPx = width
 
   return (
-    <div style={{width: `${widthInPx}px`}}>
+    <div style={width !== undefined ? null : {width: `${widthInPx}px`}}>
       <Autosuggest 
         suggestions={disabled ? [] : suggestions}
         onSuggestionsFetchRequested={({value}: {value: string}) => setSuggestions(findSuggestions(value))}        
@@ -53,7 +57,7 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue,
           return t === "" ? <div>&nbsp;</div> : <div>{t}</div>
         }}
         inputProps={{
-          className: "bg-gray-200 border border-gray-500 rounded-md w-full",
+          className: className ?? "bg-gray-200 border border-gray-500 rounded-md w-full",
           value: disabled ? "" : value,
           onChange: onValueChanged
         }}

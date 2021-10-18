@@ -1090,11 +1090,11 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
     const formatPaymentMethod = (type: PaymentType) => {
         switch(type.type) {
             case "card":
-                return `Card (####-####-####-${type.additionalData}) $${type.amount.toFixed(2)}`
+                return `Card (####-####-####-${type.additionalData || "????"}) $${type.amount.toFixed(2)}`
             case "cash":
                 return `Cash $${type.amount.toFixed(2)}`
             case "check":
-                return `Check (#${type.additionalData}) $${type.amount.toFixed(2)}`
+                return `Check (#${type.additionalData || "?????"}) $${type.amount.toFixed(2)}`
         }
     }
 

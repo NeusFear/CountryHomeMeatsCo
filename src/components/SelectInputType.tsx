@@ -17,8 +17,8 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue}
       return defaultValue
     }
     if(initial === undefined) {
-      onChange(insertedValues[0])
-      return insertedValues[0]
+      onChange(values[0])
+      return values[0]
     }
     return initial
   }, [initial])

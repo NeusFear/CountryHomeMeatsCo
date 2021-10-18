@@ -28,7 +28,9 @@ export const InCoolerPage = () => {
       <div className="pt-4">
         <div className="w-auto bg-gray-200 mx-4 h-full rounded-lg">
           <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1" >{tab ? "BEEF: " + beef.length : "PORK: " + pork.length}</div>
-          {(tab ? beef : pork).map(c => <AnimalInfoEntry key={c.id} animal={c} />)}
+          {animals === DatabaseWait ? "Loading..." : 
+          (tab ? beef : pork).map(c => <AnimalInfoEntry key={c.id} animal={c} />)
+          }
         </div>
       </div>
     </div>
@@ -55,7 +57,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
           <DataTag name={user.name} />
         </div>
         <div className="text-gray-800 group-hover:text-gray-900 w-20 mr-4">
-          <p>ID</p>
+          <p>Animal ID</p>
           <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">#{paddedAnimalId(animal)}</p>
         </div>
         <div className="text-gray-800 group-hover:text-gray-900 flex-shrink mr-2">
@@ -65,10 +67,10 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
         <div className="text-gray-800 group-hover:text-gray-900 mx-2 w-auto mr-2">
           <p>Living Info</p>
           <div className="flex flex-row">
-            <DataTag name={animal.liveWeight.toString() + "lbs"} />
+            <DataTag name={String(animal.liveWeight ?? "???") + "lbs"} />
             <DataTag name={animal.color} />
             <DataTag name={animal.sex} />
-            <DataTag name={"Tag #" + String(animal.tagNumber)} />
+            <DataTag name={"Tag #" + String(animal.tagNumber ?? "???")} />
             <DataTag name={"Pen " + animal.penLetter} />
             { animal.animalType === AnimalType.Beef &&
               <HilightTag name={animal.older30Months ? "> 30 Months" : "< 30 Months"} good={!animal.older30Months} />
@@ -79,7 +81,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
         <div className="text-gray-800 group-hover:text-gray-900 mx-2 w-auto mr-2">
           <p>Dress Info</p>
           <div className="flex flex-row">
-            <DataTag name={animal.dressWeight.toString() + "lbs"} />
+            <DataTag name={String(animal.dressWeight ?? "???") + "lbs"} />
           </div>
         </div>
       </div>

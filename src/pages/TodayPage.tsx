@@ -6,7 +6,7 @@ import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, useAnimals, useC
 import User, { CutInstructions, IUser, useUsers } from "../database/types/User"
 import { hangingAnimals, printGenericSheet, scheduleAnimal, setModal } from "../modals/ModalManager"
 import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
-import { formatDay, getDayNumber, normalizeDay, printPage } from "../Util"
+import { formatDay, getDayNumber, normalizeDay } from "../Util"
 import { userDetailsPage, animalDetailsPage } from "../NavBar";
 import { useMemo } from "react";
 import { DatabaseWait } from "../database/Database";

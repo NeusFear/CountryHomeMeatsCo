@@ -255,16 +255,25 @@ export const AnimalDetailsPage = () => {
                   const toRemove = animal.invoices.map(i => String(i))
                   animal.invoices = []
                   const toSave = new Set<IUser>()
-                  eaters.forEach((e, i) => {
-                    e.foundUser.invoices = e.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
-                    if(e.halfUser) {
-                      e.halfUser.foundUser.invoices = e.halfUser.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
-                    }
-                    generateInvoice(animal, e.foundUser, e.halfUser?.foundUser, priceData.currentPrices, e.cutInstruction, e.foundCutInstruction, databaseLength + 1 + i, eaters.length > 1)
-                    toSave.add(e.foundUser)
-                    if(e.halfUser) {
-                      toSave.add(e.halfUser?.foundUser)
-                    }
+
+                  let generated = 0
+
+                  const compoundQuaters = animal.numEaters === 1 ? 4 : 2
+
+                  eaters.forEach(eaterCompound => {
+                    const quaters = eaterCompound.halfUser ? 1 : compoundQuaters;
+                    [eaterCompound, eaterCompound.halfUser].forEach(eater => {
+                      if(eater === undefined) {
+                        return
+                      }
+                      eater.foundUser.invoices = eater.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
+                      generateInvoice(
+                        animal, eater.foundUser, priceData.currentPrices, 
+                        eaterCompound.foundUser, eaterCompound.cutInstruction, eaterCompound.foundCutInstruction, 
+                        databaseLength + ++generated, quaters
+                      )
+                      toSave.add(eater.foundUser)
+                    })
                   })
                   Invoice.deleteMany().where("_id").in(toRemove).exec()
                   toSave.forEach(u => u.save())

@@ -10,6 +10,7 @@ import Invoice, { IInvoice, useInvoice } from "../database/types/Invoices";
 import User, { IUser, useUsers } from "../database/types/User";
 import { editCutInstructions, setModal } from "../modals/ModalManager";
 import { invoiceDetails, userDetailsPage } from "../NavBar";
+import { formatQuaterText } from "../Util";
 import { calculateTotal, InvoiceDetailsPage } from "./InvoiceDetailsPage";
 
 export const InvoicesPage = () => {
@@ -21,7 +22,6 @@ export const InvoicesPage = () => {
 
     const filteredInvoices = invoices === DatabaseWait ? DatabaseWait : invoices.filter(i => 
       userIds.includes(i.user.toHexString()) || 
-      (i.secondaryUser !== undefined && userIds.includes(i.secondaryUser.toHexString())) || 
       regExp.test(`#${i.invoiceId}`)
     );
 
@@ -75,7 +75,7 @@ export const InvoicesPage = () => {
 const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
   const history = useHistory()
   const animal = useAnimals(Animal.findById(invoice.animal), [invoice.animal], invoice.animal)
-  const userIds = [invoice.user, invoice.secondaryUser].filter(a => a != null)
+  const userIds = [invoice.user].filter(a => a != null)
   if(animal !== DatabaseWait) {
     animal?.eaters?.forEach(eater => {
       userIds.push(eater.id)
@@ -84,7 +84,7 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
       }
     })
   }
-  const users = useUsers(User.where("_id").in(userIds).select("name cutInstructions"), [invoice.user, invoice.secondaryUser, animal])
+  const users = useUsers(User.where("_id").in(userIds).select("name cutInstructions"), [invoice.user, animal])
 
   const totalCost = animal === DatabaseWait ? 0 : calculateTotal(animal, invoice).total
 
@@ -92,7 +92,7 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
 
   const mainUser = users === DatabaseWait ? DatabaseWait : users.find(u => u._id == invoice.user.toHexString())
   const mainUserName = mainUser === DatabaseWait ? DatabaseWait : mainUser?.name ?? "???"
-  const subUserName = users === DatabaseWait || !invoice.secondaryUser ? DatabaseWait : users.find(u => u._id == invoice.secondaryUser.toHexString()).name ?? "???"
+  // const subUserName = users === DatabaseWait || !invoice.secondaryUser ? DatabaseWait : users.find(u => u._id == invoice.secondaryUser.toHexString()).name ?? "???"
 
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(invoiceDetails, invoice.id)}>
@@ -104,12 +104,12 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
             { mainUserName !== DatabaseWait && 
               <>
                 <DataTag name={mainUserName} onClick={() => history.push(userDetailsPage, invoice.user.toHexString())} />
-                { subUserName !== DatabaseWait &&
+                {/* { subUserName !== DatabaseWait &&
                  <>
                   <p className="mt-2 mx-1 text-xs">&</p>
                   <DataTag name={subUserName} onClick={() => history.push(userDetailsPage, invoice.secondaryUser.toHexString())} />
                  </>
-                }
+                } */}
               </>
             }
           </div>
@@ -121,7 +121,7 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
           <p className="bg-orange-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-orange-300">${totalCost}</p>
         </div>
         <div className="mx-4 text-gray-800 group-hover:text-gray-900">
-            <DataTag name={invoice.half ? "Half" : "Whole"} />
+            <DataTag name={formatQuaterText(invoice.numQuaters)} />
         </div>
         <div className="flex-grow text-gray-800 group-hover:text-gray-900">
           <div className="flex flex-row">
@@ -134,12 +134,12 @@ const InvoiceEntry = ({invoice}: {invoice: IInvoice}) => {
                   onClick={() => history.push(userDetailsPage, invoice.user.toHexString())}
                   onInstructionClicked={() => setModal(editCutInstructions, { id: invoice.user.toHexString(), instructionID: foundEater.cutInstruction })}
                 />
-                { foundEater.halfUser != undefined && subUserName !== DatabaseWait &&
+                {/* { foundEater.halfUser != undefined && subUserName !== DatabaseWait &&
                  <>
                   <p className="mt-2 mx-1 text-xs">&</p>
                   <EaterTag name={subUserName} tag={foundEater.halfUser.tag} onClick={() => history.push(userDetailsPage, invoice.secondaryUser.toHexString())} />
                  </>
-                }
+                } */}
               </>
             }
           </div>

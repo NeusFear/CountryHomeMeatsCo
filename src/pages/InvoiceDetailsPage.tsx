@@ -10,7 +10,7 @@ import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
 import Invoice, { AllCuredPorkDataPieces, BeefPricesList, IInvoice, PaymentType, PorkPricesList, useInvoice } from "../database/types/Invoices"
 import User, { IUser, useUsers } from "../database/types/User"
-import { formatDay, formatPhoneNumber, normalizeDay } from "../Util"
+import { formatDay, formatHalfs, formatPhoneNumber, formatQuaters, formatWhole, normalizeDay } from "../Util"
 import { animalDetailsPage, userDetailsPage } from "../NavBar"
 import { printGenericSheet, setModal } from "../modals/ModalManager"
 import { GenericPrintModal } from "../modals/GenericPrintModal"
@@ -20,13 +20,13 @@ export const InvoiceDetailsPage = () => {
     const id = useHistoryListState()
     const invoice = useInvoice(Invoice.findById(id), [id], id as string)
     const userID = invoice === DatabaseWait ? null : invoice.user
-    const subUserId = invoice === DatabaseWait ? null : invoice.secondaryUser
+    const cutInstructionUserID = invoice === DatabaseWait ? null : invoice.cutInstructionUser
     const animalID = invoice === DatabaseWait ? null : invoice.animal
     const user = useUsers(User.findById(userID), [userID], userID)
-    const subUser = useUsers(User.findById(subUserId), [subUserId], subUserId)
+    const cutInstructionUser = useUsers(User.findById(cutInstructionUserID), [cutInstructionUserID], cutInstructionUserID)
     const animal = useAnimals(Animal.findById(animalID), [animalID], animalID)
 
-    if(invoice === DatabaseWait || user === DatabaseWait || animal == DatabaseWait || subUser === DatabaseWait) {
+    if(invoice === DatabaseWait || user === DatabaseWait || animal == DatabaseWait || cutInstructionUser === DatabaseWait) {
         return <div>Loading...</div>
     }
 
@@ -56,7 +56,7 @@ export const InvoiceDetailsPage = () => {
         <div className="w-full h-screen flex flex-col">
         <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
             <div className="text-white text-4xl font-bold ml-4 flex-grow">INVOICE</div>
-            <div onClick={() => doPrint(invoice, user, animal, subUser)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 mr-4 mt-1 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgPrint /></div>
+            <div onClick={() => doPrint(invoice, user, animal)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 mr-4 mt-1 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgPrint /></div>
         </div>
         <div className="flex-grow flex flex-col p-4 overflow-y-scroll">
             
@@ -119,7 +119,7 @@ export const InvoiceDetailsPage = () => {
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Type:</p>
-                        <p className="text-right">{invoice.half ? "Half " : ""}{animal.animalType}</p>
+                        <p className="text-right">{formatWhole(invoice.numQuaters)} {animal.animalType}</p>
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Date Killed:</p>
@@ -140,6 +140,10 @@ export const InvoiceDetailsPage = () => {
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Dress Weight:</p>
                         <p className="text-right">{animal.dressWeight}lbs ({Math.round(animal.dressWeight / animal.liveWeight * 100)}% of live)</p>
+                    </div>
+                    <div className="flex flex-row pl-2 pr-4">
+                        <p className="font-semibold flex-grow">Portion Weight:</p>
+                        <p className="text-right">{Math.round(animal.dressWeight * invoice.numQuaters/4)}lbs ({Math.round(invoice.numQuaters/4 * 100)}% of dress)</p>
                     </div>
                     <div className="flex flex-row pl-2 pr-4">
                         <p className="font-semibold flex-grow">Liver Good:</p>
@@ -625,14 +629,14 @@ const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
         <ChargesEntry 
             title="Split into halves"
             price={`${price.halves.toFixed(2)} per half`}
-            quantity={invoice.half ? "1 Half" : "N/A"}
+            quantity={formatHalfs(invoice.numQuaters)}
             value={invoice.beefprices.halving}
             setValue={runThenSave(v => invoice.beefprices.halving = v)}
         />
         <ChargesEntry 
             title="Divide a half in half"
             price={`${price.halvesToQuaters.toFixed(2)} per quater.`}
-            quantity={invoice.secondaryUser ? "2 Quaters" : "N/A"}
+            quantity={formatQuaters(invoice.numQuaters)}
             value={invoice.beefprices.quatering}
             setValue={runThenSave(v => invoice.beefprices.quatering = v)}
         />
@@ -650,17 +654,18 @@ const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
             value={invoice.beefprices.cutstewmeat}
             setValue={runThenSave(v => invoice.beefprices.cutstewmeat = v)}
         />
-        <ChargesEntry 
+        <ChargesEntry
+
             title="Bone and Tenderized"
             price={`${price.boneAndTenderizeRoundSteaks.toFixed(2)} per half`}
-            quantity={invoice.beefdata.hasTenderized ? (invoice.half ? "1 Half" : "2 Halves") : "N/A"}
+            quantity={invoice.beefdata.hasTenderized ? formatHalfs(invoice.numQuaters) : "N/A"}
             value={invoice.beefprices.tenderized}
             setValue={runThenSave(v => invoice.beefprices.tenderized = v)}
         />
         <ChargesEntry 
             title="Make Cubes Steaks"
             price={`${price.makeCubedSteaks.toFixed(2)} per half`}
-            quantity={invoice.beefdata.makeCubedSteaks ? (invoice.half ? "1 Half" : "2 Halves") : "N/A"}
+            quantity={invoice.beefdata.makeCubedSteaks ? formatHalfs(invoice.numQuaters) : "N/A"}
             value={invoice.beefprices.cubedsteaks}
             setValue={runThenSave(v => invoice.beefprices.cubedsteaks = v)}
         />
@@ -869,7 +874,7 @@ const EditableCutInstructionEntry = ({title, cutInstructions, editableValue, set
     )
 }
 
-const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUser) => {
+const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
     const data: PosPrintData[] = [
         {
             type: "text",
@@ -907,7 +912,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                     USA<br>
                     (405) 341-0267
                 </div>
-                <br><br>
+                <br>
                 Bill To:
                 <div>
                     <span style="font-weight: bold">${user.name}</span><br>
@@ -929,7 +934,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
             margin: 0;
         }
         th, td {
-            padding: 4px !important;
+            padding: 3px !important;
         }
         </style>
         `
@@ -937,7 +942,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
 
     const formatWeight = (num?: number) => {
         if(num === undefined || num === null) {
-            return "..."
+            return "0lbs"
         }
         return num + "lbs"
     }
@@ -956,12 +961,19 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
                 [ "T-Bone", `${beef.tbone.bone} ${beef.tbone.size} ${beef.tbone.amount}`, "..." ],
                 [ "Rump", beef.rump, "..." ],
                 [ "Pikes Peak", beef.pikespeak, "..." ],
+                [ "Soup Bones", beef.soupbones, "..." ],
+                [ "Ground Beef", beef.groundbeef, "..." ],
+                [ "Chuck", beef.chuck, "..." ],
+                [ "Arm", beef.arm, "..." ],
+                [ "Ribs", beef.ribs, "..." ],
+                [ "Club", `${beef.club.bone} ${beef.club.size} ${beef.club.amount}`, "..." ],
+                [ "Brisket", beef.brisket, "..." ],
                 [ "Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`, formatWeight(invoice.beefdata.stewmeat) ],
                 [ "Patties", `${beef.patties.weight} ${beef.patties.amount}`, formatWeight(invoice.beefdata.patties) ]
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
-            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 10px"
         })
     } else {
         const getHalf = (n: number) => n + (n === 1 ? " Half" : " Halves")
@@ -1011,7 +1023,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
-            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 15px"
         })
         data.push({
             type: "table",
@@ -1026,7 +1038,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
-            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 15px"
         })
     }
 
@@ -1048,19 +1060,19 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
             tableBody: [
                 makeCharge("Slaughter Fee", price.slaughter, "", "1 Slaughter", costs.slaughter),
                 makeCharge("Processing Fee", price.processing, "per lbs of dress weight. (Min $200.00)", `${animal.dressWeight}lbs`, costs.processing),
-                makeCharge("Split into halves", price.halves, "per half", invoice.half ? "1 Half" : "N/A", costs.halving),
-                makeCharge("Divide a half in half", price.halvesToQuaters, "per quater", invoice.secondaryUser ? "2 Quaters" : "N/A", costs.quatering),
+                makeCharge("Split into halves", price.halves, "per half", invoice.numQuaters === 4 ? "N/A" : "1 Halving", costs.halving),
+                makeCharge("Divide a half in half", price.halvesToQuaters, "per quater", invoice.numQuaters === 1 ? "2 Quaters" : "N/A", costs.quatering),
                 makeCharge("Patties", price.patties, "per lbs", `${beefdata.patties ?? 0}lbs`, costs.patties),
                 makeCharge("Cut Stew Meat", price.cutStewMeat, "per lbs", `${beefdata.stewmeat ?? 0}lbs`, costs.cutstewmeat),
-                makeCharge("Bone and Tenderized", price.boneAndTenderizeRoundSteaks, "per half", beefdata.hasTenderized ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.tenderized),
-                makeCharge("Make Cubes Steaks", price.makeCubedSteaks, "per half", beefdata.makeCubedSteaks ? (invoice.half ? "1 Half" : "2 Halves") : "N/A", costs.cubedsteaks),
+                makeCharge("Bone and Tenderized", price.boneAndTenderizeRoundSteaks, "per half", beefdata.hasTenderized ? formatHalfs(invoice.numQuaters) : "N/A", costs.tenderized),
+                makeCharge("Make Cubes Steaks", price.makeCubedSteaks, "per half", beefdata.makeCubedSteaks ? formatHalfs(invoice.numQuaters) : "N/A", costs.cubedsteaks),
                 makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", beefdata.boneoutprimerib ? "Yes" : "No", costs.boneoutprimerib),
                 makeCharge("Bone Out Loin", price.boneOutLoin, "per half", beefdata.boneoutloin ? "Yes" : "No", costs.boneoutloin),
                 ...invoice.customcharges.map(c => [ c.name, "---", "---", `$${c.amount.toFixed(2)}` ])
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
-            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 15px"
         })
     } else {
         const price = invoice.priceData.pork
@@ -1078,7 +1090,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal, subUser?: IUse
             ],
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
-            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 25px"
+            style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 15px"
         })
     }
 

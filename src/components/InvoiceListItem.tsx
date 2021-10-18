@@ -3,13 +3,12 @@ import { DatabaseWait } from "../database/Database"
 import { IInvoice } from "../database/types/Invoices"
 import User, { useUsers } from "../database/types/User"
 import { invoiceDetails } from "../NavBar"
-import UserTag from "./UserTag"
+import { formatQuaterText } from "../Util"
 
 export default ({invoice}: {invoice: IInvoice}) => {
-    const mainUser = useUsers(User.findById(invoice.user), [invoice.user], invoice.user)
-    const secondaryUser = useUsers(User.findById(invoice.secondaryUser), [invoice.secondaryUser], invoice.secondaryUser)
+    const cutInstructionUser = useUsers(User.findById(invoice.cutInstructionUser), [invoice.cutInstructionUser], invoice.cutInstructionUser)
    
-    if(mainUser === DatabaseWait || secondaryUser == DatabaseWait) {
+    if(cutInstructionUser === DatabaseWait) {
       return <div>Loading Users...</div>
     }
   
@@ -28,22 +27,15 @@ export default ({invoice}: {invoice: IInvoice}) => {
         </div>
         <div className="w-1/6 mx-4 text-gray-800 group-hover:text-gray-900">
             <p className="font-semibold">Portion:</p>
-            <DataTag name={invoice.half ? "Half" : "Whole"} />
+            <DataTag name={formatQuaterText(invoice.numQuaters)} />
         </div>
         <div className="flex-grow text-gray-800 group-hover:text-gray-900">
           <p className="font-semibold">Cut List:</p>
           <div className="flex flex-row">
-            <div className="px-2 ml-2 bg-gray-200 rounded-md p-0.5">{mainUser.name}</div>
-            <div className="bg-gray-200 rounded-md px-2 ml-1 text-xs p-0.5 pt-1.5">{mainUser?.cutInstructions?.find(c => c.id === invoice.cutInstructionId)?.nickname ?? `#${invoice.cutInstructionId}`}</div>
+            <div className="px-2 ml-2 bg-gray-200 rounded-md p-0.5">{cutInstructionUser?.name}</div>
+            <div className="bg-gray-200 rounded-md px-2 ml-1 text-xs p-0.5 pt-1.5">{cutInstructionUser?.cutInstructions?.find(c => c.id === invoice.cutInstructionId)?.nickname ?? `#${invoice.cutInstructionId}`}</div>
           </div>
         </div>
-        {
-          secondaryUser && 
-          <div className="flex-grow text-gray-800 group-hover:text-gray-900">
-            <p className="font-semibold">Secondary User:</p>
-            <DataTag name={secondaryUser.name} />
-          </div>
-        }
       </Link>
     )
 }

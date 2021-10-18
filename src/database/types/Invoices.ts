@@ -25,12 +25,11 @@ export type PaymentType = {
 export interface IInvoice extends Document {
     invoiceId: number,
     user: ObjectId,
-    secondaryUser?: ObjectId,
+    cutInstructionUser: ObjectId,
     cutInstructionId: number,
     cutInstruction: CutInstructions,
     priceData: PriceDataNumbers
     animal: ObjectId,
-    half: boolean,
     numQuaters: number,
 
     takeHomeWeight: number,
@@ -88,16 +87,14 @@ export interface IInvoice extends Document {
 const invoiceSchema = new Schema({
     invoiceId: { type: Number, required: true },
     user: { type: Schema.Types.ObjectId, ref: userDatabaseName, required: true },
-    secondaryUser: { type: Schema.Types.ObjectId, ref: userDatabaseName },
+    cutInstructionUser: { type: Schema.Types.ObjectId, ref: userDatabaseName },
     cutInstructionId: { type: Number, required: true },
     cutInstruction: { type: CutInstructionsSchema, required: true },
     priceData: { type: PriceDataSchema, required: true },
     animal: { type: Schema.Types.ObjectId, ref: animalDatabaseName, required: true },
-    half: { type: Boolean, required: true },
     numQuaters: { type: Number, required: true },
 
     takeHomeWeight: { type: Number },
-
 
     beefdata: { type: {
         makeCubedSteaks: { type: Boolean, required: true },
@@ -154,25 +151,18 @@ const invoiceSchema = new Schema({
 
 const Invoice = mongoose.model<IInvoice>(invoiceDatabaseName, invoiceSchema)
 
-export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUser: IUser | undefined, priceData: PriceDataNumbers, cutInstructionId: number, cutInstruction: CutInstructions, id: number, half: boolean) => {
-    let numQuaters: number
-    const numHalves = half ? 1 : 2;
-    if(half) {
-        numQuaters = secondaryUser !== undefined ? 1 : 2
-    } else {
-        numQuaters = 4
-    }
-
+export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDataNumbers, cutInstructionUser: IUser, cutInstructionId: number, cutInstruction: CutInstructions, id: number, numQuaters) => {
+    const numWhole = numQuaters / 4
+    const numHalves = numQuaters / 2
     
     const invoice = new Invoice({
         invoiceId: id,
-        user: new ObjectId(primaryUser.id),
-        secondaryUser: secondaryUser === undefined ? undefined : new ObjectId(secondaryUser.id),
+        user: new ObjectId(user.id),
+        cutInstructionUser: new ObjectId(cutInstructionUser.id),
         cutInstructionId: cutInstructionId,
         cutInstruction: cutInstruction,
         priceData: priceData,
         animal: new ObjectId(animal.id),
-        half: half,
         numQuaters: numQuaters,
 
         customcharges: [],
@@ -192,12 +182,12 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         }
         invoice.beefprices = {}
 
-        invoice.beefprices.processing = Math.max(animal.dressWeight * priceData.beef.processing, 200)
-        invoice.beefprices.slaughter = priceData.beef.slaughter
-        if(invoice.half) {
-            invoice.beefprices.halving = priceData.beef.halves
+        invoice.beefprices.processing = Math.max(animal.dressWeight * priceData.beef.processing, 200) * numWhole
+        invoice.beefprices.slaughter = priceData.beef.slaughter * numWhole
+        if(invoice.numQuaters !== 4) {
+            invoice.beefprices.halving = priceData.beef.halves * numHalves
         }
-        if(invoice.secondaryUser) {
+        if(numQuaters === 1) {
             invoice.beefprices.quatering = numQuaters * priceData.beef.halvesToQuaters
         }
         runIfGroup(
@@ -212,10 +202,10 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         }
 
         if(invoice.beefdata.boneoutprimerib) {
-            invoice.beefprices.boneoutprimerib = priceData.beef.boneOutPrimeRib
+            invoice.beefprices.boneoutprimerib = priceData.beef.boneOutPrimeRib * numHalves
         }
         if(invoice.beefdata.boneoutloin) {
-            invoice.beefprices.boneoutloin = priceData.beef.boneOutLoin
+            invoice.beefprices.boneoutloin = priceData.beef.boneOutLoin * numHalves
         }
     } else {
         invoice.porkdata = {
@@ -225,18 +215,15 @@ export const generateInvoice = (animal: IAnimal, primaryUser: IUser, secondaryUs
         }
 
         invoice.porkprices = {
-            processing: animal.dressWeight * priceData.pork.processing,
-            slaughter: invoice.porkdata.over350lbs ? priceData.pork.slaughterOver150lb : priceData.pork.slaughter
+            processing: animal.dressWeight * priceData.pork.processing * numWhole,
+            slaughter: (invoice.porkdata.over350lbs ? priceData.pork.slaughterOver150lb : priceData.pork.slaughter) * numWhole
         }
 
 
     }
 
     animal.invoices.push(invoice.id)
-    primaryUser.invoices.push(invoice.id)
-    if(secondaryUser !== undefined) {
-        secondaryUser.invoices.push(invoice.id)
-    }
+    user.invoices.push(invoice.id)
 
     invoice.save()
 }

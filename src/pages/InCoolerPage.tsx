@@ -38,27 +38,41 @@ export const InCoolerPage = () => {
 }
 
 const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
+  const usersToFind = [animal.bringer]
+  animal.eaters.forEach(e => {
+    usersToFind.push(e.id)
+    if(e.halfUser) usersToFind.push(e.halfUser.id)
+  })
 
-  const user = useUsers(User.findById(animal.bringer).select("name"), [animal.bringer], animal.bringer)
+  const users = useUsers(User.where("_id").in(usersToFind).select("name"), usersToFind, ...usersToFind)
   const history = useHistory()
 
-  if (user === DatabaseWait) {
+  if (users === DatabaseWait) {
     return <p>Loading users...</p>
   }
 
-  if (user === null) {
+  if (users === null) {
     return <p>Error loading user.</p>
   }
+
+  const mainUser = users.find(u => String(u.id) === animal.bringer.toHexString())
 
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
         <div className="text-gray-800 group-hover:text-gray-900 flex-shrink">
           <p>Bringer</p>
-          <DataTag name={user.name} />
+          <DataTag name={mainUser?.name ?? "???"} />
         </div>
         <div className="text-gray-800 group-hover:text-gray-900 w-20 mr-4">
           <p>Animal ID</p>
           <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">#{paddedAnimalId(animal)}</p>
+        </div>
+        <div className="text-gray-800 group-hover:text-gray-900 w-20 mr-4">
+          <p>Eaters</p>
+          {animal.eaters.map((e, i) => {
+             const user = users.find(u => String(u.id) === String(e.id  ))
+             return <p key={i} className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">{user?.name ?? "???"}</p>
+          })}
         </div>
         <div className="text-gray-800 group-hover:text-gray-900 flex-shrink mr-2">
           <p>Type</p>

@@ -90,10 +90,15 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        {animal.eaters.length > 0 ? animal.eaters.map((eater, i) => 
+        {animal.eaters.length > 0 ? animal.eaters.flatMap(e => [e, e.halfUser]).filter(e => e != null).map((eater, i) => 
           <div className="flex flex-row" key={i} >
-            <p className="flex-grow bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{allFoundUsers.find(u => eater.id.toHexString()).name}</p>
-            <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{eater.cutInstruction}</p>
+            <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{allFoundUsers.find(u => String(u.id) === eater.id.toHexString()).name}</p>
+            { eater.tag !== undefined && eater.tag !== "" && 
+              <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{eater.tag}</p>
+            }
+            { eater['cutInstruction'] !== undefined &&
+              <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{eater['cutInstruction']}</p>
+            }
           </div> ) : <p className="font-semibold text-tomato-400">Error</p>}
       </div>
     </div>

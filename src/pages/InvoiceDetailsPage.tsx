@@ -686,7 +686,7 @@ const CustomChargesEntry = ({charge, onSave, onRemove}: {charge: { name: string,
     return (
         <tr className="m-1">
             <td className="m-1">
-                <input value={name} className="w-full ml-2" onChange={i => setName(i.currentTarget.value)} onBlur={() => {
+                <input value={name} className="w-full ml-2" onFocus={e => e.target.select()} onChange={i => setName(i.currentTarget.value)} onBlur={() => {
                     charge.name = name
                     onSave()
                 }} />

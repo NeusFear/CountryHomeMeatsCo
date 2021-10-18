@@ -346,8 +346,8 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                       ${instructionDiv("Ribs", beef.ribs)}
                       ${instructionDiv("Club", `${beef.club.bone} ${beef.club.size} ${beef.club.amount}`)}
                       ${instructionDiv("Brisket", beef.brisket)}
-                      ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
                       ${instructionDiv("Soup Bones", beef.soupbones )}
+                      ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">

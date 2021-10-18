@@ -2,12 +2,13 @@ import React, { useMemo } from "react"
 import { useState } from "react";
 import Autosuggest from 'react-autosuggest';
 
-export const SelectInputType = ({initial, onChange, values, width, defaultValue}: {
+export const SelectInputType = ({initial, onChange, values, width, defaultValue, disabled = false}: {
   initial: string,
   onChange: (value: string) => void,
   values: string[], 
   width: number,
-  defaultValue?: string
+  defaultValue?: string,
+  disabled?: boolean
 }) => {
   const insertedValues = values.slice()
   insertedValues.unshift("")
@@ -43,7 +44,7 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue}
   return (
     <div style={{width: `${widthInPx}px`}}>
       <Autosuggest 
-        suggestions={suggestions}
+        suggestions={disabled ? [] : suggestions}
         onSuggestionsFetchRequested={({value}: {value: string}) => setSuggestions(findSuggestions(value))}        
         onSuggestionsClearRequested={() => setSuggestions(insertedValues)}
         shouldRenderSuggestions={() => true}
@@ -53,7 +54,7 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue}
         }}
         inputProps={{
           className: "bg-gray-200 border border-gray-500 rounded-md w-full",
-          value,
+          value: disabled ? "" : value,
           onChange: onValueChanged
         }}
       />

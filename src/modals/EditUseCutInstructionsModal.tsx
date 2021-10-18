@@ -65,11 +65,15 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, {id: string,
           patties: {}
         } as BeefCutInstructions
       } else {
-        const freshCuredObj = () => { return { fresh: { amount: 0 }, cured: { amount: 0 } } }
+        const freshCuredObj = (fresh = true) => { 
+          return { 
+            fresh: { amount: fresh ? 2 : 0 }, 
+            cured: { amount: fresh ? 0 : 2 } } 
+          }
         return {
           cutType: AnimalType.Pork,
-          ham: freshCuredObj(),
-          bacon: freshCuredObj(),
+          ham: freshCuredObj(false),
+          bacon: freshCuredObj(false),
           jowl: freshCuredObj(),
           loin: freshCuredObj(),
           butt: freshCuredObj(),
@@ -177,7 +181,7 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
     setState(state + 1) //Just force a re-render. We *should* have a way that only the valid parts update, but thats to do another time
   }
   return (
-    <div className="flex-grow overflow-show h-full">
+    <div className="flex-grow overflow-show">
       <div className="flex flex-row">
         <div className="flex-grow">
           <span className="ml-2 pr-2 text-gray-800 font-bold w-1/4">FRESH</span>
@@ -192,6 +196,7 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
                   onChange={v => instructions.ham.fresh.type=v}
                   values={['Whole', '2pcs', 'Ends for Roast', 'Shank for Roast', 'Grind']} 
                   width={100} 
+                  disabled={instructions.ham.fresh.amount === 0}
                 />
               </div>
               <div className="flex flex-row">
@@ -200,18 +205,21 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
                   onChange={v => instructions.ham.fresh.cutType=v}
                   values={['Centers', 'Balance', 'Slice All']} 
                   width={65}
+                  disabled={instructions.ham.fresh.amount === 0}
                 />
                 <SelectInputType 
                   initial={instructions.ham.fresh.size}
                   onChange={v => instructions.ham.fresh.size=v}
                   values={['1/2"']}
                   width={50} 
+                  disabled={instructions.ham.fresh.amount === 0}
                 />
                 <SelectInputType
                   initial={instructions.ham.fresh.amountPerPackage}
                   onChange={v => instructions.ham.fresh.amountPerPackage=v}  
                   values={['2/Pkg']} 
                   width={50} 
+                  disabled={instructions.ham.fresh.amount === 0}
                 />
               </div>
               <br />
@@ -226,12 +234,14 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.bacon.fresh.cutType=v}
               values={['Slice Fresh', 'Grind']}
               width={100} 
+              disabled={instructions.bacon.fresh.amount === 0}
             />
             <SelectInputType
               initial={instructions.bacon.fresh.size}
               onChange={v => instructions.bacon.fresh.size=v}
               values={['1.0 lb', '1.5 lb', '2.0 lb']}
               width={65}
+              disabled={instructions.bacon.fresh.amount === 0}
             />
           </div>
 
@@ -243,6 +253,7 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.jowl.fresh.type=v}
               values={['Grind', 'Whole', 'Slice']} 
               width={65} 
+              disabled={instructions.jowl.fresh.amount === 0}
             />
           </div>
 
@@ -254,12 +265,16 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.loin.fresh.size=v}
               values={['1/2"', '3/4"', '1"', '1 1/4"']} 
               width={65} 
+              defaultValue='3/4"'
+              disabled={instructions.loin.fresh.amount === 0}
             />
             <SelectInputType 
               initial={instructions.loin.fresh.packageAmount}
               onChange={v => instructions.loin.fresh.packageAmount=v}
               values={['2/Pkg', '3/Pkg', '4/Pkg', '5/Pkg', '6/Pkg']} 
               width={65} 
+              defaultValue="4/Pkg"
+              disabled={instructions.loin.fresh.amount === 0}
             />
           </div>
 
@@ -270,13 +285,16 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               initial={instructions.butt.fresh.type}
               onChange={v => instructions.butt.fresh.type=v}
               values={['CSRibs', '3lb Roast', '4lb Roast', '5lb Roast', '2 Pieces', 'Whole', '1/2"', '3/4"', 'Grind']} 
-              width={100} 
+              width={100}
+              disabled={instructions.butt.fresh.amount === 0}
             />
             <SelectInputType
               initial={instructions.butt.fresh.packageAmount}
               onChange={v => instructions.butt.fresh.packageAmount=v}
               values={['2/Pkg', '3/Pkg', '4/Pkg']}
               width={65}
+              defaultValue='3/Pkg'
+              disabled={instructions.butt.fresh.amount === 0}
             />
           </div>
 
@@ -288,12 +306,15 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.picnic.fresh.type=v}
               values={['3lb Roast', '4lb Roast', '5lb Roast', '2 Pieces', 'Whole', '1/2"', '3/4"', 'Grind']}
               width={90}
+              disabled={instructions.picnic.fresh.amount === 0}
             />
             <SelectInputType 
               initial={instructions.picnic.fresh.packageAmount}
               onChange={v => instructions.picnic.fresh.packageAmount=v}
               values={['2/Pkg', '3/Pkg', '4/Pkg']}
               width={65}
+              defaultValue=""
+              disabled={instructions.picnic.fresh.amount === 0}
             />
           </div>
         </div>
@@ -311,6 +332,8 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
                   onChange={v => instructions.ham.cured.type=v}
                   values={['Whole', '2pcs', 'Ends for Roast', 'Shank for Roast', 'Grind']} 
                   width={130}
+                  defaultValue="Ends for Roast"
+                  disabled={instructions.ham.cured.amount === 0}
                 />
               </div>
               <div className="flex flex-row">
@@ -318,19 +341,22 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
                   initial={instructions.ham.cured.cutType}
                   onChange={v => instructions.ham.cured.cutType=v}
                   values={['Centers', 'Balance', 'Slice All']} 
-                  width={80} 
+                  width={80}
+                  disabled={instructions.ham.cured.amount === 0}
                 />
                 <SelectInputType
                   initial={instructions.ham.cured.size}
                   onChange={v => instructions.ham.cured.size=v}
                   values={['1/2"']} 
                   width={50} 
+                  disabled={instructions.ham.cured.amount === 0}
                 />
                 <SelectInputType 
                   initial={instructions.ham.cured.amountPerPackage}
                   onChange={v => instructions.ham.cured.amountPerPackage=v}
                   values={['2/Pkg']} 
                   width={65} 
+                  disabled={instructions.ham.cured.amount === 0}
                 />
               </div>
               <br />
@@ -345,12 +371,15 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.bacon.cured.cutType=v}
               values={['Regular', 'Thick', 'Thin']} 
               width={80} 
+              disabled={instructions.bacon.cured.amount === 0}
             />
             <SelectInputType 
               initial={instructions.bacon.cured.size}
               onChange={v => instructions.bacon.cured.size=v}
               values={['1.0 lb', '1.5 lb', '2.0 lb']} 
               width={65} 
+              defaultValue="1.5 lb"
+              disabled={instructions.bacon.cured.amount === 0}
             />
           </div>
 
@@ -361,7 +390,8 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               initial={instructions.jowl.cured.type}
               onChange={v => instructions.jowl.cured.type=v}
               values={['Chuck', 'Whole', 'Slice']} 
-              width={70} 
+              width={70}
+              disabled={instructions.jowl.cured.amount === 0}
             />
           </div>
 
@@ -373,12 +403,14 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.loin.cured.size=v}
               values={['1/2"', '3/4"', '1"', '1 1/4"']} 
               width={70} 
+              disabled={instructions.loin.cured.amount === 0}
             />
             <SelectInputType
               initial={instructions.loin.cured.packageAmount}
               onChange={v => instructions.loin.cured.packageAmount=v}
               values={['2/Pkg', '3/Pkg', '4/Pkg', '5/Pkg', '6/Pkg']} 
               width={65} 
+              disabled={instructions.loin.cured.amount === 0}
             />
           </div>
 
@@ -390,12 +422,14 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.butt.cured.type=v}
               values={['3lb Roast', '4lb Roast', '5lb Roast', '2 Pieces', 'Whole', '1/2"', '3/4"', 'Grind']}
               width={90}
+              disabled={instructions.butt.cured.amount === 0}
             />
             <SelectInputType
               initial={instructions.butt.cured.packageAmount}
               onChange={v => instructions.butt.cured.packageAmount=v}
               values={['2/Pkg', '3/Pkg', '4/Pkg']}
               width={65}
+              disabled={instructions.butt.cured.amount === 0}
             />
           </div>
 
@@ -407,12 +441,14 @@ const PorkInstructions = ({instructions, refreshSubmit}: {instructions: PorkCutI
               onChange={v => instructions.picnic.cured.type=v}
               values={['3lb Roast', '4lb Roast', '5lb Roast', '2 Pieces', 'Whole', '1/2"', '3/4"', 'Grind']} 
               width={90} 
+              disabled={instructions.picnic.cured.amount === 0}
             />
             <SelectInputType
               initial={instructions.picnic.cured.packageAmount}
               onChange={v => instructions.picnic.cured.packageAmount=v}
               values={['2/Pkg', '3/Pkg', '4/Pkg']} 
               width={65} 
+              disabled={instructions.picnic.cured.amount === 0}
             />
           </div>
         </div>

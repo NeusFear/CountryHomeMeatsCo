@@ -187,7 +187,7 @@ export const AnimalDetailsPage = () => {
               <div className="font-semibold flex flex-col p-1">
                 <span>Tag Number</span>
                 <input className="border-gray-700 border rounded-md px-2" type="number" disabled={currentState < 1} defaultValue={animal.tagNumber} onChange={e => {
-                  animal.tagNumber = e.target.valueAsNumber
+                  animal.tagNumber = nanToUndefined(e.target.valueAsNumber)
                   setAnimalArriveDateAndSave()
                 }} />
               </div>

@@ -127,11 +127,10 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
-export const AnimalStateFields = "confirmed liveWeight color sex tagNumber penLetter dressWeight invoiceGeneratedDate pickedUp " + ValidateEatersFields
+export const AnimalStateFields = "confirmed liveWeight color sex penLetter dressWeight invoiceGeneratedDate pickedUp " + ValidateEatersFields
 export const computeAnimalState = (animal: IAnimal | undefined) => {
   if (!animal || !animal.confirmed) return 0
-  if ([animal.liveWeight, animal.color, animal.sex,
-  animal.tagNumber, animal.penLetter].some(e => e === undefined)) return 1
+  if ([animal.liveWeight, animal.color, animal.sex, animal.penLetter].some(e => e === undefined || e === "")) return 1
   if (animal.dressWeight === undefined) return 2
   if (!validateEaters(animal)) return 3
   if (animal.invoiceGeneratedDate === undefined) return 4
@@ -173,7 +172,7 @@ export const useComputedAnimalState = (animalWithWait: IAnimal | undefined | Dat
     animal?.confirmed,
 
     //To get from confirmed to arrived
-    animal?.liveWeight, animal?.color, animal?.sex, animal?.tagNumber, animal?.penLetter,
+    animal?.liveWeight, animal?.color, animal?.sex, animal?.penLetter,
 
     //To get from arrived to hanging
     animal?.dressWeight,

@@ -68,7 +68,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
             <DataTag name={animal.liveWeight.toString() + "lbs"} />
             <DataTag name={animal.color} />
             <DataTag name={animal.sex} />
-            <DataTag name={"Tag #" + animal.tagNumber.toString()} />
+            <DataTag name={"Tag #" + String(animal.tagNumber)} />
             <DataTag name={"Pen " + animal.penLetter} />
             { animal.animalType === AnimalType.Beef &&
               <HilightTag name={animal.older30Months ? "> 30 Months" : "< 30 Months"} good={!animal.older30Months} />

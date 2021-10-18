@@ -64,6 +64,7 @@ const TodaysCutList = () => {
 }
 
 const SelectedCutList = ({animal}: {animal: IAnimal}) => {
+  const history = useHistory()
   const allUsers = useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
   const allFoundUsers = useUsers(User.where('_id').in(allUsers).select("name"))
 
@@ -78,7 +79,7 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
 
   const Tag = animal.animalType === AnimalType.Beef ? SvgCow : SvgPig
   return (
-    <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => console.log("go to animal")}>
+    <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="w-14 mr-1">
         <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" />
         <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{animal.animalId}</p>

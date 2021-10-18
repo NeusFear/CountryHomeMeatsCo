@@ -57,12 +57,12 @@
  ::START
  ::::::::::::::::::::::::::::
 
-::curl https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-5.0.3-signed.msi -o installer.msi
-::msiexec /i installer.msi
-::DEL installer.msi
-::curl https://fastdl.mongodb.org/tools/db/mongodb-database-tools-windows-x86_64-100.5.1.msi -o installer.msi
-::msiexec /i installer.msi
-::DEL installer.msi
+curl https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-5.0.3-signed.msi -o installer.msi
+msiexec /i installer.msi
+DEL installer.msi
+curl https://fastdl.mongodb.org/tools/db/mongodb-database-tools-windows-x86_64-100.5.1.msi -o installer.msi
+msiexec /i installer.msi
+DEL installer.msi
 md \data\db
 md "%USERPROFILE%\Desktop\Server Backups"
 echo F|xcopy /S /Q /Y /F mongod.cfg "C:\Program Files\MongoDB\Server\5.0\bin\mongod.cfg"

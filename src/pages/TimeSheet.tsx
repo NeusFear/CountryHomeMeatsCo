@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SvgNewUser, SvgTimesheets } from "../assets/Icons";
+import { SvgEdit, SvgNewUser, SvgTimesheets } from "../assets/Icons";
 import { DatabaseWait } from "../database/Database";
 import Employee, { useEmployees, ClockInState, IEmployee, computeEmployeeDay } from "../database/types/Employee";
 import { editEmployeeDetails, printTimeSheet, setModal } from "../modals/ModalManager";
@@ -133,6 +133,7 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
         colour="tomato"
         text="Clock Out"
       />
+      <div className="cursor-pointer hover:text-tomato-400 text-gray-600 " onClick={() => setModal(editEmployeeDetails, String(employee.id))}><SvgEdit/></div>
     </div>
   )
 }

@@ -8,6 +8,21 @@ import { PosPrintData, PosPrintOptions } from "electron-pos-printer";
 import { PrinterInfo } from "electron/main";
 import { DatabaseWait } from "../database/Database";
 import { PrinterDropdownBox } from "./GenericPrintModal";
+import { atRule } from "postcss";
+const style = `
+.DayPicker-Day {
+  border-radius: 0
+}
+.DayPicker-Day--isHighlighted {
+  background-color: var(--yellow-300)
+}
+.DayPicker-Day--isSelected {
+  background-color: var(--blue-300)
+}
+.DayPicker-Day:hover {
+  background-color: var(--blue-100) !important
+}
+`
 
 export const PrintTimeSheetModal = () => {
   const employees = useEmployees(Employee.find().select("firstName lastName clockInEvents"))
@@ -19,18 +34,25 @@ export const PrintTimeSheetModal = () => {
     return day
   })
 
+  if(fromDate.getTime() > toDate.getTime()) {
+    setFromDate(toDate)
+    setToDate(fromDate)
+  }
+
+
   return (
     <div className="bg-gray-200 h-full rounded-lg">
+      <style>{style}</style>
       <div className="bg-gray-800 font-semibold rounded-t-md text-white px-2 py-1" >Print Time Sheets</div>
       <div className="flex flex-row" style={{ width: '700px', height: '500px' }}>
         
         <div className="flex flex-col flex-grow">
         <div className="w-full bg-gray-400 text-black mt-2 text-center">Select Start of Pay Period</div>
-          <div><DayPickerEntry date={fromDate} setDate={setFromDate} /></div>
+          <div><DayPickerEntry date={fromDate} setDate={setFromDate} startDate={fromDate} endDate={toDate} /></div>
         </div>
         <div className="flex flex-col flex-grow">
           <div className="w-full bg-gray-400 text-black mt-2 text-center">Select End of Pay Period</div>
-          <div><DayPickerEntry date={toDate} setDate={setToDate} /></div>
+          <div><DayPickerEntry date={toDate} setDate={setToDate} startDate={fromDate} endDate={toDate} /></div>
         </div>
       </div>
       <div className="flex flex-row bg-gray-100 p-2 mx-10 rounded-sm">
@@ -52,7 +74,7 @@ export const PrintTimeSheetModal = () => {
   )
 }
 
-const DayPickerEntry = ({ date, setDate, }: { date: Date, setDate: (day: Date) => void }) => {
+const DayPickerEntry = ({ date, setDate, startDate, endDate, }: { date: Date, setDate: (day: Date) => void, startDate: Date, endDate: Date }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
   return (
@@ -64,8 +86,23 @@ const DayPickerEntry = ({ date, setDate, }: { date: Date, setDate: (day: Date) =
         <DayPickerCaption date={date} locale={localeUtils} onChange={setSelectedMonth} />
       }
       onMonthChange={setSelectedMonth}
+      modifiers={{
+        isSelected: d => d.getTime() === date.getTime(),
+        isHighlighted: d => d.getTime() >= startDate.getTime() && d.getTime() <= endDate.getTime()
+      }}
       fromMonth={fromMonth}
       toMonth={toMonth}
+      renderDay={day => {
+        return (
+          <div
+            //Below is some hacks to make this div take up the entire parent area.
+            //This is to have the data-tip take up the whole area
+            style={{ margin: '-8px', padding: '8px' }}
+          >
+            {day.getDate()}
+          </div>
+        )
+      }}
       disabledDays={[{ daysOfWeek: [0, 6] }]}
     />
   )
@@ -75,11 +112,32 @@ const DayPickerEntry = ({ date, setDate, }: { date: Date, setDate: (day: Date) =
 
 const perRow = 5
 const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Date) => {
+  to.setDate(to.getDate() + 1) //Include from
   const numberOfBlocks = Math.ceil((to.getTime() - from.getTime()) / 8.64e+7 / perRow)
+
+  const computeAllDates = (e: IEmployee) => {
+    const date = new Date(from)
+    let total = 0
+    while(date.getTime() < to.getTime()) {
+      total += computeEmployeeDay(e.clockInEvents.find(d => d.day.getTime() === date.getTime()).events)
+      date.setDate(date.getDate() + 1)
+    }
+    const hours = String(Math.floor(total / 3600000)).padStart(2, "0")
+    const minutes = String(Math.floor(total / 60000) % 60).padStart(2, "0")
+    return hours + ":" + minutes
+  }
 
   const data: PosPrintData[] = [{
     type: "text",
     value: "<style>td { border: 0.5px solid #ddd; height: 1px; }</style>"
+  } as PosPrintData, {
+    type: "text",
+    value: `
+      <h2>Total Hours</h2>
+      ${employees.map(e => e.firstName + " " + e.lastName + ": " + computeAllDates(e) + "<br>")}
+      <br>
+      <br>
+    `
   } as PosPrintData]
     .concat(Array.from({ length: numberOfBlocks }).flatMap((_, i) => {
       const ret: PosPrintData[] = []

@@ -578,7 +578,7 @@ const PigChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
         <ChargesEntry 
             title="Processing Fee"
             price={`${price.processing.toFixed(2)} per lbs of dress weight.`}
-            quantity={`${animal.dressWeight}lbs`}
+            quantity={`${Math.round(animal.dressWeight * invoice.numQuaters / 4 * 100) / 100}lbs`}
             value={invoice.porkprices.processing}
             setValue={runThenSave(v => invoice.porkprices.processing = v)}
         />
@@ -622,7 +622,7 @@ const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
         <ChargesEntry 
             title="Processing Fee"
             price={`${price.processing.toFixed(2)} per lbs of dress weight. (Min $200.00)`}
-            quantity={`${animal.dressWeight}lbs`}
+            quantity={`${Math.round(animal.dressWeight * invoice.numQuaters / 4 * 100) / 100}lbs`}
             value={invoice.beefprices.processing}
             setValue={runThenSave(v => invoice.beefprices.processing = v)}
         />
@@ -1059,7 +1059,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
             tableHeader: ["Charge Name", "Rate", "Quantity", "Charge"],
             tableBody: [
                 makeCharge("Slaughter Fee", price.slaughter, "", "1 Slaughter", costs.slaughter),
-                makeCharge("Processing Fee", price.processing, "per lbs of dress weight. (Min $200.00)", `${animal.dressWeight}lbs`, costs.processing),
+                makeCharge("Processing Fee", price.processing, "per lbs of dress weight. (Min $200.00)", `${Math.round(animal.dressWeight * invoice.numQuaters / 4 * 100) / 100}lbs`, costs.processing),
                 makeCharge("Split into halves", price.halves, "per half", invoice.numQuaters === 4 ? "N/A" : "1 Halving", costs.halving),
                 makeCharge("Divide a half in half", price.halvesToQuaters, "per quater", invoice.numQuaters === 1 ? "2 Quaters" : "N/A", costs.quatering),
                 makeCharge("Patties", price.patties, "per lbs", `${beefdata.patties ?? 0}lbs`, costs.patties),
@@ -1083,7 +1083,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
             tableHeader: ["Charge Name", "Rate", "Quantity", "Charge"],
             tableBody: [
                 makeCharge(`Slaughter Fee (${porkdata.over350lbs ? "Over 350lbs" : "Under 350lbs"})`, price.slaughter, "", "1 Slaughter", costs.slaughter),
-                makeCharge("Processing Fee", price.processing, "per lbs of dress weight", `${animal.dressWeight}lbs`, costs.processing),
+                makeCharge("Processing Fee", price.processing, "per lbs of dress weight", `${Math.round(animal.dressWeight * invoice.numQuaters / 4 * 100) / 100}lbs`, costs.processing),
                 makeCharge("Curing Fee", price.cure, "per lbs of cured pork", `${porkdata.totalcured}lbs`, costs.cured),
                 makeCharge("Sausage Fee", price.sausage, "per lbs of sausage", `${porkdata.sausage}lbs`, costs.sausage),
                 ...invoice.customcharges.map(c => [ c.name, "---", "---", `$${c.amount.toFixed(2)}` ])

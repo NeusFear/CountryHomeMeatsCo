@@ -9,15 +9,16 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue}
   width: number,
   defaultValue?: string
 }) => {
-
+  const insertedValues = values.slice()
+  insertedValues.unshift("")
   const computedInitial = useMemo(() => {
     if(defaultValue !== undefined) {
       onChange(defaultValue)
       return defaultValue
     }
     if(initial === undefined) {
-      onChange(values[0])
-      return values[0]
+      onChange(insertedValues[0])
+      return insertedValues[0]
     }
     return initial
   }, [initial])
@@ -31,8 +32,8 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue}
 
   const findSuggestions = (value: string) => {
     // const lowerValue = value.toLowerCase().trim()
-    // return lowerValue === '' ? values : values.filter(s => s.toLowerCase().startsWith(lowerValue))
-    return values
+    // return lowerValue === '' ? insertedValues : insertedValues.filter(s => s.toLowerCase().startsWith(lowerValue))
+    return insertedValues
   }
 
   const [ suggestions, setSuggestions ] = useState(findSuggestions(value))
@@ -44,10 +45,12 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue}
       <Autosuggest 
         suggestions={suggestions}
         onSuggestionsFetchRequested={({value}: {value: string}) => setSuggestions(findSuggestions(value))}        
-        onSuggestionsClearRequested={() => setSuggestions(values)}
+        onSuggestionsClearRequested={() => setSuggestions(insertedValues)}
         shouldRenderSuggestions={() => true}
         getSuggestionValue={t => t}
-        renderSuggestion={t => t}
+        renderSuggestion={t => {
+          return t === "" ? <div>&nbsp;</div> : <div>{t}</div>
+        }}
         inputProps={{
           className: "bg-gray-200 border border-gray-500 rounded-md w-full",
           value,

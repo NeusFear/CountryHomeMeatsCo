@@ -9,17 +9,20 @@ import './styles/tailwind.scss'
 import './styles/autosuggest.css'
 
 import { NavBar, routes } from './NavBar';
-import { connectToDB } from './database/Database';
+import { useDatabaseConnection } from './database/Database';
 import { ModalManager } from './modals/ModalManager';
 import { ConnectingPage } from './pages/ConnectingPage';
 import { ipcRenderer } from 'electron';
 
 const defaultPinned = (ipcRenderer.sendSync("get-pinned-users") as string[]).map(s => s.trim()).filter(s => s.length !== 0)
+const defaultConnection = (ipcRenderer.sendSync("get-default-connection") as [string, number])
 
 export const AppContainer = () => {
-  let connectState = connectToDB("localhost")
+  const defaultIP = defaultConnection[0]
+  const defaultPort = defaultConnection[1]
+  const connectState = useDatabaseConnection(defaultIP, defaultPort);
   return (
-    connectState.connected ? <App/> : <ConnectingPage details={connectState.details} />
+    connectState.connected ? <App/> : <ConnectingPage details={connectState.details} address={connectState.address} refreshState={connectState.refresh} defaultIP={defaultIP} defaultPort={defaultPort} />
   )
 }
 

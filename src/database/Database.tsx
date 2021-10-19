@@ -4,31 +4,50 @@ import { list } from "postcss";
 import { useEffect, useRef, useState, DependencyList } from "react";
 import User, { IUser } from "./types/User";
 import { ObjectId as BsonObjectId } from 'bson'
+import { ipcRenderer } from "electron";
 
 //Import the mongoose module
 const mongoose = require('mongoose')
 
-let connected = false
+type ConnectState = { details: string, connected: boolean, address: string }
+export const useDatabaseConnection = (ip: string, port: number): ConnectState & { refresh: (ip: string, port: number) => void }  => {
+  const [address, setAddress] = useState(`${ip}:${port}`)
 
-type ConnectState = { details: string, connected: boolean }
-export const connectToDB = (ip: string): ConnectState => {
-  let [connectState, setConnectState] = useState<ConnectState>({
-    details: "Connecting to database...",
-    connected: false
-  })
-
-  if (!connected) {
-    connected = true
-    mongoose.connect(`mongodb://${ip}:27017/`, { useNewUrlParser: true, useUnifiedTopology: true })
-
-    const db = mongoose.connection;
-    db.on('error', err => setConnectState({ details: `Error: ${err}`, connected: false }));
-    db.on('disconnected', () => setConnectState({ details: `Connection Closed`, connected: false }));
-    db.on('connecting', () => setConnectState({ details: `Trying to establish a connection...`, connected: false }));
-    db.on('open', () => setConnectState({ details: `Connected`, connected: true }));
+  const defaultState = () => {
+    return {
+      details: "Connecting to database...",
+      connected: false,
+      address,
+    }
   }
 
-  return connectState
+  let [connectState, setConnectState] = useState<ConnectState>(defaultState)
+
+  useEffect(() => {
+    setConnectState(defaultState)
+    mongoose.connect(`mongodb://${address}/`, { useNewUrlParser: true, useUnifiedTopology: true })
+    
+    const db = mongoose.connection;
+    db.on('error', err => setConnectState({ details: `Error: ${err}`, connected: false, address }));
+    db.on('disconnected', () => setConnectState({ details: `Connection Closed`, connected: false, address }));
+    db.on('connecting', () => setConnectState({ details: `Trying to establish a connection...`, connected: false, address }));
+    db.on('open', () => setConnectState({ details: `Connected`, connected: true, address }));
+    
+    return () => {
+      db.removeAllListeners();
+
+      //Bit of a hack here, but essentially set the state to DISCONNECTED on the mongoose connection
+      mongoose.connection.readyState = 0
+    }
+  }, [address])
+
+  return {
+    ...connectState,
+    refresh: async(ip, port) => {
+      ipcRenderer.send("save-default-connection", [ip, port])
+      setAddress(`${ip}:${port}`)
+    }
+  }
 }
 
 export const DatabaseWait = "DatabaseHoldValue"

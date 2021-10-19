@@ -40,6 +40,7 @@ app.on("activate", () => {
 });
 
 const pinnedUserPath = app.getPath("userData") + "/" + "CountryHomeMeatsPinnedUsers.txt"
+const connectionPath = app.getPath("userData") + "/" + "CountryHomeMeatsConnection.txt"
 
 ipcMain.on("get-pinned-users", (evnt) => {
   if(fs.existsSync(pinnedUserPath)) {
@@ -47,12 +48,24 @@ ipcMain.on("get-pinned-users", (evnt) => {
   } else {
     evnt.returnValue = []
   }
-  
 })
-
 ipcMain.on("save-pinned-users", (_, list) => {
   fs.writeFileSync(pinnedUserPath, list.join("\n"))
 })
+
+ipcMain.on("get-default-connection", (evnt) => {
+  if(fs.existsSync(connectionPath)) {
+    const lines = fs.readFileSync(connectionPath).toString().split("\n")
+    const num =  parseInt(lines[1])
+    evnt.returnValue = [lines[0], isNaN(num) ? 0 : num]
+  } else {
+    evnt.returnValue = ["localhost", 27017]
+  }
+})
+ipcMain.on("save-default-connection", (_, list) => {
+  fs.writeFileSync(connectionPath, list[0] + "\n" + list[1])
+})
+
 
 ipcMain.on("get-printers", (evnt) => {
   evnt.returnValue = mainWindow.webContents.getPrinters()

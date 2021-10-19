@@ -46,7 +46,7 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue,
   const widthInPx = width
 
   return (
-    <div style={width !== undefined ? null : {width: `${widthInPx}px`}}>
+    <div style={width === undefined ? null : {width: `${widthInPx}px`}}>
       <Autosuggest 
         suggestions={disabled ? [] : suggestions}
         onSuggestionsFetchRequested={({value}: {value: string}) => setSuggestions(findSuggestions(value))}        

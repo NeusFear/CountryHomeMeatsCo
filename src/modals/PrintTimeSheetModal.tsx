@@ -112,14 +112,13 @@ const DayPickerEntry = ({ date, setDate, startDate, endDate, }: { date: Date, se
 
 const perRow = 5
 const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Date) => {
-  to.setDate(to.getDate() + 1) //Include from
-  const numberOfBlocks = Math.ceil((to.getTime() - from.getTime()) / 8.64e+7 / perRow)
+  const numberOfBlocks = Math.max(Math.ceil((to.getTime() - from.getTime()) / 8.64e+7 / perRow), 1)
 
   const computeAllDates = (e: IEmployee) => {
     const date = new Date(from)
     let total = 0
     while(date.getTime() < to.getTime()) {
-      total += computeEmployeeDay(e.clockInEvents.find(d => d.day.getTime() === date.getTime()).events)
+      total += computeEmployeeDay(e.clockInEvents.find(d => d.day.getTime() === date.getTime())?.events ?? [])
       date.setDate(date.getDate() + 1)
     }
     const hours = String(Math.floor(total / 3600000)).padStart(2, "0")
@@ -127,46 +126,78 @@ const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Da
     return hours + ":" + minutes
   }
 
+  const generateTable = (employees: IEmployee[]) => Array.from({ length: numberOfBlocks }).flatMap((_, i) => {
+    const ret: PosPrintData[] = []
+    if (i !== 0) {
+      ret.push({
+        type: "text",
+        value: `<div style="width: 100%; height: 2px; background-color: #ddd; margin-top: 10px; margin-bottom: 10px" />`
+      })
+    }
+
+    const days: Date[] = []
+    for (let j = 0; j < perRow; j++) {
+      const date = new Date(from)
+      date.setDate(date.getDate() + i * perRow + j)
+      if (date <= to) {
+        days.push(date)
+      }
+    }
+
+    ret.push({
+      type: "table",
+      tableHeader: ["Employee"].concat(days.map(d => d.toDateString())),
+      tableBody: genEmployeeData(employees, days),
+      tableHeaderStyle: 'background-color: #000; color: white;',
+      tableBodyStyle: 'border: 0.5px solid #ddd',
+    })
+
+    return ret
+  })
+
   const data: PosPrintData[] = [{
     type: "text",
-    value: "<style>td { border: 0.5px solid #ddd; height: 1px; }</style>"
+    value: `
+    <style>
+      td { 
+        border: 0.5px solid #ddd; 
+        height: 1px; 
+      }
+      @media print {
+        .page-break  { 
+          display:block; 
+          page-break-before:always; 
+        }
+      }
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+    </style>`
   } as PosPrintData, {
     type: "text",
     value: `
       <h2>Total Hours</h2>
-      ${employees.map(e => e.firstName + " " + e.lastName + ": " + computeAllDates(e) + "<br>")}
+      ${employees.map(e => e.firstName + " " + e.lastName + ": " + computeAllDates(e) + "<br>").join("")}
       <br>
       <br>
     `
-  } as PosPrintData]
-    .concat(Array.from({ length: numberOfBlocks }).flatMap((_, i) => {
-      const ret: PosPrintData[] = []
-      if (i !== 0) {
-        ret.push({
-          type: "text",
-          value: `<div style="width: 100%; height: 2px; background-color: #ddd; margin-top: 10px; margin-bottom: 10px" />`
-        })
-      }
+  } as PosPrintData].concat(generateTable(employees))
 
-      const days: Date[] = []
-      for (let j = 0; j < perRow; j++) {
-        const date = new Date(from)
-        date.setDate(date.getDate() + i * perRow + j)
-        if (date <= to) {
-          days.push(date)
-        }
-      }
+  employees.forEach(employee => {
+    const hasEvents = employee.clockInEvents.some(e => e.day.getTime() >= from.getTime() && e.day.getTime() <= to.getTime() && e.events.length !== 0)
+    if(!hasEvents) {
+      return
+    }
+    data.push({
+      type: "text",
+      value: `
+      <div class="page-break" />
+      <h2>Hours for ${employee.firstName} ${employee.middleName ?? ""} ${employee.lastName}</h2>
 
-      ret.push({
-        type: "table",
-        tableHeader: ["Employee"].concat(days.map(d => d.toDateString())),
-        tableBody: genEmployeeData(employees, days),
-        tableHeaderStyle: 'background-color: #000; color: white;',
-        tableBodyStyle: 'border: 0.5px solid #ddd',
-      })
-
-      return ret
-    }))
+      `
+    })
+    data.push(...generateTable([employee]))
+  })
 
   const options: PosPrintOptions = {
     // preview: true,

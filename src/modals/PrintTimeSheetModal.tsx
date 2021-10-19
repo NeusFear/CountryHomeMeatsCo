@@ -193,7 +193,7 @@ const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Da
       value: `
       <div class="page-break" />
       <h2>Hours for ${employee.firstName} ${employee.middleName ?? ""} ${employee.lastName}</h2>
-
+      Total Time Worked: ${computeAllDates(employee)}
       `
     })
     data.push(...generateTable([employee]))

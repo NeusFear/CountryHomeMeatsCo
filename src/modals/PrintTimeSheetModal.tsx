@@ -117,7 +117,7 @@ const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Da
   const computeAllDates = (e: IEmployee) => {
     const date = new Date(from)
     let total = 0
-    while(date.getTime() < to.getTime()) {
+    while(date.getTime() <= to.getTime()) {
       total += computeEmployeeDay(e.clockInEvents.find(d => d.day.getTime() === date.getTime())?.events ?? [])
       date.setDate(date.getDate() + 1)
     }

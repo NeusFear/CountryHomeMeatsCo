@@ -658,7 +658,7 @@ const CowChargesTable = ({animal, invoice}: {animal: IAnimal, invoice: IInvoice}
 
             title="Bone and Tenderized"
             price={`${price.boneAndTenderizeRoundSteaks.toFixed(2)} per half`}
-            quantity={invoice.beefdata.hasTenderized ? formatHalfs(invoice.numQuaters) : "N/A"}
+            quantity={invoice.beefdata.hasTenderized ? (formatHalfs(invoice.numQuaters) + " @ " + (invoice.beefdata.tenderizedAmount??"???") + "%") : "N/A"}
             value={invoice.beefprices.tenderized}
             setValue={runThenSave(v => invoice.beefprices.tenderized = v)}
         />
@@ -772,7 +772,7 @@ const CowDataTable = ({invoice, cutInstructions: c, price: p}: {invoice: IInvoic
         <DataTableWrapper>
             <NonEditableCutInstructionEntry 
                 title="Round"
-                cutInstructions={`${c.round.tenderizedAmount}  ${c.round.size} ${c.round.perPackage}`}
+                cutInstructions={`${c.round.keepAmount} ${c.round.tenderized} ${c.round.size} ${c.round.perPackage} ${c.round.howToUseRest}`}
             />
             <NonEditableCutInstructionEntry 
                 title="Sirloin Tip"
@@ -954,7 +954,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
 
             tableHeader: ["Part", "Instruction Given", "Weight"],
             tableBody: [
-                [ "Round", `${beef.round.tenderizedAmount} ${beef.round.size} ${beef.round.perPackage}`, "..." ],
+                [ "Round", `${beef.round.keepAmount} ${beef.round.tenderized} ${beef.round.size} ${beef.round.perPackage} ${beef.round.howToUseRest}`, "..." ],
                 [ "Sirloin Tip", `${beef.sirlointip.size} ${beef.sirlointip.amount}`, "..." ],
                 [ "Flank", beef.flank, "..." ],
                 [ "Sirloin", `${beef.sirloin.size} ${beef.sirloin.amount}`, "..." ],
@@ -1064,7 +1064,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                 makeCharge("Divide a half in half", price.halvesToQuaters, "per quater", invoice.numQuaters === 1 ? "2 Quaters" : "N/A", costs.quatering),
                 makeCharge("Patties", price.patties, "per lbs", `${beefdata.patties ?? 0}lbs`, costs.patties),
                 makeCharge("Cut Stew Meat", price.cutStewMeat, "per lbs", `${beefdata.stewmeat ?? 0}lbs`, costs.cutstewmeat),
-                makeCharge("Bone and Tenderized", price.boneAndTenderizeRoundSteaks, "per half", beefdata.hasTenderized ? formatHalfs(invoice.numQuaters) : "N/A", costs.tenderized),
+                makeCharge("Bone and Tenderized", price.boneAndTenderizeRoundSteaks, "per half", beefdata.hasTenderized ? (formatHalfs(invoice.numQuaters) + " @ " + (beefdata.tenderizedAmount??"???") + "%") : "N/A", costs.tenderized),
                 makeCharge("Make Cubes Steaks", price.makeCubedSteaks, "per half", beefdata.makeCubedSteaks ? formatHalfs(invoice.numQuaters) : "N/A", costs.cubedsteaks),
                 makeCharge("Bone Out Prime Rib", price.boneOutPrimeRib, "per half", beefdata.boneoutprimerib ? "Yes" : "No", costs.boneoutprimerib),
                 makeCharge("Bone Out Loin", price.boneOutLoin, "per half", beefdata.boneoutloin ? "Yes" : "No", costs.boneoutloin),

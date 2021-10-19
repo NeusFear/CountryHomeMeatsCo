@@ -37,6 +37,7 @@ export interface IInvoice extends Document {
     beefdata?: {
         makeCubedSteaks: boolean
         hasTenderized: boolean
+        tenderizedAmount?: number
         stewmeat?: number,
         patties?: number,
         boneoutprimerib: boolean
@@ -99,6 +100,7 @@ const invoiceSchema = new Schema({
     beefdata: { type: {
         makeCubedSteaks: { type: Boolean, required: true },
         hasTenderized: { type: Boolean, required: true },
+        tenderizedAmount: { type: Number },
         stewmeat: { type: Number },
         patties: { type: Number },
         boneoutprimerib: { type: Boolean, required: true },
@@ -190,13 +192,17 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
         if(numQuaters === 1) {
             invoice.beefprices.quatering = numQuaters * priceData.beef.halvesToQuaters
         }
-        runIfGroup(
-            cutInstruction.round.tenderizedAmount, /(\d+.?\d+?)%/,
-            amount => {
-                invoice.beefprices.tenderized = priceData.beef.boneAndTenderizeRoundSteaks * (parseFloat(amount) / 100) * numHalves
-                invoice.beefdata.hasTenderized = true;
-            }
-        )
+        if(cutInstruction.round.tenderized.toLowerCase() == "tenderized") {
+            runIfGroup(
+                cutInstruction.round.keepAmount, /(\d+.?\d+?)%/,
+                amount => {
+                    const val = parseFloat(amount)
+                    invoice.beefdata.tenderizedAmount = val
+                    invoice.beefprices.tenderized = priceData.beef.boneAndTenderizeRoundSteaks * (val / 100) * numHalves
+                    invoice.beefdata.hasTenderized = true;
+                }
+            )
+        }
         if(invoice.beefdata.makeCubedSteaks) {
             invoice.beefprices.cubedsteaks = numHalves * priceData.beef.makeCubedSteaks
         }
@@ -233,7 +239,7 @@ const runIfGroup = (val: string, regex: RegExp, onPresent: (val: string) => void
     if(res === null) {
         return null
     }
-    onPresent(res[0])
+    onPresent(res[1])
 }
 
 export const useInvoice = createResultWatcher(Invoice)

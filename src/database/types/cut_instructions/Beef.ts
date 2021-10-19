@@ -3,7 +3,7 @@ import { AnimalType } from '../Animal';
 
 export type BeefCutInstructions = {
   cutType: AnimalType.Beef
-  round: { tenderizedAmount: string, size: string, perPackage: string }
+  round: { keepAmount: string, tenderized: string, size: string, perPackage: string, howToUseRest: string }
   sirlointip: { size: string, amount: string }
   flank: string
   sirloin: { size: string, amount: string }
@@ -22,7 +22,7 @@ export type BeefCutInstructions = {
 }
 
 export const BeefCutInstructionsSchema: SchemaDefinition = {
-  round: { tenderizedAmount: String, size: String, perPackage: String },
+  round: { keepAmount: String, tenderized: String, size: String, perPackage: String, howToUseRest: String },
   sirlointip: { size: String, amount: String },
   flank: String,
   sirloin: { size: String, amount: String },

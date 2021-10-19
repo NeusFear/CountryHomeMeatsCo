@@ -337,7 +337,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
               value: `
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 100%">
-                        ${instructionDiv("Round", `${beef.round.tenderizedAmount} ${beef.round.size} ${beef.round.perPackage}`)}
+                        ${instructionDiv("Round", `${beef.round.keepAmount} ${beef.round.tenderized} ${beef.round.size} ${beef.round.perPackage} ${beef.round.howToUseRest}`)}
                         ${instructionDiv("Sirloin Tip", `${beef.sirlointip.size} ${beef.sirlointip.amount}`)}
                         ${instructionDiv("Flank", beef.flank)}
                         ${instructionDiv("Sirloin", `${beef.sirloin.size} ${beef.sirloin.amount}`)}

@@ -582,21 +582,26 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
             <div className="pt-4 flex flex-row">
               <span className="ml-2 pr-2 text-gray-700 w-1/4">Round:</span>
               <div className="flex flex-col">
-                <div className="flex flex-row mb-1">
+              <div className="flex flex-row mb-1">
                   <SelectInputType
-                    initial={instructions.round.tenderizedAmount}
-                    onChange={v => instructions.round.tenderizedAmount=v}
-                    values={["Not Tenderized", "25%", "50%", "75%", "100%"]} 
-                    width={150}
+                    initial={instructions.round.keepAmount}
+                    onChange={v => instructions.round.keepAmount=v}
+                    values={["0%", "25%", "50%", "75%", "100%"]} 
+                    width={50}
+                  />
+                  <SelectInputType
+                    initial={instructions.round.tenderized}
+                    onChange={v => instructions.round.tenderized=v}
+                    values={["Tenderized"]} 
+                    width={100}
                   />
                 </div>
-                <br />
                 <div className="flex flex-row">
                   <SelectInputType
                     initial={instructions.round.size}
                     onChange={v => instructions.round.size=v}
-                    values={['1/2"', '3/4"', '1"', 'Hamburger', 'Chicken Fry']} 
-                    width={100} 
+                    values={['1/2"', '3/4"', '1"']} 
+                    width={50} 
                   />
                   <SelectInputType 
                     initial={instructions.round.perPackage}
@@ -604,8 +609,13 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                     values={['1/Pkg', '2/Pkg', '3/Pkg', '4/Pkg']} 
                     width={60} 
                   />
+                  <SelectInputType 
+                    initial={instructions.round.howToUseRest}
+                    onChange={v => instructions.round.howToUseRest=v}
+                    values={['Hamburger', 'Chicken Fry']} 
+                    width={100} 
+                  />
                 </div>
-                <br />
               </div>
             </div>
                   

@@ -127,7 +127,7 @@ export const createEmptyAnimal = (userID: string): IAnimal => {
   })
 }
 
-export const AnimalStateFields = "confirmed liveWeight color sex penLetter dressWeight invoiceGeneratedDate pickedUp " + ValidateEatersFields
+export const AnimalStateFields = "confirmed liveWeight color sex penLetter dressWeight invoiceGeneratedDate pickedUp tagNumber " + ValidateEatersFields
 export const computeAnimalState = (animal: IAnimal | undefined) => {
   if (!animal || !animal.confirmed) return 0
   if ([animal.liveWeight, animal.color, animal.sex, animal.penLetter].some(e => e === undefined || e === "")) return 1

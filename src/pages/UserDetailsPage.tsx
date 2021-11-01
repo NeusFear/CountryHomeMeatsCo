@@ -196,6 +196,7 @@ const BroughtInAnimalEntry = ({ animals }: {
           <InfoTag missingInfo={!firstEntry.liveWeight} value={(firstEntry.liveWeight ?? "?") + " lbs"} />
           <InfoTag missingInfo={!firstEntry.color} value={(firstEntry.color ?? "Color?")} />
           <InfoTag missingInfo={!firstEntry.sex} value={(firstEntry.sex ?? "Sex?")} />
+          <InfoTag missingInfo={!firstEntry.tagNumber} value={"Tag #" + (firstEntry.tagNumber ?? "tag# ?")} />
           <InfoTag missingInfo={!firstEntry.penLetter} value={"Pen " + (firstEntry.penLetter ?? "pen ?")} />
         </div>
       }

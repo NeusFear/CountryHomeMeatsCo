@@ -28,7 +28,7 @@ export const CalendarDayModal = ({ state }:
   const users = useMemo(() => dayData.map(d => d.user), [dayData])
   const animalIds = useMemo(() => dayData.map(d => d.ids).reduce((a, b) => a.concat(b)), [dayData])
 
-  const animals = useAnimals(Animal.where('_id').in(animalIds).select('confirmed animalType'), [animalIds])
+  const animals = useAnimals(Animal.where('_id').in(animalIds).select('confirmed animalType called'), [animalIds])
   const allUsers = useUsers(User.where('_id').in(users).select('name phoneNumbers emails notes'), [users])
 
   if(allUsers === DatabaseWait || animals === DatabaseWait) {
@@ -47,6 +47,13 @@ export const CalendarDayModal = ({ state }:
   const confirmAll = () => {
     selectedAnimalModels?.forEach(a => {
       a.confirmed = true
+      a.save()
+    })
+  }
+
+  const callAll = () => {
+    selectedAnimalModels?.forEach(a => {
+      a.called = true
       a.save()
     })
   }
@@ -81,6 +88,7 @@ export const CalendarDayModal = ({ state }:
           <div className="cursor-pointer mt-5 bg-green-200 hover:bg-green-300 rounded-sm px-2 shadow text-center" onClick={() => history.push(userDetailsPage, selectedUser)}>Go to User</div>
         </div>
         <div className="w-1/3 p-2">
+        <div className="cursor-pointer mt-1 bg-gray-200 hover:bg-gray-300 rounded-sm px-2 shadow" onClick={callAll}>Mark all Called</div>
         <div className="cursor-pointer mt-1 bg-gray-200 hover:bg-gray-300 rounded-sm px-2 shadow" onClick={confirmAll}>Confirm all</div>
           <div className="mt-5">
             {selectedAnimalModels === undefined ? 'Loading...' : 
@@ -114,11 +122,16 @@ const AnimalEntry = ({animal}: {animal: IAnimal}) => {
 
   const history = useHistory()
 
-  const confirmedClasses = "bg-green-200 hover:bg-green-300"
-  const unconfirmedClasses = "bg-tomato-200 hover:bg-tomato-300"
+  const confirmedClasses = "bg-green-200 hover:bg-green-300 mr-1"
+  const unconfirmedClasses = "bg-tomato-200 hover:bg-tomato-300 mr-1"
 
   const toggleConfirmation = () => {
     animal.confirmed = !animal.confirmed
+    animal.save()
+  }
+
+  const toggleCalled = () => {
+    animal.called = !animal.called
     animal.save()
   }
 
@@ -126,6 +139,11 @@ const AnimalEntry = ({animal}: {animal: IAnimal}) => {
     <div className="cursor-pointer rounded-sm shadow px-2 hover:bg-gray-200 mb-1">
       <div className="flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
         <p className="flex-grow text-xs font-bold">{animal.animalType === AnimalType.Beef ? "Beef " : "Pork "}</p>
+        <div className={`text-xs rounded-sm shadow text-center mt-0.5 px-1 + ${animal.called ? confirmedClasses : unconfirmedClasses}`} 
+        onClick={e => {
+          toggleCalled()
+          e.stopPropagation()
+        }}>{animal.called?'Called':'Not Called'}</div>
         <div className={`text-xs rounded-sm shadow text-center mt-0.5 px-1 + ${animal.confirmed ? confirmedClasses : unconfirmedClasses}`} 
         onClick={e => {
           toggleConfirmation()

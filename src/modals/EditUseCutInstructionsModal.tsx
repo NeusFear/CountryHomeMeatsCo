@@ -815,13 +815,13 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
               <SelectInputType
                 initial={instructions.stewmeat.amount}
                 onChange={v => instructions.stewmeat.amount=v}
-                values={['5 Packages', '10 Packages', '15 Packages']}
+                values={['', '5 Packages', '10 Packages', '15 Packages']}
                 width={100}
               />
               <SelectInputType
                 initial={instructions.stewmeat.size}
                 onChange={v => instructions.stewmeat.size=v}
-                values={['1lb/Pkg', '1.5lb/Pkg', '2.0lb/Pkg']}
+                values={['', '1lb/Pkg', '1.5lb/Pkg', '2.0lb/Pkg']}
                 width={100}
               />
             </div>

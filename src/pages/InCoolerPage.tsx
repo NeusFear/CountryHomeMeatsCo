@@ -59,7 +59,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
 
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
-      <div className="text-gray-800 group-hover:text-gray-900 flex-shrink">
+      <div className="text-gray-800 group-hover:text-gray-900 flex-shrink w-32">
         <p>Bringer</p>
         <DataTag name={mainUser?.name ?? "???"} />
       </div>
@@ -67,7 +67,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
         <p>Animal ID</p>
         <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">#{paddedAnimalId(animal)}</p>
       </div>
-      <div className="text-gray-800 group-hover:text-gray-900 w-20 mr-4">
+      <div className="text-gray-800 group-hover:text-gray-900 w-32 mr-4">
         <p>Eaters</p>
         {animal.eaters.map((e, i) => {
           const user = users.find(u => String(u.id) === String(e.id))
@@ -76,7 +76,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 flex-shrink mr-2">
         <p>Type</p>
-        <p className={`${animal.animalType == AnimalType.Beef ? "bg-tomato-300 hover:bg-tomato-400" : "bg-green-300 hover:bg-green-400"} w-20 px-2 text-white py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{animal.animalType == AnimalType.Beef ? "Beef" : "Pork"}</p>
+        <p className={`${animal.animalType == AnimalType.Beef ? "bg-tomato-300 hover:bg-tomato-400" : "bg-green-300 hover:bg-green-400"} w-14 px-2 text-white py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{animal.animalType == AnimalType.Beef ? "Beef" : "Pork"}</p>
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 mx-2 w-auto mr-2">
         <p>Living Info</p>
@@ -105,7 +105,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
 const DataTag = ({ name }: { name: string }) => {
   return (
     <div className="flex">
-      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 mr-1">{name}</p>
+      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 mr-1 truncate">{name}</p>
     </div>
   )
 }

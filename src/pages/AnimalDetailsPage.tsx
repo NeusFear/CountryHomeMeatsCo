@@ -163,7 +163,7 @@ export const AnimalDetailsPage = () => {
                     setAnimalArriveDateAndSave()
                   }}
                   disabled={currentState < 1}
-                  initial=""
+                  initial={animal.color}
                   removeEmpty
                 />
                 {/* <input className="border-gray-700 border rounded-md px-2" type="text" disabled={currentState < 1} defaultValue={animal.color} onChange={e => {

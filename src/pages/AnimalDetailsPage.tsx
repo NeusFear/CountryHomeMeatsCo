@@ -421,7 +421,7 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
         }} />
         <select 
         key={user?.id?? "null"}
-        className="w-48 border-gray-700 border rounded-md ml-2 px-1" 
+        className="w-60 border-gray-700 border rounded-md ml-2 px-1" 
         disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} 
         onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
           <option hidden disabled value="__default"></option>

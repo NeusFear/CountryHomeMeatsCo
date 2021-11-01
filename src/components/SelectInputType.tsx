@@ -54,7 +54,7 @@ export const SelectInputType = ({ initial, onChange, values, width, defaultValue
         shouldRenderSuggestions={() => true}
         getSuggestionValue={t => t}
         renderSuggestion={t => {
-          return t === "" ? <div>&nbsp;</div> : <div>{t}</div>
+          return t === "" ? <div>&nbsp;</div> : <div className="font-normal pl-2">{t.toString().charAt(0).toUpperCase() + t.toString().slice(1)}</div>
         }}
         inputProps={{
           className: className ?? "bg-gray-200 border border-gray-500 rounded-md w-full",

@@ -214,18 +214,24 @@ export const AnimalDetailsPage = () => {
             <div className="flex flex-row">
               <div className="font-semibold flex flex-row p-1">
                 <span>Liver Good</span>
-                <input className="mt-1 h-8 w-8 rounded-md mr-2" type="checkbox" checked={animal.liverGood} onChange={e => {
-                  animal.liverGood = e.target.checked
+                <select className="border-gray-700 border rounded-md px-1 h-6" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
+                  animal.liverGood = e.target.value === "true"
                   setAnimalArriveDateAndSave()
-                }} />
+                }}>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
               </div>
               {animal.animalType === AnimalType.Beef &&
                 <div className="font-semibold flex flex-row p-1">
                   <span>Older than 30 Months</span>
-                  <input className="mt-1 h-8 w-8 rounded-md mr-2" type="checkbox" checked={animal.older30Months} onChange={e => {
-                    animal.older30Months = e.target.checked
+                  <select className="border-gray-700 border rounded-md px-1 h-6" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
+                    animal.older30Months = e.target.value === "true"
                     setAnimalArriveDateAndSave()
-                  }} />
+                  }}>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
                 </div>
               }
             </div>

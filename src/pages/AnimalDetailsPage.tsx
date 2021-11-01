@@ -256,7 +256,7 @@ export const AnimalDetailsPage = () => {
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Related Invoices</div>
-              {<button className="bg-blue-200 rounded" disabled={currentState < 4} onClick={() => {
+              {<button className="bg-blue-300 rounded px-2 text-white font-semibold" disabled={currentState < 4} onClick={() => {
                 if (animal.invoices.length === 0 || confirm("This will remove all current invoices.")) {
                   const toRemove = animal.invoices.map(i => String(i))
                   animal.invoices = []

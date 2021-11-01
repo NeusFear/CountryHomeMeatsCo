@@ -500,7 +500,6 @@ const WrappedAutoSuggest = ({ suggestion, disabled = false, intial, mappingFunc,
   }
   return (
     <Autosuggest
-      className="border-gray-700 border rounded-md ml-2"
       suggestions={suggestions}
       onSuggestionsFetchRequested={({ value }: { value: string }) => {
         const lowerValue = value.toLowerCase().trim()
@@ -515,6 +514,7 @@ const WrappedAutoSuggest = ({ suggestion, disabled = false, intial, mappingFunc,
         placeholder: 'Type a Name',
         onChange: onValueChanged,
         onBlur: save,
+        className: `border-gray-700 border rounded-md ml-2 w-48`
       }}
     />
   )

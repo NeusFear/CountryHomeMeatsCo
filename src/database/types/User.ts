@@ -23,7 +23,7 @@ export interface IUser extends Document {
 
 export const CutInstructionsSchema: SchemaDefinition<DocumentDefinition<any>> = {
   cutType: { type: String, enum: [AnimalType.Beef, AnimalType.Pork], required: true },
-  ...BeefCutInstructionsSchema, 
+  ...BeefCutInstructionsSchema,
   ...PorkCutInstructionsSchema,
   notes: { type: String, default: '' },
 }
@@ -31,17 +31,21 @@ export const CutInstructionsSchema: SchemaDefinition<DocumentDefinition<any>> = 
 const userSchmea = new Schema({
   name: { type: String, required: true },
   invoices: [{ type: Schema.Types.ObjectId, ref: invoiceDatabaseName, required: true, default: [] }],
-  phoneNumbers: { type: [{ 
-    name: { type: String, required: true }, 
-    number: { type: String, required: true }
-  }], required: true },
-  emails: {type: [String], required: true },
-  cutInstructions: { type: [{ 
-    id: { type: Number, required: true },
-    nickname: { type: String, required: true },
-    instructions: { type: CutInstructionsSchema, required: true }
-   }], required: true},
-   notes: { type: String, default: '' },
+  phoneNumbers: {
+    type: [{
+      name: { type: String, required: true },
+      number: { type: String, required: true }
+    }], required: true
+  },
+  emails: { type: [String], required: true },
+  cutInstructions: {
+    type: [{
+      id: { type: Number, required: true },
+      nickname: { type: String, required: true },
+      instructions: { type: CutInstructionsSchema, required: true }
+    }], required: true
+  },
+  notes: { type: String, default: '' },
 });
 
 const User = mongoose.model<IUser>(userDatabaseName, userSchmea)

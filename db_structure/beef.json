@@ -1,28 +1,28 @@
 {
-  "bringer": 123088,				//The id of the bringer
-  "eaters": [
-	{
-	  "id": 1123,					//can be the bringer's id, usually a seperate user an "eater"
-	  "portion": .25,				//can be .25 .5 or 1.0
-	  "recordCard": 4				//can be null on schedule, but needs to be complete before the cut sheet can be printed
-	},
-	{
-	  "id": 4633,
-	  "portion": .25,
-	  "recordCard": 2
-	},
-	{
-	  "id": 65348,
-	  "portion": .5,
-	  "recordCard": 1
-	}
-  ],
-  "killDate": <some date format>,	//Date known at time of schedule
-  "liveWieght": 900,				//In pounds, not know at the time of schedule
-  "dressWeight" 450,				//In pounds, also not known at time of schedule
-  "color": "black",					//Not kown at time of schedule
-  "sex": "steer",					//Can be one of 4 options (Steer, Heffer, Cow, Bull), not known at time of schedule
-  "tagNum": 239,					//Not known at time of schedule
-  "penLetter": F,					//(A-J) Not known at time of schedule
-  "processDate": <some date format>	//Can be any date after killDate, usually within 2 weeks, controlled by today page, can explain later if you need it
+	"bringer": 123088, //The id of the bringer
+	"eaters": [
+		{
+			"id": 1123, //can be the bringer's id, usually a seperate user an "eater"
+			"portion": .25, //can be .25 .5 or 1.0
+			"recordCard": 4 //can be null on schedule, but needs to be complete before the cut sheet can be printed
+		},
+		{
+			"id": 4633,
+			"portion": .25,
+			"recordCard": 2
+		},
+		{
+			"id": 65348,
+			"portion": .5,
+			"recordCard": 1
+		}
+	],
+	"killDate": <some date format>, //Date known at time of schedule
+	"liveWieght": 900, //In pounds, not know at the time of schedule
+	"dressWeight" 450, //In pounds, also not known at time of schedule
+	"color": "black", //Not kown at time of schedule
+	"sex": "steer", //Can be one of 4 options (Steer, Heffer, Cow, Bull), not known at time of schedule
+	"tagNum": 239, //Not known at time of schedule
+	"penLetter": F, //(A-J) Not known at time of schedule
+	"processDate": <some date format> //Can be any date after killDate, usually within 2 weeks, controlled by today page, can explain later if you need it
 }

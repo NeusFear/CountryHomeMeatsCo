@@ -39,7 +39,7 @@ export type PorkCutInstructions = {
   head: string,
   feet: string,
   heart: string,
-  fat: string  
+  fat: string
 }
 
 export const PorkCutInstructionsSchema: SchemaDefinition = {

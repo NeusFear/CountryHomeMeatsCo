@@ -17,27 +17,27 @@ const isValidPhoneNum = (text: string) => {
 
 const dateRegex = /^\d\d?\/\d\d?\/\d\d\d\d$/
 const zipRegex = /^\d{5}(?:[-\s]\d{4})?$/
-export const EditEmployeeDetailsModal = forwardRef<ModalHandler, {objectId: string}>(({objectId}, ref) => {
-  return objectId === undefined ? 
-  (<EditUserDetailsModalWithUser ref={ref} user={new Employee({
-    phoneNumbers: [{ name: '', number:'' }],
-    clockInEvents: []
-  })}/>) : 
-  (<EditUserDetailsModalWithUserID ref={ref} id={objectId}/>)
+export const EditEmployeeDetailsModal = forwardRef<ModalHandler, { objectId: string }>(({ objectId }, ref) => {
+  return objectId === undefined ?
+    (<EditUserDetailsModalWithUser ref={ref} user={new Employee({
+      phoneNumbers: [{ name: '', number: '' }],
+      clockInEvents: []
+    })} />) :
+    (<EditUserDetailsModalWithUserID ref={ref} id={objectId} />)
 })
 
-const EditUserDetailsModalWithUserID = forwardRef<ModalHandler, {id: string}>(({id}, ref) => {
+const EditUserDetailsModalWithUserID = forwardRef<ModalHandler, { id: string }>(({ id }, ref) => {
   const user = useEmployees(Employee.findById(id), [id], id)
   return user === DatabaseWait ?
     (<div>Loading User ID {id}</div>) :
-    (<EditUserDetailsModalWithUser ref={ref} user={user}/>)
+    (<EditUserDetailsModalWithUser ref={ref} user={user} />)
 })
 
-const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>(({user}, ref) => {  
-  const [firstName, setFirstName] = useState<ValidatedString>(null) 
-  const [middleName, setMiddleName] = useState<ValidatedString>(null) 
-  const [lastName, setLastName] = useState<ValidatedString>(null) 
-  const [phoneNumbers, setPhoneNumbers] = useState<{name: ValidatedString, number:ValidatedString, _id:number}[]>(() => 
+const EditUserDetailsModalWithUser = forwardRef<ModalHandler, { user: IEmployee }>(({ user }, ref) => {
+  const [firstName, setFirstName] = useState<ValidatedString>(null)
+  const [middleName, setMiddleName] = useState<ValidatedString>(null)
+  const [lastName, setLastName] = useState<ValidatedString>(null)
+  const [phoneNumbers, setPhoneNumbers] = useState<{ name: ValidatedString, number: ValidatedString, _id: number }[]>(() =>
     [...user.phoneNumbers].map(d => {
       return {
         name: { text: d.name, valid: false },
@@ -49,45 +49,45 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
   const [address, setAddress] = useState<ValidatedString[]>([])
   const [startDate, setStartDate] = useState<ValidatedString>(null)
   const [birthday, setBirthday] = useState<ValidatedString>(null)
-  
-  const valid = 
-    firstName !== null && firstName.valid && 
-    middleName !== null && middleName.valid && 
-    lastName !== null && lastName.valid && 
-    phoneNumbers.every(d => d.name.valid && d.number.valid) && 
+
+  const valid =
+    firstName !== null && firstName.valid &&
+    middleName !== null && middleName.valid &&
+    lastName !== null && lastName.valid &&
+    phoneNumbers.every(d => d.name.valid && d.number.valid) &&
     address.length === 4 && address.every(a => a.valid) &&
-    startDate !== null && startDate.valid && 
-    birthday !== null && birthday.valid 
-  
-    const trySubmitData = () => {
-      if(!valid) {
-        return
-      }
-      user.firstName = firstName.text
-      user.middleName = middleName.text
-      user.lastName = lastName.text
-      user.phoneNumbers = phoneNumbers.map(n => {
-        return {
-          name: n.name.text,
-          number: n.number.text
-        }
-      })
-      user.address = address.map(a => a.text)
-      user.startDate = new Date(startDate.text)
-      user.birthday = new Date(birthday.text)
-      user.save().then(() => setModal(null))
+    startDate !== null && startDate.valid &&
+    birthday !== null && birthday.valid
+
+  const trySubmitData = () => {
+    if (!valid) {
+      return
     }
+    user.firstName = firstName.text
+    user.middleName = middleName.text
+    user.lastName = lastName.text
+    user.phoneNumbers = phoneNumbers.map(n => {
+      return {
+        name: n.name.text,
+        number: n.number.text
+      }
+    })
+    user.address = address.map(a => a.text)
+    user.startDate = new Date(startDate.text)
+    user.birthday = new Date(birthday.text)
+    user.save().then(() => setModal(null))
+  }
 
   useImperativeHandle(ref, () => ({ onClose: trySubmitData }))
 
   const validateDate = (str: string) => !isNaN(new Date(str).getTime()) && str.match(dateRegex) !== null
 
   return (
-    <div className="flex flex-col" style={{width:'700px', height:'500px'}}>
+    <div className="flex flex-col" style={{ width: '700px', height: '500px' }}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
-        { user.isNew ? 
+        {user.isNew ?
           <span className="text-gray-300 font-semibold">Create Employee User</span> :
-          <span className="text-gray-300">Editing Employee ID: {user.id}</span> 
+          <span className="text-gray-300">Editing Employee ID: {user.id}</span>
         }
       </div>
       <div className="flex-grow overflow-auto">
@@ -107,23 +107,23 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
         <div className="pt-5">
           <span className="ml-2 pr-2 text-gray-700"><SvgPhone className="float-left mx-2" />Phone Numbers:</span>
           <div>
-            {phoneNumbers.map(d=> (
+            {phoneNumbers.map(d => (
               <div key={d._id}>
                 <EditorValidateInput label="Name" example="cell" current={d.name.text} predicate={t => t.length >= 2} onChange={data => {
-                  if(d.name.text !== data.text || d.name.valid !== data.valid) {
+                  if (d.name.text !== data.text || d.name.valid !== data.valid) {
                     d.name = data
                     setPhoneNumbers([...phoneNumbers])
                   }
                 }} />
                 :
                 <EditorValidateInput label="Number" example="4051234567" current={d.number.text} predicate={t => isValidPhoneNum(t)} onChange={data => {
-                  if(d.number.text !== data.text || d.number.valid !== data.valid) {
+                  if (d.number.text !== data.text || d.number.valid !== data.valid) {
                     d.number = data
                     setPhoneNumbers([...phoneNumbers])
                   }
-                }}/>
-                {phoneNumbers.length === 1 ? <></> : 
-                  <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3"  onClick={() => {
+                }} />
+                {phoneNumbers.length === 1 ? <></> :
+                  <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
                     phoneNumbers.splice(phoneNumbers.indexOf(d), 1)
                     setPhoneNumbers([...phoneNumbers])
                   }}><SvgCross /></span>
@@ -144,30 +144,30 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, {user: IEmployee}>
         <div className="pt-5">
           <span className="ml-2 pr-2 text-gray-700"><SvgEmail className="float-left mx-2" />Address:</span>
           <div>
-            <EditorValidateInput label="Address 1" example="123 N Road St." current={user.address[0]} predicate={t => t.length >= 5} onChange={d => {address[0] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Address 1" example="123 N Road St." current={user.address[0]} predicate={t => t.length >= 5} onChange={d => { address[0] = d; setAddress([...address]) }} />
           </div>
           <div>
-            <EditorValidateInput label="Address 2 (optional)" example="Apt D" current={user.address[1]} onChange={d => {address[1] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Address 2 (optional)" example="Apt D" current={user.address[1]} onChange={d => { address[1] = d; setAddress([...address]) }} />
           </div>
           <div>
-            <EditorValidateInput label="City and State" example="Oklahoma City, OK" current={user.address[2]} predicate={t => t.length >= 5} onChange={d => {address[2] = d; setAddress([...address])}} />
+            <EditorValidateInput label="City and State" example="Oklahoma City, OK" current={user.address[2]} predicate={t => t.length >= 5} onChange={d => { address[2] = d; setAddress([...address]) }} />
           </div>
           <div>
-            <EditorValidateInput label="Zip" example="73034" current={user.address[3]} predicate={t => zipRegex.test(t)} onChange={d => {address[3] = d; setAddress([...address])}} />
+            <EditorValidateInput label="Zip" example="73034" current={user.address[3]} predicate={t => zipRegex.test(t)} onChange={d => { address[3] = d; setAddress([...address]) }} />
           </div>
-         </div>
+        </div>
 
-         <div className="pt-4">
+        <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Start Date:</span>
           <div>
-            <EditorValidateInput label="Start Date MM/DD/YYYY" example="01/31/1999" current={user.startDate===undefined?undefined:`${user.startDate.getMonth()+1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setStartDate(d)} />
+            <EditorValidateInput label="Start Date MM/DD/YYYY" example="01/31/1999" current={user.startDate === undefined ? undefined : `${user.startDate.getMonth() + 1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setStartDate(d)} />
           </div>
         </div>
 
         <div className="pt-4">
           <span className="ml-2 pr-2 text-gray-700"><SvgUser className="float-left mx-2" />Birthday:</span>
           <div>
-            <EditorValidateInput label="Birth Date MM/DD/YYYY" example="01/31/1999" current={user.birthday===undefined?undefined:`${user.birthday.getMonth()+1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setBirthday(d)} />
+            <EditorValidateInput label="Birth Date MM/DD/YYYY" example="01/31/1999" current={user.birthday === undefined ? undefined : `${user.birthday.getMonth() + 1}/${user.startDate.getDate()}/${user.startDate.getFullYear()}`} predicate={validateDate} onChange={d => setBirthday(d)} />
           </div>
         </div>
 

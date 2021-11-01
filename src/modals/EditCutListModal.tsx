@@ -16,22 +16,22 @@ export const EditCutListModal = () => {
   )
 
   return (
-    <div className="flex flex-row h-full" style={{width:'900px', height:'400px'}}>
-      <div style={{width: '450px'}}>
+    <div className="flex flex-row h-full" style={{ width: '900px', height: '400px' }}>
+      <div style={{ width: '450px' }}>
         <div className="bg-gray-700 p-3 mb-3 rounded-tl-lg text-gray-200 font-semibold">HANGING</div>
         {animalsHanging !== DatabaseWait && animalsHanging.map(a => <HangingAnimalEntry key={a.id} animal={a} />)}
       </div>
-      <div className="flex flex-col" style={{width: '450px'}}>
+      <div className="flex flex-col" style={{ width: '450px' }}>
         <div className="bg-gray-700 p-3 mb-3 rounded-tr-lg text-gray-200 font-semibold">TO CUT</div>
         <div className="border-l border-gray-200 pl-3 flex-grow">
-        {animalsToCut !== DatabaseWait && animalsToCut.map(a => <CutAnimalEntry key={a.id} animal={a} />)}
+          {animalsToCut !== DatabaseWait && animalsToCut.map(a => <CutAnimalEntry key={a.id} animal={a} />)}
         </div>
       </div>
     </div>
   )
 }
 
-const HangingAnimalEntry = ({animal}: {animal: IAnimal}) => {
+const HangingAnimalEntry = ({ animal }: { animal: IAnimal }) => {
   const user = useUsers(User.findById(animal.bringer).select("name"), [animal.bringer], animal.bringer)
   const eatersValid = validateEaters(animal);
   const processAnimalToday = () => {
@@ -47,14 +47,14 @@ const HangingAnimalEntry = ({animal}: {animal: IAnimal}) => {
         <p className="bg-gray-300 rounded-md text-xs py-1 px-2 text-gray-700">#{animal.animalId}</p>
         <div className="ml-1 font-semibold rounded-md flex-grow">{user === DatabaseWait ? 'Loading...' : user.name}</div>
         <div className={(eatersValid ? "bg-green-300" : "bg-tomato-300") + " ml-1 font-semibold rounded-md px-1 text-white mr-2 transform translate-y-2"}>{eatersValid ? 'Eaters Confirmed' : 'Eaters Invalid'}</div>
-        <SvgArrow className="text-white group-hover:text-green-100 h-6 w-6 transform translate-y-2"/>
+        <SvgArrow className="text-white group-hover:text-green-100 h-6 w-6 transform translate-y-2" />
       </div>
       <div className="flex-grow text-xs text-gray-600 mt-0.5 font-semibold ml-2">{animal.animalType} Killed {animal.killDate.toDateString()}</div>
     </div>
   )
 }
 
-const CutAnimalEntry = ({animal}: {animal: IAnimal}) => {
+const CutAnimalEntry = ({ animal }: { animal: IAnimal }) => {
   const user = useUsers(User.findById(animal.bringer).select("name"), [animal.bringer], animal.bringer)
   const processAnimalToday = () => {
     animal.processDate = undefined
@@ -66,7 +66,7 @@ const CutAnimalEntry = ({animal}: {animal: IAnimal}) => {
         <div>{animal.animalType == AnimalType.Beef ? <SvgCow className="mb-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
         <p className="bg-gray-300 rounded-md text-xs py-1 px-2 text-gray-700">#{animal.animalId}</p>
         <div className="ml-1 font-semibold flex-grow">{user === DatabaseWait ? 'Loading...' : user.name}</div>
-        <SvgArrow className="text-white group-hover:text-tomato-300 h-6 w-6 transform translate-y-2 rotate-180"/>
+        <SvgArrow className="text-white group-hover:text-tomato-300 h-6 w-6 transform translate-y-2 rotate-180" />
       </div>
       <div className="flex-grow text-xs text-gray-600 mt-0.5 font-semibold ml-2">{animal.animalType} Killed {animal.killDate.toDateString()}</div>
     </div>

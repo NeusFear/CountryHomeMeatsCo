@@ -50,10 +50,10 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
   const runThenSave = <T,>(run: (arg: T) => void) => {
     return (arg: T) => {
       run(arg)
-      if(!entry.isNew) {
+      if (!entry.isNew) {
         entry.save()
       }
-      
+
     }
   }
 
@@ -61,7 +61,7 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
   const [endDate, setEndDate] = useState(entry.endDate)
 
   const swapIfNeededAndUpdate = () => {
-    if(entry.startDate.getTime() > entry.endDate.getTime()) {
+    if (entry.startDate.getTime() > entry.endDate.getTime()) {
       const temp = entry.startDate
       entry.startDate = entry.endDate
       entry.endDate = temp
@@ -75,7 +75,7 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
   }))
 
   const [selectedColour, setSelectedColour] = useState(entry.eventColor)
-  
+
   return (
     <div className="flex flex-col" style={{ width: '700px', height: '650px' }}>
       <div className="bg-gray-800 w-ful rounded-t-sm text-white p-2">
@@ -102,20 +102,20 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
             <DayPickerWrapper date={endDate} entry={entry} setDate={runThenSave(d => {
               entry.endDate = d
               swapIfNeededAndUpdate()
-            })}/>
+            })} />
           </div>
         </div>
         <div className="flex flex-row">
           <div className="pt-4">
             <span className="ml-2 pr-2 text-gray-700">Color:</span>
             <div className="flex flex-row ml-6">
-              { colours.map((colour, i) => <ColorOption key={i} color={colour} selected={selectedColour === colour} setSelected={() => {
+              {colours.map((colour, i) => <ColorOption key={i} color={colour} selected={selectedColour === colour} setSelected={() => {
                 entry.eventColor = colour
                 setSelectedColour(colour)
-                if(!entry.isNew) {
+                if (!entry.isNew) {
                   entry.save()
                 }
-              }}  />) }
+              }} />)}
             </div>
           </div>
           <div className="pt-4 flex flex-row ml-4 mt-6">
@@ -132,15 +132,15 @@ const CustomCalendarEntryModalWithEntry = forwardRef<ModalHandler, { entry: ICus
   )
 })
 
-const ColorOption = ({color, selected, setSelected}: {color: string, selected: boolean, setSelected: () => void}) => {
+const ColorOption = ({ color, selected, setSelected }: { color: string, selected: boolean, setSelected: () => void }) => {
   return <div
-    className={`w-8 h-8 rounded-md border hover:border-gray-800 mx-1 ${selected ? 'border-black' : 'border-white'}`} 
+    className={`w-8 h-8 rounded-md border hover:border-gray-800 mx-1 ${selected ? 'border-black' : 'border-white'}`}
     onClick={setSelected}
-    style={{backgroundColor: color}} 
+    style={{ backgroundColor: color }}
   />
 }
 
-const DayPickerWrapper = ({date, setDate, entry}: {date: Date, setDate: (date: Date) => void, entry: ICustomEvent}) => {
+const DayPickerWrapper = ({ date, setDate, entry }: { date: Date, setDate: (date: Date) => void, entry: ICustomEvent }) => {
   const [selectedMonth, setSelectedMonth] = useState(date)
 
   return (

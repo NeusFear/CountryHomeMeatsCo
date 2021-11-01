@@ -10,7 +10,7 @@ import { ipcRenderer } from "electron";
 const mongoose = require('mongoose')
 
 type ConnectState = { details: string, connected: boolean, address: string }
-export const useDatabaseConnection = (ip: string, port: number): ConnectState & { refresh: (ip: string, port: number) => void }  => {
+export const useDatabaseConnection = (ip: string, port: number): ConnectState & { refresh: (ip: string, port: number) => void } => {
   const [address, setAddress] = useState(`${ip}:${port}`)
 
   const defaultState = () => {
@@ -26,13 +26,13 @@ export const useDatabaseConnection = (ip: string, port: number): ConnectState & 
   useEffect(() => {
     setConnectState(defaultState)
     mongoose.connect(`mongodb://${address}/`, { useNewUrlParser: true, useUnifiedTopology: true })
-    
+
     const db = mongoose.connection;
     db.on('error', err => setConnectState({ details: `Error: ${err}`, connected: false, address }));
     db.on('disconnected', () => setConnectState({ details: `Connection Closed`, connected: false, address }));
     db.on('connecting', () => setConnectState({ details: `Trying to establish a connection...`, connected: false, address }));
     db.on('open', () => setConnectState({ details: `Connected`, connected: true, address }));
-    
+
     return () => {
       db.removeAllListeners();
 
@@ -43,7 +43,7 @@ export const useDatabaseConnection = (ip: string, port: number): ConnectState & 
 
   return {
     ...connectState,
-    refresh: async(ip, port) => {
+    refresh: async (ip, port) => {
       ipcRenderer.send("save-default-connection", [ip, port])
       setAddress(`${ip}:${port}`)
     }
@@ -74,11 +74,11 @@ export const createResultWatcher = <DocType extends Document,>(model: Model<DocT
     ...ids: (string | ObjectId | BsonObjectId)[]
   ) => {
     ids = ids.filter(id => {
-      if(id == null) {
+      if (id == null) {
         return false
       }
       const str = String(id)
-      if(str.length != 24 || str.match(/^[0-9a-f]{24}$/) == null) {
+      if (str.length != 24 || str.match(/^[0-9a-f]{24}$/) == null) {
         console.error(str + " is not a valid id. Removing...")
         return false
       }
@@ -90,7 +90,7 @@ export const createResultWatcher = <DocType extends Document,>(model: Model<DocT
     //   console.warn("Query had no projection. Please call select to select the fields you need.")
     // }
 
-    const [state, setState] = useState<DatabaseWaitType|T>(DatabaseWait)
+    const [state, setState] = useState<DatabaseWaitType | T>(DatabaseWait)
     useEffect(() => subscribeListener(evt => {
       const any: any = evt
       if (

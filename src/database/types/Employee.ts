@@ -51,8 +51,8 @@ const employeeSchema = new Schema({
 
 export const computeEmployeeDay = (events: { time: Date; state: number; }[]) => {
   let hours = 0;
-  for(let i = 0; i < events.length-1; i+=2) {
-    hours += events[i+1].time.getTime() - events[i].time.getTime()
+  for (let i = 0; i < events.length - 1; i += 2) {
+    hours += events[i + 1].time.getTime() - events[i].time.getTime()
   }
   return hours
 }

@@ -15,11 +15,13 @@ export interface IVendor extends Document {
 const vendorSchema = new Schema({
   company: { type: String, required: true },
   primaryContact: { type: String, required: true },
-  phoneNumbers: { type: [{ 
-    name: { type: String, required: true }, 
-    number: { type: String, required: true }
-  }], required: true },
-  emails: {type: [String], required: true },
+  phoneNumbers: {
+    type: [{
+      name: { type: String, required: true },
+      number: { type: String, required: true }
+    }], required: true
+  },
+  emails: { type: [String], required: true },
   notes: { type: String, default: '' }
 });
 

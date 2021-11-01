@@ -23,7 +23,7 @@ export const TodayPage = () => {
       <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
         <div className="text-white text-4xl font-bold ml-4">TODAY</div>
         <div className="text-gray-700 ml-1 text-3xl">
-          {(today.getMonth()+1).toString().padStart(2, '0')}
+          {(today.getMonth() + 1).toString().padStart(2, '0')}
           /
           {today.getDate().toString().padStart(2, '0')}
           /
@@ -49,11 +49,11 @@ const TodaysCutList = () => {
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
           <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2" onClick={() => animals !== DatabaseWait && doPrintAll(animals)}>
-            <SvgPrint className="mt-1 mr-1"/>
+            <SvgPrint className="mt-1 mr-1" />
             Print Cut List
           </div>
           <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2" onClick={() => setModal(hangingAnimals)}>
-            <SvgEdit className="mt-0.5 mr-1"/>
+            <SvgEdit className="mt-0.5 mr-1" />
             Edit Cut List
           </div>
         </div>
@@ -63,17 +63,17 @@ const TodaysCutList = () => {
   )
 }
 
-const SelectedCutList = ({animal}: {animal: IAnimal}) => {
+const SelectedCutList = ({ animal }: { animal: IAnimal }) => {
   const history = useHistory()
   const allUsers = useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
   const allFoundUsers = useUsers(User.where('_id').in(allUsers).select("name"))
 
   const mainUser = allFoundUsers === DatabaseWait ? DatabaseWait : allFoundUsers.find(u => u.id === animal.bringer.toHexString())
 
-  if(mainUser === DatabaseWait || allFoundUsers === DatabaseWait) {
+  if (mainUser === DatabaseWait || allFoundUsers === DatabaseWait) {
     return (<div>Loading...</div>)
   }
-  if(mainUser === null) {
+  if (mainUser === null) {
     return (<div>Problem loading user with ID {animal.bringer.toHexString()}</div>)
   }
 
@@ -90,16 +90,16 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <p className="font-semibold">Eaters:</p>
-        {animal.eaters.length > 0 ? animal.eaters.flatMap(e => [e, e.halfUser]).filter(e => e != null).map((eater, i) => 
+        {animal.eaters.length > 0 ? animal.eaters.flatMap(e => [e, e.halfUser]).filter(e => e != null).map((eater, i) =>
           <div className="flex flex-row" key={i} >
             <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{allFoundUsers.find(u => String(u.id) === eater.id.toHexString()).name}</p>
-            { eater.tag !== undefined && eater.tag !== "" && 
+            {eater.tag !== undefined && eater.tag !== "" &&
               <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{eater.tag}</p>
             }
-            { eater['cutInstruction'] !== undefined &&
+            {eater['cutInstruction'] !== undefined &&
               <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{eater['cutInstruction']}</p>
             }
-          </div> ) : <p className="font-semibold text-tomato-400">Error</p>}
+          </div>) : <p className="font-semibold text-tomato-400">Error</p>}
       </div>
     </div>
   )
@@ -107,9 +107,9 @@ const SelectedCutList = ({animal}: {animal: IAnimal}) => {
 
 const ScheduledSlaughterList = () => {
   const now = normalizeDay()
-  const scheduledToday = useAnimals(Animal.where('killDate', now).select("bringer eaters animalType confirmed animalId " + AnimalStateFields), [ getDayNumber(now) ])
+  const scheduledToday = useAnimals(Animal.where('killDate', now).select("bringer eaters animalType confirmed animalId " + AnimalStateFields), [getDayNumber(now)])
 
-  if(scheduledToday === DatabaseWait) {
+  if (scheduledToday === DatabaseWait) {
     return (<div>Loading...</div>)
   }
 
@@ -120,34 +120,34 @@ const ScheduledSlaughterList = () => {
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Scheduled Slaughters</div>
         </div>
         <div className="overflow-y-scroll h-full">
-          { scheduledToday.length > 0 ? scheduledToday.map((a, i) => <SlaughterInfo key={i} animal={a} />) : <p className="ml-4">No scheduled slaughters for today.</p> }
+          {scheduledToday.length > 0 ? scheduledToday.map((a, i) => <SlaughterInfo key={i} animal={a} />) : <p className="ml-4">No scheduled slaughters for today.</p>}
         </div>
       </div>
     </div>
   )
 }
 
-const SlaughterInfo = ({animal}: {animal: IAnimal}) => {
+const SlaughterInfo = ({ animal }: { animal: IAnimal }) => {
   const allIds = useMemo(() => {
-    if(animal.bringer === undefined || animal.eaters === undefined) {
+    if (animal.bringer === undefined || animal.eaters === undefined) {
       return []
     }
     const arr = [animal.bringer]
     animal.eaters.forEach(eater => arr.push(eater.id))
-    return arr.map(e => { return { _id: e }})
+    return arr.map(e => { return { _id: e } })
   }, [animal])
   const allUsers = useUsers(User.where('_id').in(allIds).select("name"), [allIds], ...allIds.map(i => i._id))
-  
+
   const user = allUsers === DatabaseWait ? DatabaseWait : allUsers.find(u => u.id === animal.bringer.toHexString())
 
   const history = useHistory();
 
   const state = useComputedAnimalState(animal);
 
-  if(user === DatabaseWait) {
+  if (user === DatabaseWait) {
     return (<div>Loading...</div>)
   }
-  
+
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="w-14 mr-1">
@@ -203,7 +203,7 @@ const instructionDiv = (part: string, value: string) => {
 }
 
 
-const doPrintAll = async(animals: IAnimal[]) => {
+const doPrintAll = async (animals: IAnimal[]) => {
   const data: PosPrintData[] = [{
     type: "text",
     value: `
@@ -223,29 +223,29 @@ const doPrintAll = async(animals: IAnimal[]) => {
 
   for (let i = 0; i < animals.length; i++) {
     const animal = animals[i];
-    if(animal.eaters.length === 0) {
+    if (animal.eaters.length === 0) {
       alert("Animals has no eaters.")
     }
     for (let j = 0; j < animal.eaters.length; j++) {
       const eater = animal.eaters[j]
 
       const user = await User.findById(eater.id)
-      if(!user) {
+      if (!user) {
         alert("Unable to find main user")
         continue
       }
 
       let subUser: IUser
-      if(eater.halfUser) {
+      if (eater.halfUser) {
         subUser = await User.findById(eater.halfUser.id)
-        if(!subUser) {
+        if (!subUser) {
           alert("Unable to find subUser")
           continue
         }
       }
 
       const cutInstruction = user.cutInstructions.find(c => c.id === eater.cutInstruction)
-      if(!cutInstruction) {
+      if (!cutInstruction) {
         alert("Unable to find cutInstruction with id " + eater.cutInstruction + " for user " + user.name + ". Page will be skipped.")
       } else {
         doPrint(data, animal, animal.eaters.length !== 1, cutInstruction.instructions, eater, user, subUser)
@@ -263,7 +263,7 @@ const doPrintAll = async(animals: IAnimal[]) => {
 
 }
 
-const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutInstruction: CutInstructions, eater: Eater, user: IUser, subUser?: IUser) => {
+const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cutInstruction: CutInstructions, eater: Eater, user: IUser, subUser?: IUser) => {
   const beef = cutInstruction as BeefCutInstructions
   const pork = cutInstruction as PorkCutInstructions
 
@@ -279,11 +279,11 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
     </div>
     `
   })
-  
+
   //The information about the bringer and the animal
   data.push({
     type: "text",
-    value:  `
+    value: `
     <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; ">
         ${elementDiv(user.name, "Bringer", true)}
         ${elementDiv(`<span style="font-size: large; font-weight: bold;">${half ? "Half" : "Whole"}</span>`, "Portion")}
@@ -301,7 +301,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
   //The information about the eaters
   data.push({
     type: "text",
-    value:  `
+    value: `
     <div style="display: flex; flex-direction: row; width: 100%; padding-bottom: 20px">
         <div style="width: 100%">
             Main Eater:
@@ -327,14 +327,14 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
       type: "text",
       value: `<div class="page-break"></div>`
     }
-  ] 
+  ]
 
 
-  if(animal.animalType === AnimalType.Beef) {
-      data.push(
-          {
-              type: "text",
-              value: `
+  if (animal.animalType === AnimalType.Beef) {
+    data.push(
+      {
+        type: "text",
+        value: `
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 100%">
                         ${instructionDiv("Round", `${beef.round.keepAmount} ${beef.round.tenderized} ${beef.round.size} ${beef.round.perPackage} ${beef.round.howToUseRest}`)}
@@ -351,7 +351,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                       ${instructionDiv("Ribs", beef.ribs)}
                       ${instructionDiv("Club", `${beef.club.bone} ${beef.club.size} ${beef.club.amount}`)}
                       ${instructionDiv("Brisket", beef.brisket)}
-                      ${instructionDiv("Soup Bones", beef.soupbones )}
+                      ${instructionDiv("Soup Bones", beef.soupbones)}
                       ${instructionDiv("Stew Meat", `${beef.stewmeat.amount} ${beef.stewmeat.size}`)}
                     </div>
                   </div>
@@ -365,25 +365,25 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                   </div>
                   ${instructionDiv("Notes", cutInstruction.notes)}
               `
-          }
-      )
-      data.push(...footer)
+      }
+    )
+    data.push(...footer)
   } else {
 
-      const getHalf = (n: number) => n + (n === 1 ? " Half" : " Halves")
+    const getHalf = (n: number) => n + (n === 1 ? " Half" : " Halves")
 
-      const generatePorkText = (fresh: boolean): PosPrintData => {
-          const mapper = <T,>(obj: {fresh: T, cured: T}) => fresh ? obj.fresh : obj.cured
+    const generatePorkText = (fresh: boolean): PosPrintData => {
+      const mapper = <T,>(obj: { fresh: T, cured: T }) => fresh ? obj.fresh : obj.cured
 
-          const hamIns = mapper(pork.ham)
-          const baconIns = mapper(pork.bacon)
-          const jowlIns = mapper(pork.jowl)
-          const loinIns = mapper(pork.loin)
-          const buttIns = mapper(pork.butt)
-          const picnicIns = mapper(pork.picnic)
-          return {
-              type: "text",
-              value: `
+      const hamIns = mapper(pork.ham)
+      const baconIns = mapper(pork.bacon)
+      const jowlIns = mapper(pork.jowl)
+      const loinIns = mapper(pork.loin)
+      const buttIns = mapper(pork.butt)
+      const picnicIns = mapper(pork.picnic)
+      return {
+        type: "text",
+        value: `
               <div>
                   <div style="font-size: x-large; font-weight: bold;">${fresh ? "Fresh" : "Cured"}</div>
                   <div>
@@ -394,8 +394,7 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                       ${instructionDiv("Butt", `${getHalf(buttIns.amount)} ${buttIns.type} ${buttIns.packageAmount}`)}
                       ${instructionDiv("Picnic", `${getHalf(picnicIns.amount)} ${picnicIns.type} ${picnicIns.packageAmount}`)}
                       <br>
-                      ${
-                          fresh ? `
+                      ${fresh ? `
                               ${instructionDiv("Ribs", pork.rib)}
                               ${instructionDiv("Head", pork.head)}
                               ${instructionDiv("Feet", pork.feet)}
@@ -404,22 +403,22 @@ const doPrint = async(data: PosPrintData[], animal: IAnimal, half: boolean, cutI
                           ` : `
                               ${instructionDiv("Sausage", pork.sausage)}
                           `
-                      }
+          }
                   </div>
                   ${instructionDiv("Notes", cutInstruction.notes)}
               </div>
           `
-          }
       }
+    }
 
-      const copiedHeader = Array.from(data)
+    const copiedHeader = Array.from(data)
 
-      data.push(generatePorkText(true))
-      data.push(...footer)
+    data.push(generatePorkText(true))
+    data.push(...footer)
 
-      data.push(...copiedHeader)
-      data.push(generatePorkText(false))
-      data.push(...footer)
+    data.push(...copiedHeader)
+    data.push(generatePorkText(false))
+    data.push(...footer)
 
   }
 }

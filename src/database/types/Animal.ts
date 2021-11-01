@@ -20,17 +20,17 @@ export type Eater = {
 export const ValidateEatersFields = "numEaters eaters"
 export const validateEaters = (animal: IAnimal): boolean => {
   const eaterValid = (obj: { id: ObjectId; tag: string; cutInstruction?: number }) => {
-    if(obj === undefined) {
+    if (obj === undefined) {
       return false
     }
-    const {id, cutInstruction} = obj
+    const { id, cutInstruction } = obj
     return (id ?? false) && (cutInstruction === undefined || cutInstruction >= 0)
   }
   const eaters = animal.numEaters;
-  if(eaters < 1 || eaters > 4) {
+  if (eaters < 1 || eaters > 4) {
     return false
   }
-  switch(eaters) {
+  switch (eaters) {
     case 1: return animal.eaters.length === 1 && eaterValid(animal.eaters[0]) && !animal.eaters[0].halfUser
     case 2: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && !animal.eaters[0].halfUser && eaterValid(animal.eaters[1]) && !animal.eaters[1].halfUser
     case 3: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && eaterValid(animal.eaters[0].halfUser) && eaterValid(animal.eaters[1]) && !animal.eaters[1].halfUser
@@ -161,7 +161,7 @@ export const useAnimalStateText = (state: number) => useMemo(() => {
 
 export const useComputedAnimalState = (animalWithWait: IAnimal | undefined | DatabaseWaitType) => {
   let animal: IAnimal | undefined
-  if(animalWithWait === DatabaseWait) {
+  if (animalWithWait === DatabaseWait) {
     animal = undefined
   } else {
     animal = animalWithWait

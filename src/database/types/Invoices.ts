@@ -8,13 +8,13 @@ import { CutInstructions, CutInstructionsSchema, IUser } from './User';
 import { PriceData, PriceDataNumbers, PriceDataSchema } from './Configs';
 
 export const BeefPricesList: (keyof IInvoice['beefprices'])[] = [
-    "slaughter", "processing", "halving", "quatering", "tenderized", "patties", 
+    "slaughter", "processing", "halving", "quatering", "tenderized", "patties",
     "cutstewmeat", "extraboning", "cubedsteaks", "boneoutprimerib", "boneoutloin",
 ]
 
-export const PorkPricesList: (keyof IInvoice['porkprices'])[] = [ "slaughter", "processing", "cured", "sausage", ]
+export const PorkPricesList: (keyof IInvoice['porkprices'])[] = ["slaughter", "processing", "cured", "sausage",]
 
-export const AllCuredPorkDataPieces = [ "curedham", "curedbacon", "curedjowl", "curedloin", "curedbutt", "curedpicnic", ] as const
+export const AllCuredPorkDataPieces = ["curedham", "curedbacon", "curedjowl", "curedloin", "curedbutt", "curedpicnic",] as const
 
 export type PaymentType = {
     type: "check" | "card" | "cash";
@@ -33,7 +33,7 @@ export interface IInvoice extends Document {
     numQuaters: number,
 
     takeHomeWeight: number,
-    
+
     beefdata?: {
         makeCubedSteaks: boolean
         hasTenderized: boolean
@@ -97,58 +97,70 @@ const invoiceSchema = new Schema({
 
     takeHomeWeight: { type: Number },
 
-    beefdata: { type: {
-        makeCubedSteaks: { type: Boolean, required: true },
-        hasTenderized: { type: Boolean, required: true },
-        tenderizedAmount: { type: Number },
-        stewmeat: { type: Number },
-        patties: { type: Number },
-        boneoutprimerib: { type: Boolean, required: true },
-        boneoutloin: { type: Boolean, required: true },
-    }},
-    beefprices: { type: {
-        slaughter: { type: Number },
-        processing: { type: Number },
-        halving: { type: Number },
-        quatering: { type: Number },
-        tenderized: { type: Number },
-        patties: { type: Number },
-        cutstewmeat: { type: Number },
-        cubedsteaks: { type: Number },
-        boneoutprimerib: { type: Number },
-        boneoutloin: { type: Number },
-    }},
+    beefdata: {
+        type: {
+            makeCubedSteaks: { type: Boolean, required: true },
+            hasTenderized: { type: Boolean, required: true },
+            tenderizedAmount: { type: Number },
+            stewmeat: { type: Number },
+            patties: { type: Number },
+            boneoutprimerib: { type: Boolean, required: true },
+            boneoutloin: { type: Boolean, required: true },
+        }
+    },
+    beefprices: {
+        type: {
+            slaughter: { type: Number },
+            processing: { type: Number },
+            halving: { type: Number },
+            quatering: { type: Number },
+            tenderized: { type: Number },
+            patties: { type: Number },
+            cutstewmeat: { type: Number },
+            cubedsteaks: { type: Number },
+            boneoutprimerib: { type: Number },
+            boneoutloin: { type: Number },
+        }
+    },
 
-    porkdata: { type: {
-        over350lbs: { type: Boolean, required: true },
-        totalcured: { type: Number, required: true },
-        sausage: { type: Number },
-        curedham: { type: Number },
-        curedbacon: { type: Number },
-        curedjowl: { type: Number },
-        curedloin: { type: Number },
-        curedbutt: { type: Number },
-        curedpicnic: { type: Number },
-    }},
-    porkprices: { type: {
-        slaughter: { type: Number },
-        processing: { type: Number },
-        cured: { type: Number },
-        sausage: { type: Number }
-    }},
+    porkdata: {
+        type: {
+            over350lbs: { type: Boolean, required: true },
+            totalcured: { type: Number, required: true },
+            sausage: { type: Number },
+            curedham: { type: Number },
+            curedbacon: { type: Number },
+            curedjowl: { type: Number },
+            curedloin: { type: Number },
+            curedbutt: { type: Number },
+            curedpicnic: { type: Number },
+        }
+    },
+    porkprices: {
+        type: {
+            slaughter: { type: Number },
+            processing: { type: Number },
+            cured: { type: Number },
+            sausage: { type: Number }
+        }
+    },
 
-    customcharges: { type: [{ 
-        name: { type: String },
-        amount: { type: Number }
-     }]},
+    customcharges: {
+        type: [{
+            name: { type: String },
+            amount: { type: Number }
+        }]
+    },
 
-     dateTimePaid: { type: Schema.Types.Date },
-     markedAsPaid: { type: Boolean },
-     paymentTypes: { type: [{ 
-        type: { type: String, enum: ["check", "card", "cash"] },
-        amount: { type: Number },
-        additionalData: { type: String },
-     }]},
+    dateTimePaid: { type: Schema.Types.Date },
+    markedAsPaid: { type: Boolean },
+    paymentTypes: {
+        type: [{
+            type: { type: String, enum: ["check", "card", "cash"] },
+            amount: { type: Number },
+            additionalData: { type: String },
+        }]
+    },
 });
 
 const Invoice = mongoose.model<IInvoice>(invoiceDatabaseName, invoiceSchema)
@@ -156,7 +168,7 @@ const Invoice = mongoose.model<IInvoice>(invoiceDatabaseName, invoiceSchema)
 export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDataNumbers, cutInstructionUser: IUser, cutInstructionId: number, cutInstruction: CutInstructions, id: number, numQuaters) => {
     const numWhole = numQuaters / 4
     const numHalves = numQuaters / 2
-    
+
     const invoice = new Invoice({
         invoiceId: id,
         user: new ObjectId(user.id),
@@ -168,14 +180,14 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
         numQuaters: numQuaters,
 
         customcharges: [],
-        
+
         markedAsPaid: false,
         paymentTypes: [],
     })
 
-    
 
-    if(cutInstruction.cutType === AnimalType.Beef) {
+
+    if (cutInstruction.cutType === AnimalType.Beef) {
         invoice.beefdata = {
             makeCubedSteaks: cutInstruction.round.size.toLowerCase() == "chicken fry" || cutInstruction.sirlointip.size.toLowerCase() == "chicken fry" || cutInstruction.flank.toLowerCase() == "chicken fry",
             hasTenderized: false,
@@ -186,13 +198,13 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
 
         invoice.beefprices.processing = Math.max(animal.dressWeight * priceData.beef.processing, 200) * numWhole
         invoice.beefprices.slaughter = priceData.beef.slaughter * numWhole
-        if(invoice.numQuaters !== 4) {
+        if (invoice.numQuaters !== 4) {
             invoice.beefprices.halving = priceData.beef.halves * numHalves
         }
-        if(numQuaters === 1) {
+        if (numQuaters === 1) {
             invoice.beefprices.quatering = numQuaters * priceData.beef.halvesToQuaters
         }
-        if(cutInstruction.round.tenderized.toLowerCase() == "tenderized") {
+        if (cutInstruction.round.tenderized.toLowerCase() == "tenderized") {
             runIfGroup(
                 cutInstruction.round.keepAmount, /(\d+.?\d+?)%/,
                 amount => {
@@ -203,14 +215,14 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
                 }
             )
         }
-        if(invoice.beefdata.makeCubedSteaks) {
+        if (invoice.beefdata.makeCubedSteaks) {
             invoice.beefprices.cubedsteaks = numHalves * priceData.beef.makeCubedSteaks
         }
 
-        if(invoice.beefdata.boneoutprimerib) {
+        if (invoice.beefdata.boneoutprimerib) {
             invoice.beefprices.boneoutprimerib = priceData.beef.boneOutPrimeRib * numHalves
         }
-        if(invoice.beefdata.boneoutloin) {
+        if (invoice.beefdata.boneoutloin) {
             invoice.beefprices.boneoutloin = priceData.beef.boneOutLoin * numHalves
         }
     } else {
@@ -236,7 +248,7 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
 
 const runIfGroup = (val: string, regex: RegExp, onPresent: (val: string) => void) => {
     const res = val.match(regex)
-    if(res === null) {
+    if (res === null) {
         return null
     }
     onPresent(res[1])

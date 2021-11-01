@@ -46,7 +46,7 @@ export const AnimalDetailsPage = () => {
 
   const history = useHistory()
 
-  if(priceData === DatabaseWait) {
+  if (priceData === DatabaseWait) {
     return <div>Loading Price Data</div>
   }
 
@@ -57,13 +57,13 @@ export const AnimalDetailsPage = () => {
     return (<div>Error finding Info for animal id {String(id)}</div>)
   }
 
-  if(user === DatabaseWait) {
+  if (user === DatabaseWait) {
     return <p>Loading user...</p>
   }
-  if(users === DatabaseWait || databaseLength == DatabaseWait) {
+  if (users === DatabaseWait || databaseLength == DatabaseWait) {
     return <p>Loading users...</p>
   }
-  if(user === null) {
+  if (user === null) {
     return <p>Error loading user.</p>
   }
 
@@ -125,10 +125,10 @@ export const AnimalDetailsPage = () => {
                   animal.save()
                 }} />
               </div>
-              { animal && !animal.confirmed &&
+              {animal && !animal.confirmed &&
                 <div className="font-semibold mx-2 absolute right-0">
                   <button className="mt-1 rounded-md mr-2 bg-tomato-500 p-5" onClick={e => {
-                    if(confirm("Are you sure you to delete? This cannot be undone.")) {
+                    if (confirm("Are you sure you to delete? This cannot be undone.")) {
                       animal.delete()
                       const toDelete = animal.invoices.map(i => i.toHexString())
                       Invoice.deleteMany().where("_id").in(toDelete).exec()
@@ -155,7 +155,7 @@ export const AnimalDetailsPage = () => {
               </div>
               <div className="font-semibold flex flex-col p-1">
                 <span>Color</span>
-                <SelectInputType 
+                <SelectInputType
                   className="border-gray-700 border rounded-md px-2"
                   values={animal.animalType === AnimalType.Beef ? ["black", "red", "white", "white face", "holstien", "jersey"] : ["black", "white", "red", "spot", "hamp"]}
                   onChange={val => {
@@ -219,7 +219,7 @@ export const AnimalDetailsPage = () => {
                   setAnimalArriveDateAndSave()
                 }} />
               </div>
-              { animal.animalType === AnimalType.Beef &&
+              {animal.animalType === AnimalType.Beef &&
                 <div className="font-semibold flex flex-row p-1">
                   <span>Older than 30 Months</span>
                   <input className="mt-1 h-8 w-8 rounded-md mr-2" type="checkbox" checked={animal.older30Months} onChange={e => {
@@ -250,8 +250,8 @@ export const AnimalDetailsPage = () => {
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Related Invoices</div>
-              { <button className="bg-blue-200 rounded" disabled={currentState < 4} onClick={() => {
-                if(animal.invoices.length === 0 || confirm("This will remove all current invoices.")) {
+              {<button className="bg-blue-200 rounded" disabled={currentState < 4} onClick={() => {
+                if (animal.invoices.length === 0 || confirm("This will remove all current invoices.")) {
                   const toRemove = animal.invoices.map(i => String(i))
                   animal.invoices = []
                   const toSave = new Set<IUser>()
@@ -263,13 +263,13 @@ export const AnimalDetailsPage = () => {
                   eaters.forEach(eaterCompound => {
                     const quaters = eaterCompound.halfUser ? 1 : compoundQuaters;
                     [eaterCompound, eaterCompound.halfUser].forEach(eater => {
-                      if(eater === undefined) {
+                      if (eater === undefined) {
                         return
                       }
                       eater.foundUser.invoices = eater.foundUser.invoices.filter(i => !toRemove.includes(String(i)))
                       generateInvoice(
-                        animal, eater.foundUser, priceData.currentPrices, 
-                        eaterCompound.foundUser, eaterCompound.cutInstruction, eaterCompound.foundCutInstruction, 
+                        animal, eater.foundUser, priceData.currentPrices,
+                        eaterCompound.foundUser, eaterCompound.cutInstruction, eaterCompound.foundCutInstruction,
                         databaseLength + ++generated, quaters
                       )
                       toSave.add(eater.foundUser)
@@ -280,10 +280,10 @@ export const AnimalDetailsPage = () => {
                   animal.invoiceGeneratedDate = normalizeDay()
                   animal.save()
                 }
-              }}>Generate</button> }
+              }}>Generate</button>}
             </div>
             <div className="py-4">
-              <InvoiceList animal={animal}/>
+              <InvoiceList animal={animal} />
             </div>
           </div>
         </div>
@@ -292,13 +292,13 @@ export const AnimalDetailsPage = () => {
   )
 }
 
-const InvoiceList = ({animal}: {animal: IAnimal}) => {
+const InvoiceList = ({ animal }: { animal: IAnimal }) => {
   const invoices = useInvoice(Invoice.where("_id").in(animal.invoices.map(i => i.toHexString())), [animal.invoices, String(animal.invoices)], ...animal.invoices)
-  if(invoices === DatabaseWait) {
+  if (invoices === DatabaseWait) {
     return <p>Loading...</p>
   }
-  return (<> 
-    { invoices.map(i => <InvoiceListItem key={i.id} invoice={i} />) }  
+  return (<>
+    {invoices.map(i => <InvoiceListItem key={i.id} invoice={i} />)}
   </>)
 }
 
@@ -325,9 +325,9 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
             }
           }
         })
-  
+
     animal.save()
-  
+
 
     eaters.forEach(eat => {
       eat.foundCutInstruction = eat.foundUser?.cutInstructions?.find(c => c.id === eat.cutInstruction)?.instructions
@@ -337,14 +337,14 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
     const eaters: DummyEater[] = []
     eaters.length = numEaters === 2 ? 2 : Math.round(numEaters / 2)
     for (let i = 0; i < eaters.length; i++) {
-        if (eaters[i] === undefined) {
-            eaters[i] = { _rand: Math.random() }
-        }
-        if (i * 2 !== numEaters - 1 && numEaters !== 2) {
-            eaters[i].halfUser = {}
-        } else {
-            eaters[i].halfUser = undefined
-        }
+      if (eaters[i] === undefined) {
+        eaters[i] = { _rand: Math.random() }
+      }
+      if (i * 2 !== numEaters - 1 && numEaters !== 2) {
+        eaters[i].halfUser = {}
+      } else {
+        eaters[i].halfUser = undefined
+      }
     }
 
     animal.eaters.forEach((e, i) => {
@@ -393,7 +393,7 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
           <p className="w-36 ml-2">Record Name</p>
         </div>
         {eaters && eaters.map((eater, i) =>
-          <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState} animalType={animal.animalType}/>
+          <EaterPart save={saveDummyEaters} key={eater._rand} eater={eater} allUsers={allUsers} currentState={currentState} animalType={animal.animalType} />
         )}
       </div>
     </div>
@@ -412,18 +412,18 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
     <div>
       <div className="flex flex-row">
         <EaterSelectPart save={save} part={eater} allUsers={allUsers} currentState={currentState} user={user} setUser={u => {
-          if(!u) {
+          if (!u) {
             eater.cutInstruction = undefined
             eater.foundCutInstruction = undefined
             eater.foundUser = undefined
           }
           setUser(u)
         }} />
-        <select 
-        key={user?.id?? "null"}
-        className="w-60 border-gray-700 border rounded-md ml-2 px-1" 
-        disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"} 
-        onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
+        <select
+          key={user?.id ?? "null"}
+          className="w-60 border-gray-700 border rounded-md ml-2 px-1"
+          disabled={eater.foundUser === undefined || currentState < 3} defaultValue={eater.cutInstruction ?? "__default"}
+          onChange={e => { eater.cutInstruction = parseInt(e.target.value); save() }}>
           <option hidden disabled value="__default"></option>
           {eater.foundUser &&
             eater.foundUser.cutInstructions.slice()
@@ -433,7 +433,7 @@ const EaterPart = ({ save, eater, allUsers, currentState, animalType }: { save: 
           }
         </select>
       </div>
-      { eater.halfUser !== undefined &&
+      {eater.halfUser !== undefined &&
         <div className="flex flex-row pb-2">
           <EaterSelectPart save={save} part={eater.halfUser} allUsers={allUsers} currentState={currentState} user={halfUser} setUser={setHalfUser} />
         </div>
@@ -463,7 +463,7 @@ const EaterSelectPart = ({ save, part, allUsers, currentState, user, setUser }: 
         mappingFunc={(user: IUser) => user.name}
         save={save}
         onChange={u => {
-          if(!u) {
+          if (!u) {
             part.tag = ""
           }
           setUser(u)

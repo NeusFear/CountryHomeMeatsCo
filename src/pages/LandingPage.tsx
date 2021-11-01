@@ -51,7 +51,7 @@ export const LandingPage = () => {
 
 const NotesEdit = () => {
   const notes = useConfig("GlobalNotes")
-  if(notes === DatabaseWait) {
+  if (notes === DatabaseWait) {
     return <span>Loading...</span>
   }
   return (
@@ -79,13 +79,13 @@ const UpcomingEvents = () => {
     setDates([...dates])
   }
 
-  if(customEvents === DatabaseWait || scheduledAnimals === DatabaseWait) {
+  if (customEvents === DatabaseWait || scheduledAnimals === DatabaseWait) {
     return <div>Loading....</div>
   }
 
   return (
     <div ref={scrollParent} className="overflow-y-scroll h-full">
-        <InfiniteScroll
+      <InfiniteScroll
         className="h-full"
         hasMore={true}
         loader={<div className="loader" key={-1}>Loading ...</div>}
@@ -93,7 +93,7 @@ const UpcomingEvents = () => {
         useWindow={false}
         getScrollParent={() => scrollParent.current}
       >
-        {dates.map((d, i) => 
+        {dates.map((d, i) =>
           <UpcomingDay key={i} date={d} customEvents={customEvents} scheduledAnimals={scheduledAnimals} />
         )}
       </InfiniteScroll>
@@ -104,12 +104,12 @@ const UpcomingEvents = () => {
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, customEvents: ICustomEvent[], scheduledAnimals: IAnimal[]}) => {
+const UpcomingDay = ({ date, customEvents, scheduledAnimals }: { date: Date, customEvents: ICustomEvent[], scheduledAnimals: IAnimal[] }) => {
   const isWeekend = date.getDay() === 0 || date.getDay() === 6
   const [daysAway, thisYear] = useMemo(() => {
     const now = normalizeDay()
     const time = date.getTime() - now.getTime()
-    return [ time / (1000*60*60*24), date.getFullYear() === now.getFullYear() ] as const
+    return [time / (1000 * 60 * 60 * 24), date.getFullYear() === now.getFullYear()] as const
   }, [])
 
   const events = useMemo(() => customEvents.filter(e => date.getTime() >= e.startDate.getTime() && date.getTime() <= e.endDate.getTime()), [date.getTime(), customEvents])
@@ -118,7 +118,7 @@ const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, custom
     let pork = 0
     let beef = 0
     animals.forEach(a => {
-      if(a.animalType === AnimalType.Beef) {
+      if (a.animalType === AnimalType.Beef) {
         beef++
       } else {
         pork++
@@ -127,12 +127,12 @@ const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, custom
     return { pork, beef }
   }, [date.getTime(), scheduledAnimals])
   const holidays = useCalandarDates(date)
-  
+
   let dayLabel: string
 
-  if(daysAway === 0) {
+  if (daysAway === 0) {
     dayLabel = "Today"
-  } else if(daysAway === 1) {
+  } else if (daysAway === 1) {
     dayLabel = "Tommorow"
   } else {
     dayLabel = daysOfWeek[date.getDay()] + " " + String(date.getDate()).padStart(2, "0") + " " + monthsOfYear[date.getMonth()] + (thisYear ? "" : (" " + date.getFullYear()))
@@ -142,22 +142,22 @@ const UpcomingDay = ({date, customEvents, scheduledAnimals}: {date: Date, custom
       <div className="bg-gray-300 px-6 mb-1 group w-full">
         <div className="w-full text-sm">{dayLabel}</div>
       </div>
-      { !isWeekend && animals.beef > 0 &&
+      {!isWeekend && animals.beef > 0 &&
         <>
           <EventItem eventName={`${animals.beef} Beef Scheduled`} eventType="bg-tomato-400 group-hover:bg-tomato-300" />
         </>
       }
-      { !isWeekend && animals.pork > 0 &&
+      {!isWeekend && animals.pork > 0 &&
         <>
           <EventItem eventName={`${animals.pork} Pork Scheduled`} eventType="bg-blue-300 group-hover:bg-blue-200" />
         </>
       }
-  
-      { events.map((e, i) => <EventItem key={i} eventName={e.eventName} eventStyle={{backgroundColor: e.eventColor}} />) }
-      { holidays.map((e, i) => <EventItem key={i} eventName={e.name} eventType="bg-green-300 group-hover:bg-green-200" />) }
+
+      {events.map((e, i) => <EventItem key={i} eventName={e.eventName} eventStyle={{ backgroundColor: e.eventColor }} />)}
+      {holidays.map((e, i) => <EventItem key={i} eventName={e.name} eventType="bg-green-300 group-hover:bg-green-200" />)}
 
       {/* Maybe just move this to a minimum height ?? */}
-      { ((isWeekend && events.length === 0 && holidays.length === 0 ) || (animals.beef <= 0 && animals.pork <= 0 && events.length === 0 && holidays.length === 0)) && <div className="h-5 rounded-sm group mt-3 mb-2 text-xs pl-8">Empty</div>}
+      {((isWeekend && events.length === 0 && holidays.length === 0) || (animals.beef <= 0 && animals.pork <= 0 && events.length === 0 && holidays.length === 0)) && <div className="h-5 rounded-sm group mt-3 mb-2 text-xs pl-8">Empty</div>}
     </div>
   )
 }

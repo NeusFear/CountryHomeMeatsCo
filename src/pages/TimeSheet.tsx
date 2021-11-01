@@ -133,7 +133,7 @@ const EmployeeEntry = ({ employee }: { employee: IEmployee }) => {
         colour="tomato"
         text="Clock Out"
       />
-      <div className="cursor-pointer hover:text-tomato-400 text-gray-600 " onClick={() => setModal(editEmployeeDetails, String(employee.id))}><SvgEdit/></div>
+      <div className="cursor-pointer hover:text-tomato-400 text-gray-600 " onClick={() => setModal(editEmployeeDetails, String(employee.id))}><SvgEdit /></div>
     </div>
   )
 }

@@ -16,11 +16,11 @@ import { GenericPrintModal } from './GenericPrintModal';
 
 Modal.setAppElement("#root")
 const customStyles = {
-  content : { top : '50%', left : '50%', right : 'auto', bottom : 'auto', marginRight : '-50%', transform : 'translate(-50%, -50%)', padding : '0px', border : 'none' },
-  overlay: { backgroundColor : 'rgba(33, 33, 33, 0.75)', zIndex: 999 }
+  content: { top: '50%', left: '50%', right: 'auto', bottom: 'auto', marginRight: '-50%', transform: 'translate(-50%, -50%)', padding: '0px', border: 'none' },
+  overlay: { backgroundColor: 'rgba(33, 33, 33, 0.75)', zIndex: 999 }
 }
 
-export let setModal: (type: string, state?: any) => void = () => {}
+export let setModal: (type: string, state?: any) => void = () => { }
 
 export const editUserDetails = "edit-user-details"
 export const editVendorDetails = "edit-vendor-details"
@@ -34,7 +34,7 @@ export const customDay = "custom-day"
 export const printTimeSheet = "print-time-sheet"
 export const printGenericSheet = "print-generic-sheet"
 
-const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>) => JSX.Element} = {
+const modals: { [name: string]: (state: any, ref: MutableRefObject<ModalHandler>) => JSX.Element } = {
   [editUserDetails]: (state, ref) => <EditUserDetailsModal ref={ref} objectId={state} />,
   [editVendorDetails]: (state, ref) => <EditVendorDetailsModal ref={ref} objectId={state} />,
   [scheduleAnimal]: (state, ref) => <SchueduleAnimalModal ref={ref} userID={state} />,
@@ -43,25 +43,25 @@ const modals: {[name: string]: (state: any, ref: MutableRefObject<ModalHandler>)
   [editEmployeeDetails]: (state, ref) => <EditEmployeeDetailsModal ref={ref} objectId={state} />,
   [calendarDayEntry]: (state) => <CalendarDayModal state={state} />,
   [vendorNotes]: (state, ref) => <VendorNotesModal ref={ref} value={state.value} setValue={state.setValue} />,
-  [customDay]: (state, ref) => <CustomCalendarEntryModal ref={ref} objectId={state.objectId} date={state.date}  />,
+  [customDay]: (state, ref) => <CustomCalendarEntryModal ref={ref} objectId={state.objectId} date={state.date} />,
   [printTimeSheet]: () => <PrintTimeSheetModal />,
   [printGenericSheet]: (state) => <GenericPrintModal {...state} />
 }
 
 
 export const ModalManager = () => {
-  const [activeModal, setActiveModal] = useState<{type: string, state: any}>(null)
+  const [activeModal, setActiveModal] = useState<{ type: string, state: any }>(null)
   useEffect(() => {
-    setModal = (type, state) => setActiveModal(type === null ? null : {type, state })
+    setModal = (type, state) => setActiveModal(type === null ? null : { type, state })
     return () => {
-      setModal = () => {}
+      setModal = () => { }
     }
   })
   const childRef = useRef<ModalHandler>(null)
 
   const close = () => {
     setActiveModal(null)
-    if(childRef.current !== null) {
+    if (childRef.current !== null) {
       childRef.current.onClose()
     }
   }
@@ -69,7 +69,7 @@ export const ModalManager = () => {
   const history = useHistory()
   useEffect(() => history.listen(close))
 
-  if(activeModal === null || childRef === undefined) {
+  if (activeModal === null || childRef === undefined) {
     return (<></>)
   }
 
@@ -80,8 +80,8 @@ export const ModalManager = () => {
       style={customStyles}
       contentLabel="Example Modal"
     >
-    <ReactTooltip delayShow={200} multiline /> 
-    { modals[activeModal.type](activeModal.state, childRef) }
+      <ReactTooltip delayShow={200} multiline />
+      {modals[activeModal.type](activeModal.state, childRef)}
     </Modal>
   )
 }

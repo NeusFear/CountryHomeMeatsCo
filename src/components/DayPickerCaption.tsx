@@ -23,14 +23,14 @@ export const DayPickerCaption = ({ date, locale, onChange }: {
 
   return (
     <form className="DayPicker-Caption">
-      <select name="month" onChange={handleChange} value={date.getMonth()} style={{border:"black 1px solid"}}>
+      <select name="month" onChange={handleChange} value={date.getMonth()} style={{ border: "black 1px solid" }}>
         {months.map((month, i) => (
           <option key={month} value={i}>
             {month}
           </option>
         ))}
       </select>
-      <select name="year" onChange={handleChange} value={date.getFullYear()} style={{border:"black 1px solid"}}>
+      <select name="year" onChange={handleChange} value={date.getFullYear()} style={{ border: "black 1px solid" }}>
         {years.map(year => (
           <option key={year} value={year}>
             {year}

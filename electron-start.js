@@ -13,13 +13,13 @@ const { PosPrinter } = require("electron-pos-printer");
 let mainWindow;
 function createWindow() {
   mainWindow = new BrowserWindow({
-      width: 900,
-      height: 600,
-      titleBarStyle: "hiddenInset",
-      webPreferences: {
-        nodeIntegration: true
-      }
-    });
+    width: 900,
+    height: 600,
+    titleBarStyle: "hiddenInset",
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
   mainWindow.loadURL(
     isDev
       ? "http://localhost:1234"
@@ -43,7 +43,7 @@ const pinnedUserPath = app.getPath("userData") + "/" + "CountryHomeMeatsPinnedUs
 const connectionPath = app.getPath("userData") + "/" + "CountryHomeMeatsConnection.txt"
 
 ipcMain.on("get-pinned-users", (evnt) => {
-  if(fs.existsSync(pinnedUserPath)) {
+  if (fs.existsSync(pinnedUserPath)) {
     evnt.returnValue = fs.readFileSync(pinnedUserPath).toString().split("\n")
   } else {
     evnt.returnValue = []
@@ -54,9 +54,9 @@ ipcMain.on("save-pinned-users", (_, list) => {
 })
 
 ipcMain.on("get-default-connection", (evnt) => {
-  if(fs.existsSync(connectionPath)) {
+  if (fs.existsSync(connectionPath)) {
     const lines = fs.readFileSync(connectionPath).toString().split("\n")
-    const num =  parseInt(lines[1])
+    const num = parseInt(lines[1])
     evnt.returnValue = [lines[0], isNaN(num) ? 0 : num]
   } else {
     evnt.returnValue = ["localhost", 27017]
@@ -72,8 +72,8 @@ ipcMain.on("get-printers", (evnt) => {
 })
 ipcMain.on("do-print", (_, args) => {
   PosPrinter.print(args[0], args[1])
-  .then(() => {})
-  .catch(e => console.error(e))
+    .then(() => { })
+    .catch(e => console.error(e))
 })
 
 function handleSquirrelEvent() {
@@ -89,17 +89,17 @@ function handleSquirrelEvent() {
   const updateDotExe = path.resolve(path.join(rootAtomFolder, 'Update.exe'));
   const exeName = path.basename(process.execPath);
 
-  const spawn = function(command, args) {
+  const spawn = function (command, args) {
     let spawnedProcess, error;
 
     try {
-      spawnedProcess = ChildProcess.spawn(command, args, {detached: true});
-    } catch (error) {}
+      spawnedProcess = ChildProcess.spawn(command, args, { detached: true });
+    } catch (error) { }
 
     return spawnedProcess;
   };
 
-  const spawnUpdate = function(args) {
+  const spawnUpdate = function (args) {
     return spawn(updateDotExe, args);
   };
 

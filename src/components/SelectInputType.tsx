@@ -2,10 +2,10 @@ import React, { useMemo } from "react"
 import { useState } from "react";
 import Autosuggest from 'react-autosuggest';
 
-export const SelectInputType = ({initial, onChange, values, width, defaultValue, disabled = false, className, removeEmpty}: {
+export const SelectInputType = ({ initial, onChange, values, width, defaultValue, disabled = false, className, removeEmpty }: {
   initial: string,
   onChange: (value: string) => void,
-  values: string[], 
+  values: string[],
   width?: number,
   defaultValue?: string,
   disabled?: boolean,
@@ -13,23 +13,23 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue,
   removeEmpty?: boolean
 }) => {
   const insertedValues = values.slice()
-  if(!removeEmpty) {
+  if (!removeEmpty) {
     insertedValues.unshift("")
   }
   const computedInitial = useMemo(() => {
-    if(defaultValue !== undefined) {
+    if (defaultValue !== undefined) {
       onChange(defaultValue)
       return defaultValue
     }
-    if(initial === undefined) {
+    if (initial === undefined) {
       onChange(values[0])
       return values[0]
     }
     return initial
   }, [initial])
 
-  const [ value, setValue ] = useState(computedInitial)
-  
+  const [value, setValue] = useState(computedInitial)
+
   const onValueChanged = (_, { newValue }: { newValue: string }) => {
     setValue(newValue)
     onChange(newValue)
@@ -41,15 +41,15 @@ export const SelectInputType = ({initial, onChange, values, width, defaultValue,
     return insertedValues
   }
 
-  const [ suggestions, setSuggestions ] = useState(findSuggestions(value))
+  const [suggestions, setSuggestions] = useState(findSuggestions(value))
 
   const widthInPx = width
 
   return (
-    <div style={width === undefined ? null : {width: `${widthInPx}px`}}>
-      <Autosuggest 
+    <div style={width === undefined ? null : { width: `${widthInPx}px` }}>
+      <Autosuggest
         suggestions={disabled ? [] : suggestions}
-        onSuggestionsFetchRequested={({value}: {value: string}) => setSuggestions(findSuggestions(value))}        
+        onSuggestionsFetchRequested={({ value }: { value: string }) => setSuggestions(findSuggestions(value))}
         onSuggestionsClearRequested={() => setSuggestions(insertedValues)}
         shouldRenderSuggestions={() => true}
         getSuggestionValue={t => t}

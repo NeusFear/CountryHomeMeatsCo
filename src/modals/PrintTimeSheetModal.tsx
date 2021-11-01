@@ -34,7 +34,7 @@ export const PrintTimeSheetModal = () => {
     return day
   })
 
-  if(fromDate.getTime() > toDate.getTime()) {
+  if (fromDate.getTime() > toDate.getTime()) {
     setFromDate(toDate)
     setToDate(fromDate)
   }
@@ -45,9 +45,9 @@ export const PrintTimeSheetModal = () => {
       <style>{style}</style>
       <div className="bg-gray-800 font-semibold rounded-t-md text-white px-2 py-1" >Print Time Sheets</div>
       <div className="flex flex-row" style={{ width: '700px', height: '500px' }}>
-        
+
         <div className="flex flex-col flex-grow">
-        <div className="w-full bg-gray-400 text-black mt-2 text-center">Select Start of Pay Period</div>
+          <div className="w-full bg-gray-400 text-black mt-2 text-center">Select Start of Pay Period</div>
           <div><DayPickerEntry date={fromDate} setDate={setFromDate} startDate={fromDate} endDate={toDate} /></div>
         </div>
         <div className="flex flex-col flex-grow">
@@ -117,7 +117,7 @@ const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Da
   const computeAllDates = (e: IEmployee) => {
     const date = new Date(from)
     let total = 0
-    while(date.getTime() <= to.getTime()) {
+    while (date.getTime() <= to.getTime()) {
       total += computeEmployeeDay(e.clockInEvents.find(d => d.day.getTime() === date.getTime())?.events ?? [])
       date.setDate(date.getDate() + 1)
     }
@@ -185,7 +185,7 @@ const doPrint = (printerName: string, employees: IEmployee[], from: Date, to: Da
 
   employees.forEach(employee => {
     const hasEvents = employee.clockInEvents.some(e => e.day.getTime() >= from.getTime() && e.day.getTime() <= to.getTime() && e.events.length !== 0)
-    if(!hasEvents) {
+    if (!hasEvents) {
       return
     }
     data.push({

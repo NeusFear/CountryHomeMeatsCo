@@ -70,7 +70,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
   const valid = animalType !== undefined && scheduledDate !== null
   const trySubmitData = () => {
-    if(databaseLength === DatabaseWait) {
+    if (databaseLength === DatabaseWait) {
       return
     }
     for (let i = 0; i < quantity; i++) {
@@ -95,25 +95,25 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
     DayEvents.
       where('startDate').lt(monthEnd.getTime()).
       where("endDate").gte(monthStart.getTime()).
-      select("eventName eventColor startDate endDate noWork"), 
-    [ monthStart.getTime() ]
+      select("eventName eventColor startDate endDate noWork"),
+    [monthStart.getTime()]
   )
 
   const isDayFull = (date: Date) => {
-    if(customDays !== DatabaseWait && customDays.some(d => d.noWork && date.getTime() >= d.startDate.getTime() && date.getTime() < d.endDate.getTime())) {
+    if (customDays !== DatabaseWait && customDays.some(d => d.noWork && date.getTime() >= d.startDate.getTime() && date.getTime() < d.endDate.getTime())) {
       return true
     }
 
-    if(disabledDays !== DatabaseWait) {
+    if (disabledDays !== DatabaseWait) {
       const normalizedDay = normalizeDay(date)
       normalizedDay.setDate(normalizedDay.getDate() - normalizedDay.getDay())
-      if(disabledDays.includes(normalizedDay.getTime())) {
+      if (disabledDays.includes(normalizedDay.getTime())) {
         return true
       }
     }
 
     return false
-   
+
   }
 
   useEffect(() => {
@@ -158,7 +158,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
             onMonthChange={setSelectedMonth}
             fromMonth={fromMonth}
             toMonth={toMonth}
-            disabledDays={[{ daysOfWeek: [0, 6] }, date => getDayNumber(date) < dayNumber ]}
+            disabledDays={[{ daysOfWeek: [0, 6] }, date => getDayNumber(date) < dayNumber]}
             renderDay={day => {
               const orders = getOrdersForDay(day)
               const orderMap = new Map<string, number>()
@@ -176,7 +176,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
               const tipLines = Array.from(orderMap).map(o => `${o[1]}x ${o[0]}`)
 
-              if(isDayFull(day)) {
+              if (isDayFull(day)) {
                 tipLines.unshift("Day Marked As Full")
               }
 

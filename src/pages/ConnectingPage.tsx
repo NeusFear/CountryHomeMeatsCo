@@ -25,7 +25,7 @@ export const ConnectingPage = ({ defaultIP, defaultPort, details, address, refre
                 </div>
                 <div>
                     Port:
-                    <input className="bg-gray-500" value={port} onChange={e => !isNaN(e.target.valueAsNumber) && setPort(e.target.valueAsNumber)} type="number"/>
+                    <input className="bg-gray-500" value={port} onChange={e => !isNaN(e.target.valueAsNumber) && setPort(e.target.valueAsNumber)} type="number" />
                 </div>
                 <div>
                     <button className="bg-blue-200 rounded border-black border" onClick={() => refreshState(ip, port)}>Reconnect</button>

@@ -95,7 +95,7 @@ export const CalendarPage = () => {
             useWindow={false}
             getScrollParent={() => scrollParent.current}
           >
-            {items.map((d, i) => 
+            {items.map((d, i) =>
               <GridWeekEntry key={i} ref={todayElement} weekEntry={d.weekEntry} start={d.start} config={config} getUsername={getUsername} />
             )}
           </InfiniteScroll>
@@ -107,7 +107,7 @@ export const CalendarPage = () => {
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] as const
 
-const DaysEnum = Object.freeze({"scheduledBeef":"bg-tomato-400 group-hover:bg-tomato-300", "scheduledPig":"bg-blue-300 group-hover:bg-blue-200", "somethingElse":"bg-green-300 group-hover:bg-green-200"})
+const DaysEnum = Object.freeze({ "scheduledBeef": "bg-tomato-400 group-hover:bg-tomato-300", "scheduledPig": "bg-blue-300 group-hover:bg-blue-200", "somethingElse": "bg-green-300 group-hover:bg-green-200" })
 
 const EventItem = ({ eventName, eventType }: { eventName: string, eventType: any }) => {
   return (
@@ -165,9 +165,9 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
     const holidays = Array(7).fill(0).map((_, i) => useCalandarDates(addDay(i)))
 
 
-    const customDays = useDayEvents(DayEvents.where('startDate').lt(nextWeek.getTime()).where("endDate").gte(start.getTime()).select("eventName eventColor startDate endDate noWork"), [ start.getTime() ])
+    const customDays = useDayEvents(DayEvents.where('startDate').lt(nextWeek.getTime()).where("endDate").gte(start.getTime()).select("eventName eventColor startDate endDate noWork"), [start.getTime()])
     const getCustomsForDay: (day: number) => (DatabaseWaitType | ICustomEvent[]) = day => {
-      if(customDays == DatabaseWait) {
+      if (customDays == DatabaseWait) {
         return DatabaseWait
       }
       const date = addDay(day)
@@ -179,14 +179,14 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
       [start.getTime()]
     )
     const getAnimalsForDay: (day: number) => (DatabaseWaitType | IAnimal[]) = day => {
-      if(animals == DatabaseWait) {
+      if (animals == DatabaseWait) {
         return DatabaseWait
       }
       const date = addDay(day)
       return animals.filter(d => d.killDate.getTime() == date.getTime())
     }
 
-    
+
 
 
     const niceCustomDays = customDays === DatabaseWait ? [] : customDays
@@ -218,9 +218,9 @@ const GridWeekEntry = forwardRef<HTMLDivElement,
                   config.save()
                 }} />
               </div>
-              <EventItem eventType={DaysEnum.scheduledBeef} eventName={ numBeef + " Beef Scheduled"}/>
-              <EventItem eventType={DaysEnum.scheduledPig} eventName={ numPork + " Pork Scheduled"} />
-              {allHolidays.map((holiday, i) => <EventItem key={i} eventType={DaysEnum.somethingElse} eventName={holiday} /> )}
+              <EventItem eventType={DaysEnum.scheduledBeef} eventName={numBeef + " Beef Scheduled"} />
+              <EventItem eventType={DaysEnum.scheduledPig} eventName={numPork + " Pork Scheduled"} />
+              {allHolidays.map((holiday, i) => <EventItem key={i} eventType={DaysEnum.somethingElse} eventName={holiday} />)}
             </div>
           </div>
         </div>
@@ -250,7 +250,7 @@ export type AnimalEntriesType = {
   ids: ObjectId[];
 }[]
 
-const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays, customDays, animals }: { entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string, isWeekFull: boolean, holidays: HolidayEntry[], customDays: (DatabaseWaitType | ICustomEvent[]), animals: (DatabaseWaitType | IAnimal[]) } ) => {
+const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays, customDays, animals }: { entry: number, weekEntry: number, day: Date, getUsername: (id: string) => string, isWeekFull: boolean, holidays: HolidayEntry[], customDays: (DatabaseWaitType | ICustomEvent[]), animals: (DatabaseWaitType | IAnimal[]) }) => {
 
   const sortedNamedEntries = animals === DatabaseWait ? [] :
     Array.from(animals
@@ -321,14 +321,14 @@ const GridDayEntry = ({ entry, weekEntry, day, getUsername, isWeekFull, holidays
   const isBeforeToday = useMemo(() => daysBefore(new Date(), day), [day.getTime()])
 
   let bg;
-  if(isWeekFull || (customDays !== DatabaseWait && customDays.some(d => d.noWork))) {
-    if(isBeforeToday) {
+  if (isWeekFull || (customDays !== DatabaseWait && customDays.some(d => d.noWork))) {
+    if (isBeforeToday) {
       bg = "border-tomato-400 bg-gray-400"
     } else {
       bg = "border-tomato-100 bg-gray-100"
     }
   } else {
-    if(isBeforeToday) {
+    if (isBeforeToday) {
       bg = "border-transparent bg-gray-400"
     } else {
       bg = "border-transparent bg-gray-100"

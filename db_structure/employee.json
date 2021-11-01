@@ -4,10 +4,10 @@
   "middleInitial": "M",
   "phoneNumber": 4054968884,
   "alternateContacts": [
-	{
+    {
       "name": "Sydney",
-	  "phoneNumber": 1234567890
-	}
+      "phoneNumber": 1234567890
+    }
   ],
   "address": <some address format>,
   "startDate" <some date format>,

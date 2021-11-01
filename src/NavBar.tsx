@@ -31,9 +31,9 @@ export const invoiceDetails = "/invoice"
 
 export const routes = [
   { path: "/", exact: true, page: () => <LandingPage /> },
-  { path: "/users", page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UsersPage pinnedList={pinnedList}/> },
+  { path: "/users", page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UsersPage pinnedList={pinnedList} /> },
   { path: userDetailsPage, page: ({ pinnedList }: { pinnedList: UserPinnedList }) => <UserDetailsPage pinnedList={pinnedList} /> },
-  { path: animalDetailsPage, page: () => <AnimalDetailsPage />},
+  { path: animalDetailsPage, page: () => <AnimalDetailsPage /> },
   { path: timeSheet, page: () => <TimeSheet /> },
   { path: addressBook, page: () => <AddressBook /> },
   { path: priceSheet, page: () => <PriceSheet /> },
@@ -59,8 +59,8 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   return (
     <div className="bg-gray-100 w-6/12 flex flex-col h-full md:w-4/14 lg:w-2/12">
       <div className="bg-tomato-800 h-14 flex flex-row">
-        <div className="m-2" onClick={() => fb.back?history.go(-1):false}><SvgArrow className={`hover:text-${fb.back?"tomato":"gray"}-800 text-${fb.back?"tomato":"gray"}-500 hover:shadow-md cursor-pointer text-4xl w-10 h-10 bg-white rounded-full p-0.5 transform rotate-180`} /></div>
-        <div className="m-2" onClick={() => fb.forward?history.go(1):false}><SvgArrow className={`hover:text-${fb.forward?"tomato":"gray"}-800 text-${fb.forward?"tomato":"gray"}-500 hover:shadow-md cursor-pointer text-4xl w-10 h-10 bg-white rounded-full p-0.5`} /></div>
+        <div className="m-2" onClick={() => fb.back ? history.go(-1) : false}><SvgArrow className={`hover:text-${fb.back ? "tomato" : "gray"}-800 text-${fb.back ? "tomato" : "gray"}-500 hover:shadow-md cursor-pointer text-4xl w-10 h-10 bg-white rounded-full p-0.5 transform rotate-180`} /></div>
+        <div className="m-2" onClick={() => fb.forward ? history.go(1) : false}><SvgArrow className={`hover:text-${fb.forward ? "tomato" : "gray"}-800 text-${fb.forward ? "tomato" : "gray"}-500 hover:shadow-md cursor-pointer text-4xl w-10 h-10 bg-white rounded-full p-0.5`} /></div>
       </div>
       <ul>
         <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
@@ -71,30 +71,30 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <li><Link to="/invoices"><NavPageButton Page="Invoices" Icon={SvgNotes} /></Link></li>
       </ul>
       <Switch>
-        {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} /> ))}
+        {routes.map((route, index) => (<Route key={index} path={route.path} exact={route.exact} />))}
       </Switch>
 
       <div className="bg-gray-100 flex-grow mt-2 overflow-auto">
-        { allPinned && allPinned.map(id => 
-          <NavPinnedUserEntry 
-            key={id} 
-            id={id} 
+        {allPinned && allPinned.map(id =>
+          <NavPinnedUserEntry
+            key={id}
+            id={id}
             onClick={() => onDetailsClicked(id)}
             onRemove={() => pinnedList.updatePinned(id, false)}
             selected={id === selectedId}
-          />) 
+          />)
         }
       </div>
     </div>
   )
 }
 
-const useHistoryForwardBackwards: () => { 
+const useHistoryForwardBackwards: () => {
   forward: boolean,
   back: boolean
 } = () => {
   const history = useHistory()
-  const create = () => { return {forward: history.canGo(1), back: history.canGo(-1)} }
+  const create = () => { return { forward: history.canGo(1), back: history.canGo(-1) } }
   const [state, setState] = useState(create())
   useEffect(() => history.listen(() => setState(create())))
   return state

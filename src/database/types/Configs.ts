@@ -21,38 +21,42 @@ export type PriceDataNumbers = {
     minPrice: number;
   };
   pork: {
-      slaughter: number;
-      slaughterOver150lb: number;
-      processing: number;
-      cure: number;
-      sausage: number;
-      minPrice: number;
+    slaughter: number;
+    slaughterOver150lb: number;
+    processing: number;
+    cure: number;
+    sausage: number;
+    minPrice: number;
   };
 }
 
 export const PriceDataSchema: SchemaDefinition<DocumentDefinition<any>> = {
-  beef: { type: {
-    slaughter: { type: Number, required: true },
-    processing: { type: Number, required: true },
-    patties: { type: Number, required: true },
-    halves: { type: Number, required: true },
-    halvesToQuaters: { type: Number, required: true },
-    extraBoning: { type: Number, required: true },
-    cutStewMeat: { type: Number, required: true },
-    boneAndTenderizeRoundSteaks: { type: Number, required: true },
-    makeCubedSteaks: { type: Number, required: true },
-    boneOutPrimeRib: { type: Number, required: true },
-    boneOutLoin: { type: Number, required: true },
-    minPrice: { type: Number, required: true },
-  }, required: true },
-  pork: { type: {
-    slaughter: { type: Number, required: true },
-    slaughterOver150lb: { type: Number, required: true },
-    processing: { type: Number, required: true },
-    cure: { type: Number, required: true },
-    sausage: { type: Number, required: true },
-    minPrice: { type: Number, required: true },
-  }, required: true }
+  beef: {
+    type: {
+      slaughter: { type: Number, required: true },
+      processing: { type: Number, required: true },
+      patties: { type: Number, required: true },
+      halves: { type: Number, required: true },
+      halvesToQuaters: { type: Number, required: true },
+      extraBoning: { type: Number, required: true },
+      cutStewMeat: { type: Number, required: true },
+      boneAndTenderizeRoundSteaks: { type: Number, required: true },
+      makeCubedSteaks: { type: Number, required: true },
+      boneOutPrimeRib: { type: Number, required: true },
+      boneOutLoin: { type: Number, required: true },
+      minPrice: { type: Number, required: true },
+    }, required: true
+  },
+  pork: {
+    type: {
+      slaughter: { type: Number, required: true },
+      slaughterOver150lb: { type: Number, required: true },
+      processing: { type: Number, required: true },
+      cure: { type: Number, required: true },
+      sausage: { type: Number, required: true },
+      minPrice: { type: Number, required: true },
+    }, required: true
+  }
 }
 
 export interface PriceData extends Document {
@@ -67,7 +71,7 @@ export interface IGlobalNotes extends Document {
   globalNotes: string
 }
 
-type ConfigTypes<T> = 
+type ConfigTypes<T> =
   T extends typeof Configs[0] ? IFullDaysConfig :
   T extends typeof Configs[1] ? PriceData :
   T extends typeof Configs[2] ? IGlobalNotes :
@@ -99,12 +103,12 @@ const TypeToKey: { [path in typeof Configs[number]]: keyof Omit<ConfigTypes<path
 
 const useConfigs = createResultWatcher(ConfigModel)
 
-export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigTypes<T> | DatabaseWaitType =>  {
+export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigTypes<T> | DatabaseWaitType => {
   const configs = useConfigs(ConfigModel.find().select(TypeToKey[type]))
-  if(configs === DatabaseWait) {
+  if (configs === DatabaseWait) {
     return DatabaseWait
   }
-  if(configs.length === 0) {
+  if (configs.length === 0) {
     return new ConfigModel({
       dates: [],
 
@@ -113,7 +117,7 @@ export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigType
       currentPrices: {
         beef: {
           slaughter: 75, processing: 1, patties: 0.45, halves: 3, halvesToQuaters: 5,
-          extraBoning: 0.2, cutStewMeat: 0.5, boneAndTenderizeRoundSteaks: 3, 
+          extraBoning: 0.2, cutStewMeat: 0.5, boneAndTenderizeRoundSteaks: 3,
           makeCubedSteaks: 3, boneOutPrimeRib: 5, boneOutLoin: 10, minPrice: 400
         },
         pork: { slaughter: 50, slaughterOver150lb: 60, processing: 1, cure: 1, sausage: 0.25, minPrice: 200 }

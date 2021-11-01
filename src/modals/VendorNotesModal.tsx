@@ -7,14 +7,14 @@ export const VendorNotesModal = forwardRef<ModalHandler, { value: string, setVal
 
   useImperativeHandle(ref, () => ({
     onClose: () => {
-      if(textAreaRef.current !== null) {
+      if (textAreaRef.current !== null) {
         setValue(textAreaRef.current.value ?? '')
       }
     }
   }))
 
   return (
-    <div className="rounded-md overflow-hidden" style={{height: "50vh", width: "50vw"}}>
+    <div className="rounded-md overflow-hidden" style={{ height: "50vh", width: "50vw" }}>
       <div className="bg-gray-800 text-white rounded-t-md">Notes</div>
       <div className="p-4 h-full overflow-hidden">
         <textarea

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { 
+import {
   MemoryRouter as Router,
   Switch,
   Route
@@ -22,24 +22,24 @@ export const AppContainer = () => {
   const defaultPort = defaultConnection[1]
   const connectState = useDatabaseConnection(defaultIP, defaultPort);
   return (
-    connectState.connected ? <App/> : <ConnectingPage details={connectState.details} address={connectState.address} refreshState={connectState.refresh} defaultIP={defaultIP} defaultPort={defaultPort} />
+    connectState.connected ? <App /> : <ConnectingPage details={connectState.details} address={connectState.address} refreshState={connectState.refresh} defaultIP={defaultIP} defaultPort={defaultPort} />
   )
 }
 
-const App = () => {  
-  const [pinnedList, setPinnedList] = useState<UserPinnedList>({ 
+const App = () => {
+  const [pinnedList, setPinnedList] = useState<UserPinnedList>({
     allPinned: defaultPinned,
-    updatePinned: () => {},
+    updatePinned: () => { },
   })
 
   pinnedList.updatePinned = useCallback((id: string, add: boolean) => {
     let newArray = [...pinnedList.allPinned]
 
     let existIndex = newArray.indexOf(id)
-    if(existIndex !== -1) {
+    if (existIndex !== -1) {
       newArray.splice(existIndex, 1)
     }
-    if(add) {
+    if (add) {
       newArray.unshift(id)
     }
 
@@ -59,7 +59,7 @@ const App = () => {
         <NavBar pinnedList={pinnedList} />
         <div className="w-full h-full">
           <Switch>
-            {routes.map((route, index) => ( <Route key={index} path={route.path} exact={route.exact} children={<route.page pinnedList={pinnedList}/>} /> ))}
+            {routes.map((route, index) => (<Route key={index} path={route.path} exact={route.exact} children={<route.page pinnedList={pinnedList} />} />))}
           </Switch>
         </div>
       </div>

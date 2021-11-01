@@ -212,9 +212,9 @@ export const AnimalDetailsPage = () => {
               </div>
             </div>
             <div className="flex flex-row">
-              <div className="font-semibold flex flex-row p-1">
+              <div className="font-semibold flex flex-row p-1 ml-4">
                 <span>Liver Good</span>
-                <select className="border-gray-700 border rounded-md px-1 h-6" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
+                <select className="border-gray-700 border rounded-md px-1 h-6 ml-2" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
                   animal.liverGood = e.target.value === "true"
                   setAnimalArriveDateAndSave()
                 }}>
@@ -223,9 +223,9 @@ export const AnimalDetailsPage = () => {
                 </select>
               </div>
               {animal.animalType === AnimalType.Beef &&
-                <div className="font-semibold flex flex-row p-1">
+                <div className="font-semibold flex flex-row p-1 ml-4">
                   <span>Older than 30 Months</span>
-                  <select className="border-gray-700 border rounded-md px-1 h-6" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
+                  <select className="border-gray-700 border rounded-md px-1 h-6 ml-2" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
                     animal.older30Months = e.target.value === "true"
                     setAnimalArriveDateAndSave()
                   }}>

@@ -24,7 +24,7 @@ export const EditVendorDetailsModal = forwardRef<ModalHanler, { objectId: string
       company: '',
       primaryContact: '',
       phoneNumbers: [{ name: '', number: '' }],
-      emails: [''],
+      emails: [],
       notes: ''
     })} />) :
     (<EditVendorDetailsModalWithUserID ref={ref} id={objectId} />)
@@ -151,12 +151,10 @@ const EditVendorDetailsModalWithUser = forwardRef<ModalHanler, { vendor: IVendor
                     setEmails([...emails])
                   }
                 }} />
-                {emails.length === 1 ? <></> :
-                  <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
-                    emails.splice(emails.indexOf(email), 1)
-                    setEmails([...emails])
-                  }}><SvgCross /></span>
-                }
+                <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
+                  emails.splice(emails.indexOf(email), 1)
+                  setEmails([...emails])
+                }}><SvgCross /></span>
               </div>
             ))}
           </div>

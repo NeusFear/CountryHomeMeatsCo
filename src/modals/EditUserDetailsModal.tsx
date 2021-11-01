@@ -23,7 +23,7 @@ export const EditUserDetailsModal = forwardRef<ModalHandler, { objectId: string 
     (<EditUserDetailsModalWithUser ref={ref} user={new User({
       name: '',
       phoneNumbers: [{ name: '', number: '' }],
-      emails: [''],
+      emails: [],
       notes: ''
     })} />) :
     (<EditUserDetailsModalWithUserID ref={ref} id={objectId} />)
@@ -136,19 +136,17 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, { user: IUser }>((
                     setEmails([...emails])
                   }
                 }} />
-                {emails.length === 1 ? <></> :
-                  <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
-                    emails.splice(emails.indexOf(email), 1)
-                    setEmails([...emails])
-                  }}><SvgCross /></span>
-                }
+                <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
+                  emails.splice(emails.indexOf(email), 1)
+                  setEmails([...emails])
+                }}><SvgCross /></span>
               </div>
             ))}
           </div>
           <div className="bg-gray-200 p-1, rounded-sm ml-2 w-60 text-gray-700 mt-0.5 hover:bg-gray-300" onClick={() => {
             emails.push({ text: '', valid: false, _id: Math.random() })
             setEmails([...emails])
-          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add Another Email</div>
+          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add Email</div>
         </div>
 
         <button onClick={trySubmitData} className={`${valid ? "bg-blue-100 hover:bg-blue-200 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"} py-1 mt-2 rounded-sm mb-2 px-4`}>Submit</button>

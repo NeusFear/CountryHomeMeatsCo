@@ -586,7 +586,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                   <SelectInputType
                     initial={instructions.round.keepAmount}
                     onChange={v => instructions.round.keepAmount=v}
-                    values={["0%", "25%", "50%", "75%", "100%"]} 
+                    values={["100%", "0%", "25%", "50%", "75%"]} 
                     width={50}
                   />
                   <SelectInputType

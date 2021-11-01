@@ -612,7 +612,7 @@ const BeefInstructions = ({instructions}: {instructions: BeefCutInstructions}) =
                   <SelectInputType 
                     initial={instructions.round.howToUseRest}
                     onChange={v => instructions.round.howToUseRest=v}
-                    values={['Hamburger', 'Chicken Fry']} 
+                    values={['', 'Hamburger', 'Chicken Fry']} 
                     width={100} 
                   />
                 </div>

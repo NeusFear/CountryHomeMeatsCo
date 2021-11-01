@@ -45,7 +45,8 @@ const HangingAnimalEntry = ({animal}: {animal: IAnimal}) => {
       <div className="flex flex-row">
         <div>{animal.animalType === AnimalType.Beef ? <SvgCow className="mt-1 mr-1 text-gray-400 w-5 h-5" /> : <SvgPig className="mt-1 mr-1 text-gray-400 w-6 h-6" />}</div>
         <p className="bg-gray-300 rounded-md text-xs py-1 px-2 text-gray-700">#{animal.animalId}</p>
-        <div className="ml-1 font-semibold flex-grow">{user === DatabaseWait ? 'Loading...' : user.name} {eatersValid ? '(Eaters Confirmed)' : '(Eaters Invalid)'}</div>
+        <div className="ml-1 font-semibold rounded-md flex-grow">{user === DatabaseWait ? 'Loading...' : user.name}</div>
+        <div className={(eatersValid ? "bg-green-300" : "bg-tomato-300") + " ml-1 font-semibold rounded-md px-1 text-white mr-2 transform translate-y-2"}>{eatersValid ? 'Eaters Confirmed' : 'Eaters Invalid'}</div>
         <SvgArrow className="text-white group-hover:text-green-100 h-6 w-6 transform translate-y-2"/>
       </div>
       <div className="flex-grow text-xs text-gray-600 mt-0.5 font-semibold ml-2">{animal.animalType} Killed {animal.killDate.toDateString()}</div>

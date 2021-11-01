@@ -19,7 +19,7 @@ export const formatQuaterText = (quaters: number) => {
 
 export const formatQuaters = (quaters: number) => quaters + " Quater" + (quaters === 1 ? "" : "s")
 
-const halfs = ["Half of Half", "1 Half", "@INVALID@", "2 Halves"]
+const halfs = ["Half of Half", "1 Half", "@INVALID@", "Whole"]
 export const formatHalfs = (quaters: number) => halfs[quaters-1]
 
 const wholes = ["Half of Half", "Half", "@INVALID@", "Whole"]

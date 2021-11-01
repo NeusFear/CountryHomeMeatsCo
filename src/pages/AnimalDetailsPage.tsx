@@ -193,11 +193,11 @@ export const AnimalDetailsPage = () => {
               </div>
               <div className="font-semibold flex flex-col p-1">
                 <span>Pen Letter</span>
-                <select className="border-gray-700 border rounded-md px-1" disabled={currentState < 1} defaultValue={animal.penLetter ?? "__default"} onChange={e => {
+                <select className="border-gray-700 border rounded-md px-1" disabled={currentState < 1} defaultValue={animal.penLetter ?? ""} onChange={e => {
                   animal.penLetter = e.target.value as PenLetter
                   setAnimalArriveDateAndSave()
                 }}>
-                  <option hidden disabled value="__default"></option>
+                  <option value=""></option>
                   <option value="A">A</option>
                   <option value="B">B</option>
                   <option value="C">C</option>

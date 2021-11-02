@@ -25,8 +25,10 @@ export const InvoiceDetailsPage = () => {
     const user = useUsers(User.findById(userID), [userID], userID)
     const cutInstructionUser = useUsers(User.findById(cutInstructionUserID), [cutInstructionUserID], cutInstructionUserID)
     const animal = useAnimals(Animal.findById(animalID), [animalID], animalID)
+    const bringerID = animal === DatabaseWait || animal === null ? null : animal.bringer
+    const bringerUser = useUsers(User.findById(bringerID).select("name"), [bringerID], bringerID)
 
-    if (invoice === DatabaseWait || user === DatabaseWait || animal == DatabaseWait || cutInstructionUser === DatabaseWait) {
+    if (invoice === DatabaseWait || user === DatabaseWait || animal == DatabaseWait || cutInstructionUser === DatabaseWait || bringerUser === DatabaseWait) {
         return <div>Loading...</div>
     }
 
@@ -34,10 +36,14 @@ export const InvoiceDetailsPage = () => {
         return <div>Error: Invoice with id {id} was not found</div>
     }
     if (user === null) {
-        return <div>Error: User with id {userID.toHexString()} was not found</div>
+        return <div>Error: User with id {userID?.toHexString()} was not found</div>
     }
     if (animal === null) {
-        return <div>Error: Animal with id {animalID.toHexString()} was not found</div>
+        return <div>Error: Animal with id {animalID?.toHexString()} was not found</div>
+    }
+
+    if (bringerUser === null) {
+        return <div>Error: User with id {bringerID?.toHexString()} was not found</div>
     }
 
     const { total, calcualtedTotal } = calculateTotal(animal, invoice)
@@ -103,6 +109,32 @@ export const InvoiceDetailsPage = () => {
                         <div className="flex flex-row pl-2 pr-4">
                             <p className="font-semibold flex-grow">Email:</p>
                             {user.emails.map((email, i) => <div key={i} className="text-right">{email}</div>)}
+                        </div>
+                        <div className="flex flex-row pl-2 pr-4">
+                            <p className="font-semibold flex-grow">Bringer:</p>
+                            <div className="text-right">
+                                <Link className="text-blue-500"
+                                    to={{
+                                        pathname: userDetailsPage,
+                                        state: bringerID.toHexString()
+                                    }}
+                                >
+                                    {bringerUser.name}
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="flex flex-row pl-2 pr-4">
+                            <p className="font-semibold flex-grow">Cut Instructions:</p>
+                            <div className="text-right">
+                                <Link className="text-blue-500 pr-1"
+                                    to={{
+                                        pathname: userDetailsPage,
+                                        state: cutInstructionUserID.toHexString()
+                                    }}
+                                >
+                                    {cutInstructionUser.name}
+                                </Link>
+                                #{cutInstructionUser.cutInstructions.find(c => c.id === invoice.cutInstructionId)?.nickname ?? "???"} ({invoice.cutInstructionId})</div>
                         </div>
                     </div>
                     <div className="bg-gray-300 rounded-md shadow-md flex-grow">

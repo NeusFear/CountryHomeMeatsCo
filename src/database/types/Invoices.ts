@@ -196,7 +196,7 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
         }
         invoice.beefprices = {}
 
-        invoice.beefprices.processing = Math.max(animal.dressWeight * priceData.beef.processing, 200) * numWhole
+        invoice.beefprices.processing = Math.max(animal.dressWeight * priceData.beef.processing, priceData.beef.minPrice) * numWhole
         invoice.beefprices.slaughter = priceData.beef.slaughter * numWhole
         if (invoice.numQuaters !== 4) {
             invoice.beefprices.halving = priceData.beef.halves * numHalves

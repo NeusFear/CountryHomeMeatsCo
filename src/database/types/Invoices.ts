@@ -1,11 +1,11 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { ObjectId } from 'bson'
-
+import { ObjectId } from 'bson';
+import mongoose, { Document, Schema } from 'mongoose';
 import { createResultWatcher } from '../Database';
 import { animalDatabaseName, invoiceDatabaseName, userDatabaseName } from '../DatabaseNames';
 import { AnimalType, IAnimal } from './Animal';
+import { PriceDataNumbers, PriceDataSchema } from './Configs';
 import { CutInstructions, CutInstructionsSchema, IUser } from './User';
-import { PriceData, PriceDataNumbers, PriceDataSchema } from './Configs';
+
 
 export const BeefPricesList: (keyof IInvoice['beefprices'])[] = [
     "slaughter", "processing", "halving", "quatering", "tenderized", "patties",
@@ -196,7 +196,7 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
         }
         invoice.beefprices = {}
 
-        invoice.beefprices.processing = Math.max(animal.dressWeight * priceData.beef.processing, priceData.beef.minPrice) * numWhole
+        invoice.beefprices.processing = animal.dressWeight * priceData.beef.processing * numWhole
         invoice.beefprices.slaughter = priceData.beef.slaughter * numWhole
         if (invoice.numQuaters !== 4) {
             invoice.beefprices.halving = priceData.beef.halves * numHalves

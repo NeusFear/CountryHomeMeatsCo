@@ -1,6 +1,6 @@
+import mongoose, { Document, DocumentDefinition, Schema, SchemaDefinition } from 'mongoose';
+import { configDatabaseName } from '../DatabaseNames';
 import { createResultWatcher, DatabaseWait, DatabaseWaitType } from './../Database';
-import mongoose, { Schema, Document, SchemaDefinition, DocumentDefinition } from 'mongoose';
-import { animalDatabaseName, configDatabaseName } from '../DatabaseNames';
 
 const Configs = ["FullDays", "PriceData", "GlobalNotes"] as const
 
@@ -9,6 +9,7 @@ export type PriceDataNumbers = {
   beef: {
     slaughter: number;
     processing: number;
+    minProcessing: number;
     patties: number;
     halves: number;
     halvesToQuaters: number;
@@ -35,6 +36,7 @@ export const PriceDataSchema: SchemaDefinition<DocumentDefinition<any>> = {
     type: {
       slaughter: { type: Number, required: true },
       processing: { type: Number, required: true },
+      minProcessing: { type: Number, required: true, default: 200 },
       patties: { type: Number, required: true },
       halves: { type: Number, required: true },
       halvesToQuaters: { type: Number, required: true },
@@ -116,9 +118,10 @@ export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigType
 
       currentPrices: {
         beef: {
-          slaughter: 75, processing: 1, patties: 0.45, halves: 3, halvesToQuaters: 5,
-          extraBoning: 0.2, cutStewMeat: 0.5, boneAndTenderizeRoundSteaks: 3,
-          makeCubedSteaks: 3, boneOutPrimeRib: 5, boneOutLoin: 10, minPrice: 400
+          slaughter: 75, processing: 1, minProcessing: 200, patties: 0.45,
+          halves: 3, halvesToQuaters: 5, extraBoning: 0.2, cutStewMeat: 0.5,
+          boneAndTenderizeRoundSteaks: 3, makeCubedSteaks: 3, boneOutPrimeRib: 5,
+          boneOutLoin: 10, minPrice: 400
         },
         pork: { slaughter: 50, slaughterOver150lb: 60, processing: 1, cure: 1, sausage: 0.25, minPrice: 200 }
       }

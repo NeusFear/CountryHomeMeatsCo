@@ -1,20 +1,18 @@
-import { ObjectId } from "mongoose"
+import { PosPrintData } from "electron-pos-printer"
 import { FC, useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import { useHistoryListState } from "../AppHooks"
 import { SvgPlus, SvgPrint, SvgTrash } from "../assets/Icons"
 import { DatabaseWait } from "../database/Database"
-import { Link } from "react-router-dom";
 import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal"
 import { PriceDataNumbers } from "../database/types/Configs"
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
 import Invoice, { AllCuredPorkDataPieces, BeefPricesList, IInvoice, PaymentType, PorkPricesList, useInvoice } from "../database/types/Invoices"
 import User, { IUser, useUsers } from "../database/types/User"
-import { formatDay, formatHalfs, formatPhoneNumber, formatQuaters, formatWhole, normalizeDay } from "../Util"
-import { animalDetailsPage, userDetailsPage } from "../NavBar"
 import { printGenericSheet, setModal } from "../modals/ModalManager"
-import { GenericPrintModal } from "../modals/GenericPrintModal"
-import { PosPrintData } from "electron-pos-printer"
+import { animalDetailsPage, userDetailsPage } from "../NavBar"
+import { formatDay, formatHalfs, formatPhoneNumber, formatQuaters, formatWhole } from "../Util"
 
 export const InvoiceDetailsPage = () => {
     const id = useHistoryListState()
@@ -46,7 +44,7 @@ export const InvoiceDetailsPage = () => {
         return <div>Error: User with id {bringerID?.toHexString()} was not found</div>
     }
 
-    const { total, calcualtedTotal } = calculateTotal(animal, invoice)
+    const { total, minTotal, calcualtedTotal } = calculateTotal(animal, invoice)
     const subTotal = calculateSubTotal(animal, invoice)
 
     const amountPayed = invoice.paymentTypes.map(t => t.amount).reduce((a, b) => a + b, 0)
@@ -229,7 +227,7 @@ export const InvoiceDetailsPage = () => {
                             </div>
                             <div className="p-4">
                                 <FormattedCharge name="Calculated Cost" data={"$" + calcualtedTotal.toFixed(2)} />
-                                <FormattedCharge name="Post Min Fee" data={"$" + total.toFixed(2)} />
+                                <FormattedCharge name={`Post Min Fee ($${minTotal})`} data={"$" + total.toFixed(2)} />
                                 <div className="w-full bg-gray-700 h-0.5 mb-2"></div>
 
                                 {invoice.customcharges.length !== 0 &&
@@ -402,13 +400,13 @@ export const calculateTotal = (animal: IAnimal, invoice: IInvoice) => {
         total += keyObject[key] ?? 0
     }
 
-    const minTotal = (animal.animalType === AnimalType.Beef ? invoice.priceData.beef : invoice.priceData.pork).minPrice
+    const minTotal = (animal.animalType === AnimalType.Beef ? invoice.priceData.beef : invoice.priceData.pork).minPrice * invoice.numQuaters / 4
     const calcualtedTotal = total;
     if (total < minTotal) {
         total = minTotal
     }
 
-    return { total, calcualtedTotal }
+    return { total, minTotal, calcualtedTotal }
 }
 
 const calculateSubTotal = (animal: IAnimal, invoice: IInvoice) => {
@@ -653,7 +651,7 @@ const CowChargesTable = ({ animal, invoice }: { animal: IAnimal, invoice: IInvoi
             />
             <ChargesEntry
                 title="Processing Fee"
-                price={`${price.processing.toFixed(2)} per lbs of dress weight. (Min $200.00)`}
+                price={`${price.processing.toFixed(2)} per lbs of dress weight.`}
                 quantity={`${Math.round(animal.dressWeight * invoice.numQuaters / 4 * 100) / 100}lbs`}
                 value={invoice.beefprices.processing}
                 setValue={runThenSave(v => invoice.beefprices.processing = v)}
@@ -1126,7 +1124,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
         })
     }
 
-    const { total, calcualtedTotal } = calculateTotal(animal, invoice)
+    const { total, minTotal, calcualtedTotal } = calculateTotal(animal, invoice)
     const amountPayed = invoice.paymentTypes.map(t => t.amount).reduce((a, b) => a + b, 0)
 
     const subTotal = calculateSubTotal(animal, invoice)
@@ -1156,7 +1154,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                     <span>$${calcualtedTotal.toFixed(2)}</span>
                 </div>
                 <div style="display: flex; flex-direction: row; margin:">
-                    <span style="flex-grow: 1">Post Min:</span>
+                    <span style="flex-grow: 1">Post Min ($${minTotal}):</span>
                     <span>$${total.toFixed(2)}</span>
                 </div>
                 ${charges.length === 0 ? "" :

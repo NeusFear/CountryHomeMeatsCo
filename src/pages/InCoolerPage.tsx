@@ -1,10 +1,9 @@
-import Animal, { AnimalType, IAnimal, paddedAnimalId, useAnimals } from "../database/types/Animal"
+import { Fragment, useState } from "react";
 import { useHistory } from 'react-router-dom';
-import User, { useUsers } from "../database/types/User"
-import { animalDetailsPage } from "../NavBar"
 import { DatabaseWait } from "../database/Database";
-import { useState } from "react";
-import { AnimalDetailsPage } from "./AnimalDetailsPage";
+import Animal, { AnimalType, IAnimal, paddedAnimalId, useAnimals } from "../database/types/Animal";
+import User, { useUsers } from "../database/types/User";
+import { animalDetailsPage } from "../NavBar";
 
 export const InCoolerPage = () => {
 
@@ -44,7 +43,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
     if (e.halfUser) usersToFind.push(e.halfUser.id)
   })
 
-  const users = useUsers(User.where("_id").in(usersToFind).select("name"), usersToFind, ...usersToFind)
+  const users = useUsers(User.where("_id").in(usersToFind).select("name cutInstructions"), usersToFind, ...usersToFind)
   const history = useHistory()
 
   if (users === DatabaseWait) {
@@ -67,11 +66,19 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
         <p>Animal ID</p>
         <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">#{paddedAnimalId(animal)}</p>
       </div>
-      <div className="text-gray-800 group-hover:text-gray-900 w-32 mr-4">
+      <div className="text-gray-800 group-hover:text-gray-900 w-48 mr-4">
         <p>Eaters</p>
         {animal.eaters.map((e, i) => {
           const user = users.find(u => String(u.id) === String(e.id))
-          return <p key={i} className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">{user?.name ?? "???"}</p>
+          const halfUser = e.halfUser !== undefined ? users.find(u => String(u.id) === String(e.halfUser.id)) : undefined
+          return (
+            <Fragment key={i}>
+              <p key={`${i}a`} className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">{user?.name ?? "???"}{e.tag === "" ? "" : ` #${e.tag} - ${user.cutInstructions.find(c => c.id === e.cutInstruction)?.nickname ?? "???"}`}</p>
+              {halfUser !== undefined &&
+                <p key={`${i}b`} className="bg-gray-200 ml-3 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 mb-2">{halfUser?.name ?? "???"} {e.halfUser !== undefined && e.halfUser.tag === "" ? "" : `#${e.halfUser.tag}`}</p>
+              }
+            </Fragment>
+          )
         })}
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 flex-shrink mr-2">

@@ -1,17 +1,14 @@
-import { ObjectID } from "bson";
-import { ObjectId } from "mongoose";
 import { useHistory } from "react-router";
-import { Link } from "react-router-dom";
 import { useSearchState } from "../AppHooks";
 import { SvgSearch } from "../assets/Icons";
 import { DatabaseWait } from "../database/Database";
-import Animal, { Eater, useAnimals } from "../database/types/Animal";
+import Animal, { useAnimals } from "../database/types/Animal";
 import Invoice, { IInvoice, useInvoice } from "../database/types/Invoices";
-import User, { IUser, useUsers } from "../database/types/User";
+import User, { useUsers } from "../database/types/User";
 import { editCutInstructions, setModal } from "../modals/ModalManager";
 import { invoiceDetails, userDetailsPage } from "../NavBar";
 import { formatQuaterText } from "../Util";
-import { calculateTotal, InvoiceDetailsPage } from "./InvoiceDetailsPage";
+import { calculateTotal } from "./InvoiceDetailsPage";
 
 export const InvoicesPage = () => {
   const [search, setSearch, regExp] = useSearchState()
@@ -88,7 +85,11 @@ const InvoiceEntry = ({ invoice }: { invoice: IInvoice }) => {
 
   const totalCost = animal === DatabaseWait ? 0 : calculateTotal(animal, invoice).total
 
-  const foundEater = animal === DatabaseWait ? undefined : animal?.eaters.find(e => e.id.toHexString() == invoice.user.toHexString())
+  //This is a hacky way to find the invoice number by getting the genrated invoice amount.
+  const invoiceNumber = animal === DatabaseWait ? undefined : animal.invoices.indexOf(invoice.id)
+  const invoiceTagList = animal === DatabaseWait ? undefined : [animal.eaters[0]?.tag, animal.eaters[0]?.halfUser?.tag, animal.eaters[1]?.tag, animal.eaters[1]?.halfUser?.tag].filter(t => t !== undefined)
+
+  const foundTag = animal === DatabaseWait ? "???" : invoiceTagList[invoiceNumber]
 
   const mainUser = users === DatabaseWait ? DatabaseWait : users.find(u => u._id == invoice.user.toHexString())
   const mainUserName = mainUser === DatabaseWait ? DatabaseWait : mainUser?.name ?? "???"
@@ -125,14 +126,14 @@ const InvoiceEntry = ({ invoice }: { invoice: IInvoice }) => {
       </div>
       <div className="flex-grow text-gray-800 group-hover:text-gray-900">
         <div className="flex flex-row">
-          {mainUser !== DatabaseWait && mainUserName !== DatabaseWait && foundEater !== undefined &&
+          {mainUser !== DatabaseWait && mainUserName !== DatabaseWait &&
             <>
               <EaterTag
                 name={mainUserName}
-                tag={foundEater.tag}
-                cutInstruction={mainUser?.cutInstructions?.find(c => c.id === foundEater.cutInstruction)?.nickname ?? `#${foundEater.cutInstruction}`}
+                tag={foundTag}
+                cutInstruction={mainUser?.cutInstructions?.find(c => c.id === invoice.cutInstructionId)?.nickname ?? `#${invoice.cutInstructionId}`}
                 onClick={() => history.push(userDetailsPage, invoice.user.toHexString())}
-                onInstructionClicked={() => setModal(editCutInstructions, { id: invoice.user.toHexString(), instructionID: foundEater.cutInstruction })}
+                onInstructionClicked={() => setModal(editCutInstructions, { id: invoice.user.toHexString(), instructionID: invoice.cutInstructionId })}
               />
               {/* { foundEater.halfUser != undefined && subUserName !== DatabaseWait &&
                  <>
@@ -159,7 +160,7 @@ const DataTag = ({ name, onClick }: { name: string, onClick?: () => void }) => {
 const EaterTag = ({ name, tag, cutInstruction, onClick, onInstructionClicked }: { name: string, tag: string, cutInstruction?: string, onClick?: () => void, onInstructionClicked?: () => void }) => {
   return (
     <div className="flex flex-row" onClick={e => { e.stopPropagation(); onClick() }}>
-      <div className="px-2 ml-2 bg-gray-200 rounded-md p-0.5 cursor-pointer hover:bg-gray-300">{name + (tag.length === 0 ? "" : `(${tag})`)}</div>
+      <div className="px-2 ml-2 bg-gray-200 rounded-md p-0.5 cursor-pointer hover:bg-gray-300">{name} ({tag})</div>
       {cutInstruction !== undefined &&
         <div onClick={e => { e.stopPropagation(); onInstructionClicked() }} className="bg-gray-200 rounded-md px-2 mr-2 text-xs p-0.5 pt-1.5 cursor-pointer hover:bg-gray-300">{cutInstruction}</div>
       }

@@ -9,7 +9,6 @@ export type PriceDataNumbers = {
   beef: {
     slaughter: number;
     processing: number;
-    minProcessing: number;
     patties: number;
     halves: number;
     halvesToQuaters: number;
@@ -36,7 +35,6 @@ export const PriceDataSchema: SchemaDefinition<DocumentDefinition<any>> = {
     type: {
       slaughter: { type: Number, required: true },
       processing: { type: Number, required: true },
-      minProcessing: { type: Number, required: true, default: 200 },
       patties: { type: Number, required: true },
       halves: { type: Number, required: true },
       halvesToQuaters: { type: Number, required: true },
@@ -118,7 +116,7 @@ export const useConfig = <T extends typeof Configs[number]>(type: T): ConfigType
 
       currentPrices: {
         beef: {
-          slaughter: 75, processing: 1, minProcessing: 200, patties: 0.45,
+          slaughter: 75, processing: 1, patties: 0.45,
           halves: 3, halvesToQuaters: 5, extraBoning: 0.2, cutStewMeat: 0.5,
           boneAndTenderizeRoundSteaks: 3, makeCubedSteaks: 3, boneOutPrimeRib: 5,
           boneOutLoin: 10, minPrice: 400

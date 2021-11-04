@@ -165,25 +165,25 @@ const invoiceSchema = new Schema({
 
 const Invoice = mongoose.model<IInvoice>(invoiceDatabaseName, invoiceSchema)
 
-export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDataNumbers, cutInstructionUser: IUser, cutInstructionId: number, cutInstruction: CutInstructions, id: number, numQuaters) => {
+
+
+export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDataNumbers, cutInstructionUser: IUser, cutInstructionId: number, cutInstruction: CutInstructions, id: number, numQuaters: number, invoiceToGenTo?: IInvoice) => {
     const numWhole = numQuaters / 4
     const numHalves = numQuaters / 2
 
-    const invoice = new Invoice({
-        invoiceId: id,
-        user: new ObjectId(user.id),
-        cutInstructionUser: new ObjectId(cutInstructionUser.id),
-        cutInstructionId: cutInstructionId,
-        cutInstruction: cutInstruction,
-        priceData: priceData,
-        animal: new ObjectId(animal.id),
-        numQuaters: numQuaters,
+    const invoice = invoiceToGenTo ?? new Invoice({})
 
-        customcharges: [],
-
-        markedAsPaid: false,
-        paymentTypes: [],
-    })
+    invoice.invoiceId = id
+    invoice.user = new ObjectId(user.id)
+    invoice.cutInstructionUser = new ObjectId(cutInstructionUser.id)
+    invoice.cutInstructionId = cutInstructionId
+    invoice.cutInstruction = cutInstruction
+    invoice.priceData = priceData
+    invoice.animal = new ObjectId(animal.id)
+    invoice.numQuaters = numQuaters
+    invoice.customcharges = []
+    invoice.markedAsPaid = false
+    invoice.paymentTypes = []
 
 
 

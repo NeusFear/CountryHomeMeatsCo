@@ -49,7 +49,6 @@ export const PriceSheet = () => {
             <tbody>
               <PriceEntry description="Slaughter Fee" currentPrice={beef.slaughter} onChange={thenSave(v => beef.slaughter = v)} unit="per Animal" />
               <PriceEntry description="Processing Fee" currentPrice={beef.processing} onChange={thenSave(v => beef.processing = v)} unit="per Pound * Dressed Weight" />
-              <PriceEntry description="Minimum Processing Fee" currentPrice={beef.minProcessing} onChange={thenSave(v => beef.minProcessing = v)} unit="" />
               <PriceEntry description="Make Patties" currentPrice={beef.patties} onChange={thenSave(v => beef.patties = v)} unit="per Pound" />
               <PriceEntry description="Split into Halves" currentPrice={beef.halves} onChange={thenSave(v => beef.halves = v)} unit="per Half" />
               <PriceEntry description="Divide Halves into Quaters" currentPrice={beef.halvesToQuaters} onChange={thenSave(v => beef.halvesToQuaters = v)} unit="per Quarter" />

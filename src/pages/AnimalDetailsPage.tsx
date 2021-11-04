@@ -1,20 +1,17 @@
-import { useHistoryListState } from "../AppHooks";
-import Animal, { getSexes, useAnimals, AnimalSexes, PenLetter, IAnimal, useComputedAnimalState, AnimalType, paddedAnimalId, validateEaters } from "../database/types/Animal";
-import { SvgArrow, SvgCalendar, SvgEdit } from "../assets/Icons";
-import Autosuggest from 'react-autosuggest';
-import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
+import { ObjectId } from 'bson';
 import { useEffect, useMemo, useState } from "react";
-import { invoiceDetails, userDetailsPage } from "../NavBar";
-import { Link } from 'react-router-dom';
-import { normalizeDay } from "../Util";
-import { ObjectId } from 'bson'
+import Autosuggest from 'react-autosuggest';
 import { useHistory } from 'react-router-dom';
-import { editUserDetails } from "../modals/ModalManager";
-import { DatabaseWait } from "../database/Database";
-import Invoice, { generateInvoice, IInvoice, useInvoice } from "../database/types/Invoices";
-import { useConfig } from "../database/types/Configs";
+import { useHistoryListState } from "../AppHooks";
+import { SvgArrow, SvgEdit } from "../assets/Icons";
 import InvoiceListItem from "../components/InvoiceListItem";
 import { SelectInputType } from "../components/SelectInputType";
+import { DatabaseWait } from "../database/Database";
+import Animal, { AnimalSexes, AnimalType, getSexes, IAnimal, paddedAnimalId, PenLetter, useAnimals, useComputedAnimalState } from "../database/types/Animal";
+import { useConfig } from "../database/types/Configs";
+import Invoice, { generateInvoice, useInvoice } from "../database/types/Invoices";
+import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
+import { normalizeDay } from "../Util";
 
 type DummyEater = {
   _rand: number
@@ -42,8 +39,6 @@ export const AnimalDetailsPage = () => {
   const currentState = useComputedAnimalState(animal)
 
   const [eaters, setEaters] = useState<DummyEater[]>()
-  const databaseLength = useInvoice(Invoice.countDocuments())
-
   const history = useHistory()
 
   if (priceData === DatabaseWait) {
@@ -60,7 +55,7 @@ export const AnimalDetailsPage = () => {
   if (user === DatabaseWait) {
     return <p>Loading user...</p>
   }
-  if (users === DatabaseWait || databaseLength == DatabaseWait) {
+  if (users === DatabaseWait) {
     return <p>Loading users...</p>
   }
   if (user === null) {
@@ -256,7 +251,7 @@ export const AnimalDetailsPage = () => {
           <div className="bg-gray-200 rounded-lg">
             <div className="bg-gray-700 p-1 flex flex-row rounded-t-lg">
               <div className="flex-grow text-gray-200 pl-4 font-semibold">Related Invoices</div>
-              {<button className="bg-blue-300 rounded px-2 text-white font-semibold" disabled={currentState < 4} onClick={() => {
+              {<button className="bg-blue-300 rounded px-2 text-white font-semibold" disabled={currentState < 4} onClick={async () => {
                 if (animal.invoices.length === 0 || confirm("This will remove all current invoices.")) {
                   const toRemove = animal.invoices.map(i => String(i))
                   animal.invoices = []
@@ -264,10 +259,10 @@ export const AnimalDetailsPage = () => {
 
                   let generated = 0
 
-                  const compoundQuaters = animal.numEaters === 1 ? 4 : 2
+                  const databaseLength = (await Invoice.find().select("invoiceID").exec()).reduce((p, c) => Math.max(p, c.invoiceId + 1), 0)
 
                   eaters.forEach(eaterCompound => {
-                    const quaters = eaterCompound.halfUser ? 1 : compoundQuaters;
+                    const quaters = eaterCompound.halfUser ? 1 : (animal.numEaters === 1 ? 4 : 2);
                     [eaterCompound, eaterCompound.halfUser].forEach(eater => {
                       if (eater === undefined) {
                         return
@@ -276,7 +271,7 @@ export const AnimalDetailsPage = () => {
                       generateInvoice(
                         animal, eater.foundUser, priceData.currentPrices,
                         eaterCompound.foundUser, eaterCompound.cutInstruction, eaterCompound.foundCutInstruction,
-                        databaseLength + ++generated, quaters
+                        databaseLength + generated++, quaters
                       )
                       toSave.add(eater.foundUser)
                     })

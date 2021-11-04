@@ -190,7 +190,7 @@ export const InvoiceDetailsPage = () => {
                             <p className="text-right"><RightFacingNumberInput value={invoice.takeHomeWeight} setValue={v => {
                                 invoice.takeHomeWeight = v
                                 invoice.save()
-                            }} />lbs ({String(Math.round((isNaN(invoice.takeHomeWeight) ? 0 : invoice.takeHomeWeight) / animal.dressWeight * 100))}% of dress)</p>
+                            }} />lbs ({String(Math.round((isNaN(invoice.takeHomeWeight) ? 0 : invoice.takeHomeWeight) / animal.dressWeight * 100 * 4 / invoice.numQuaters))}% of dress)</p>
                         </div>
                     </div>
                 </div>

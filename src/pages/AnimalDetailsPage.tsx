@@ -316,7 +316,7 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
 
   const saveDummyEaters = () => {
     animal.eaters =
-      eaters.filter(e => e.foundUser !== undefined && e.cutInstruction !== undefined)
+      eaters.filter(e => e.foundUser !== undefined)
         .map(e => {
           return {
             id: e.foundUser._id,
@@ -355,8 +355,8 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
 
     animal.eaters.forEach((e, i) => {
       const eat = eaters[i]
-      if (eat !== undefined) {
-        eat.foundUser = allUsers.find(u => u.id == e.id.toHexString())
+      if (eat !== undefined && e !== undefined && e !== null) {
+        eat.foundUser = allUsers.find(u => u.id == e.id?.toHexString())
         eat.tag = e.tag
         eat.cutInstruction = e.cutInstruction
         eat.foundCutInstruction = eat.foundUser?.cutInstructions?.find(c => c.id === e.cutInstruction)?.instructions
@@ -383,6 +383,17 @@ const EaterList = ({ eaters, setEaters, users, animal, currentState }: { eaters:
             const value = parseInt(e.target.value)
             setNumEaters(value)
             animal.numEaters = value
+            animal.eaters = [...animal.eaters]
+            animal.eaters.length = value === 1 ? 1 : 2
+            animal.eaters = animal.eaters.map(e => e ?? {})
+            if (value <= 2) {
+              animal.eaters[0].halfUser = undefined
+            }
+            if (value >= 2 && value <= 3) {
+              console.log(value === 1 ? 1 : 2, animal.eaters.length)
+              animal.eaters[1].halfUser = undefined
+            }
+            animal.markModified("eaters")
             animal.save()
           }}>
             <option value="1">1</option>

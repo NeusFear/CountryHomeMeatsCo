@@ -13,6 +13,7 @@ import ReactTooltip from "react-tooltip";
 
 export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string, instructionID: number }>(({ id, instructionID }, ref) => {
   const user = useUsers(User.findById(id).select('cutInstructions'), [id], id);
+
   const dbInstructionIndex = (user !== DatabaseWait && instructionID !== undefined) ?
     user.cutInstructions.findIndex(c => c.id === instructionID) :
     undefined

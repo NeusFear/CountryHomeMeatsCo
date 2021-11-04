@@ -11,20 +11,20 @@ export enum AnimalType {
 }
 
 export type Eater = {
-  id: ObjectId,
-  tag: string,
+  id?: ObjectId,
+  tag?: string,
   halfUser?: { id: ObjectId, tag: string }
-  cutInstruction: number
+  cutInstruction?: number
 }
 
 export const ValidateEatersFields = "numEaters eaters"
 export const validateEaters = (animal: IAnimal): boolean => {
-  const eaterValid = (obj: { id: ObjectId; tag: string; cutInstruction?: number }) => {
-    if (obj === undefined) {
+  const eaterValid = (obj?: { id?: ObjectId; tag?: string; cutInstruction?: number }) => {
+    if (obj === undefined || obj === null) {
       return false
     }
     const { id, cutInstruction } = obj
-    return (id ?? false) && (cutInstruction === undefined || cutInstruction >= 0)
+    return (id ?? false) && (cutInstruction !== undefined && cutInstruction >= 0)
   }
   const eaters = animal.numEaters;
   if (eaters < 1 || eaters > 4) {
@@ -86,15 +86,15 @@ const animalSchmea = new Schema({
   numEaters: { type: Number, default: 1 },
   eaters: {
     type: [{
-      id: { type: Schema.Types.ObjectId, ref: userDatabaseName, required: true },
+      id: { type: Schema.Types.ObjectId, ref: userDatabaseName },
       tag: { type: String },
       halfUser: {
         type: {
-          id: { type: Schema.Types.ObjectId, ref: userDatabaseName, required: true },
+          id: { type: Schema.Types.ObjectId, ref: userDatabaseName },
           tag: { type: String },
         }
       },
-      cutInstruction: { type: Number, required: true }
+      cutInstruction: { type: Number }
     }], default: []
   },
   killDate: { type: Schema.Types.Date, required: true },
@@ -180,7 +180,7 @@ export const useComputedAnimalState = (animalWithWait: IAnimal | undefined | Dat
     //To get from hanging to ready-to-cut.
     //The stringify is as it needs to be one element, rather than several
     animal?.numEaters,
-    JSON.stringify(animal?.eaters?.map(e => { return [e.id, e.halfUser, e.cutInstruction] })),
+    JSON.stringify(animal?.eaters?.filter(e => e !== null)?.map(e => { return [e.id, e.halfUser, e.cutInstruction] })),
 
     //To get from ready-to-cut to ready-for-pickup
     animal?.invoiceGeneratedDate,

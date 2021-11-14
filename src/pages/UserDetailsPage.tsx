@@ -1,22 +1,22 @@
-import { useHistoryListState } from "../AppHooks"
-import { useHistory } from 'react-router-dom';
-import { animalDetailsPage } from "../NavBar";
-import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgPhone, SvgPig, SvgTack, SvgUser, SvgTrash, SvgNotes } from "../assets/Icons";
-import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
-import { UserPinnedList } from "../App";
-import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
-import Animal, { useAnimals, IAnimal, useComputedAnimalState, computeAnimalState, AnimalType, useAnimalStateText, AnimalStateFields, paddedAnimalId } from "../database/types/Animal";
-import { DatabaseWait } from "../database/Database";
 import { ObjectId } from "bson";
-import { formatPhoneNumber } from "../Util";
-import Invoice, { useInvoice } from "../database/types/Invoices";
+import { useHistory } from 'react-router-dom';
+import { UserPinnedList } from "../App";
+import { useHistoryListState } from "../AppHooks";
+import { SvgCow, SvgEdit, SvgEmail, SvgNew, SvgNotes, SvgPhone, SvgPig, SvgTack, SvgTrash, SvgUser } from "../assets/Icons";
 import InvoiceListItem from "../components/InvoiceListItem";
+import { DatabaseWait } from "../database/Database";
+import Animal, { AnimalStateFields, AnimalType, computeAnimalState, IAnimal, paddedAnimalId, useAnimals, useAnimalStateText } from "../database/types/Animal";
+import Invoice, { useInvoice } from "../database/types/Invoices";
+import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
+import { editCutInstructions, editUserDetails, scheduleAnimal, setModal } from "../modals/ModalManager";
+import { animalDetailsPage } from "../NavBar";
+import { formatPhoneNumber } from "../Util";
 
 export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
   const id = useHistoryListState() as ObjectId
   const user = useUsers(User.findById(id).select("name phoneNumbers emails notes cutInstructions invoices"), [id], id)
 
-  const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user?.id : null).select("killDate animalType animalId " + AnimalStateFields), [user, id])
+  const usersAnimals = useAnimals(Animal.where('bringer', user !== DatabaseWait ? user?.id : null).select("killDate animalType animalId penLetter " + AnimalStateFields), [user, id])
   if (user === DatabaseWait || usersAnimals === DatabaseWait) {
     return (<div>Loading Info for user id {id}</div>)
   }
@@ -163,7 +163,6 @@ const BroughtInAnimalEntry = ({ animals }: {
   const state = computeAnimalState(firstEntry)
   const stateText = useAnimalStateText(state)
 
-
   return (
     <div className="bg-white rounded-md p-2 mx-3 mt-1 hover:shadow-md" onClick={() => history.push(animalDetailsPage, firstEntry.id)}>
       <div className="flex flex-row">
@@ -197,15 +196,15 @@ const BroughtInAnimalEntry = ({ animals }: {
           <InfoTag missingInfo={!firstEntry.color} value={(firstEntry.color ?? "Color?")} />
           <InfoTag missingInfo={!firstEntry.sex} value={(firstEntry.sex ?? "Sex?")} />
           <InfoTag missingInfo={!firstEntry.tagNumber} value={"Tag #" + (firstEntry.tagNumber ?? "tag# ?")} />
-          <InfoTag missingInfo={!firstEntry.penLetter} value={"Pen " + (firstEntry.penLetter ?? "pen ?")} />
+          <InfoTag missingInfo={!firstEntry.penLetter} value={"Pen " + (firstEntry.penLetter === "" ? "??" : firstEntry.penLetter)} alwaysValid />
         </div>
       }
     </div>
   )
 }
 
-const InfoTag = ({ missingInfo, value }: { missingInfo: boolean, value: string }) => {
+const InfoTag = ({ missingInfo, value, alwaysValid = false }: { missingInfo: boolean, value: string, alwaysValid?: boolean }) => {
   return (
-    <div className={(missingInfo ? "bg-tomato-100" : "bg-gray-200") + " rounded text-xs py-0.5 px-1 mx-1"}>{value}</div>
+    <div className={((missingInfo && !alwaysValid) ? "bg-tomato-100" : "bg-gray-200") + " rounded text-xs py-0.5 px-1 mx-1"}>{value}</div>
   )
 }

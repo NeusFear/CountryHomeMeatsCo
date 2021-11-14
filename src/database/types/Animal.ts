@@ -1,6 +1,6 @@
+import { ObjectId } from 'bson';
+import mongoose, { Document, Schema } from 'mongoose';
 import { useMemo } from 'react';
-import mongoose, { Schema, Document } from 'mongoose';
-import { ObjectId } from 'bson'
 import { createResultWatcher, DatabaseWait, DatabaseWaitType } from '../Database';
 import { animalDatabaseName, invoiceDatabaseName, userDatabaseName } from '../DatabaseNames';
 
@@ -48,7 +48,7 @@ export const getSexes = (animal: IAnimal): AnimalSexes[] => {
 
 export type AnimalSexes = typeof CowSexes[number] | typeof PigSexes[number]
 
-export type PenLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+export type PenLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | ""
 
 export interface IAnimal extends Document {
   animalType: AnimalType,
@@ -107,7 +107,7 @@ const animalSchmea = new Schema({
   dressWeight: { type: Number },
   color: { type: String },
   sex: { type: String },
-  penLetter: { type: String, uppercase: true, enum: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] },
+  penLetter: { type: String, uppercase: true, enum: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', ''] },
   processDate: { type: Schema.Types.Date },
   invoiceGeneratedDate: { type: Schema.Types.Date },
   tagNumber: { type: String },

@@ -259,7 +259,7 @@ export const AnimalDetailsPage = () => {
 
                   let generated = 0
 
-                  const databaseLength = (await Invoice.find().select("invoiceID").exec()).reduce((p, c) => Math.max(p, c.invoiceId + 1), 0)
+                  const databaseLength = (await Invoice.find().select("invoiceId").exec()).reduce((p, c) => Math.max(p, c.invoiceId + 1), 0)
 
                   eaters.forEach(eaterCompound => {
                     const quaters = eaterCompound.halfUser ? 1 : (animal.numEaters === 1 ? 4 : 2);

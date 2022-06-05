@@ -752,7 +752,7 @@ const BeefInstructions = ({ instructions }: { instructions: BeefCutInstructions 
               <SelectInputType
                 initial={instructions.chuck}
                 onChange={v => instructions.chuck = v}
-                values={['2lb', '2.5lf', '3lb', '3.5lb', '4lb', 'Hamburger']}
+                values={['2lb', '2.5lb', '3lb', '3.5lb', '4lb', 'Hamburger']}
                 width={100}
                 defaultValue="3lb"
               />

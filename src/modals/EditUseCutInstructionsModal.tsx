@@ -774,7 +774,7 @@ const BeefInstructions = ({ instructions }: { instructions: BeefCutInstructions 
               <SelectInputType
                 initial={instructions.ribs}
                 onChange={v => instructions.ribs = v}
-                values={['Keep All', 'Keep Part', 'All Hamburger', 'Hamburger if Possible']}
+                values={['BBQ', 'Part BBQ', 'Slabs', 'Hamburger']}
                 width={100}
               />
             </div>

@@ -1,20 +1,16 @@
-import { ObjectId } from "mongoose"
-import ReactTooltip from "react-tooltip"
-import { useHistory } from 'react-router-dom';
-import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons"
-import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, useAnimals, useComputedAnimalState, validateEaters } from "../database/types/Animal"
-import User, { CutInstructions, IUser, useUsers } from "../database/types/User"
-import { hangingAnimals, printGenericSheet, scheduleAnimal, setModal } from "../modals/ModalManager"
-import { SchueduleAnimalModal } from "../modals/ScheduleAnimalModal"
-import { formatDay, formatPhoneNumber, getDayNumber, normalizeDay } from "../Util"
-import { userDetailsPage, animalDetailsPage } from "../NavBar";
-import { useMemo } from "react";
-import { DatabaseWait } from "../database/Database";
-import UserTag from "../components/UserTag";
 import { PosPrintData } from "electron-pos-printer";
-import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
+import { useMemo } from "react";
+import { useHistory } from 'react-router-dom';
+import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons";
+import UserTag from "../components/UserTag";
+import { DatabaseWait } from "../database/Database";
+import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, useAnimals, useComputedAnimalState } from "../database/types/Animal";
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
-import Invoice, { IInvoice } from "../database/types/Invoices";
+import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
+import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
+import { hangingAnimals, printGenericSheet, setModal } from "../modals/ModalManager";
+import { animalDetailsPage } from "../NavBar";
+import { formatDay, formatPhoneNumber, getDayNumber, normalizeDay } from "../Util";
 
 export const TodayPage = () => {
   const today = useMemo(() => new Date(), [])
@@ -226,6 +222,7 @@ const doPrintAll = async (animals: IAnimal[]) => {
     if (animal.eaters.length === 0) {
       alert("Animals has no eaters.")
     }
+    const bringer = await User.findById(animal.bringer);
     for (let j = 0; j < animal.eaters.length; j++) {
       const eater = animal.eaters[j]
 
@@ -248,7 +245,7 @@ const doPrintAll = async (animals: IAnimal[]) => {
       if (!cutInstruction) {
         alert("Unable to find cutInstruction with id " + eater.cutInstruction + " for user " + user.name + ". Page will be skipped.")
       } else {
-        doPrint(data, animal, animal.eaters.length !== 1, cutInstruction.instructions, eater, user, subUser)
+        doPrint(data, animal, animal.eaters.length !== 1, cutInstruction.instructions, eater, user, bringer, subUser)
       }
     }
   }
@@ -263,7 +260,7 @@ const doPrintAll = async (animals: IAnimal[]) => {
 
 }
 
-const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cutInstruction: CutInstructions, eater: Eater, user: IUser, subUser?: IUser) => {
+const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cutInstruction: CutInstructions, eater: Eater, user: IUser, bringer: IUser, subUser?: IUser) => {
   const beef = cutInstruction as BeefCutInstructions
   const pork = cutInstruction as PorkCutInstructions
 
@@ -285,7 +282,7 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cut
     type: "text",
     value: `
     <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; ">
-        ${elementDiv(user.name, "Bringer", true)}
+        ${elementDiv(bringer.name, "Bringer", true)}
         ${elementDiv(`<span style="font-size: large; font-weight: bold;">${half ? "Half" : "Whole"}</span>`, "Portion")}
         ${elementDiv(formatDay(animal.killDate), "Date Killed")}
         ${elementDiv(animal.color, "Color")}
@@ -293,7 +290,7 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cut
         ${elementDiv(animal.tagNumber, "Tag")}
         ${elementDiv(animal.penLetter, "Pen")}
         ${elementDiv(animal.liveWeight, "Live Weight")}
-        ${elementDiv("__________", "Dressed Weight")}
+        ${elementDiv(animal.dressWeight, "Dressed Weight")}
     </div>
     `
   })

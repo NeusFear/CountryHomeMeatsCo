@@ -8,6 +8,7 @@ import { generateInvoice, IInvoice } from "../database/types/Invoices"
 import User, { useUsers } from "../database/types/User"
 import { invoiceDetails } from "../NavBar"
 import { formatQuaterText } from "../Util"
+import DataTag from "./DataTag"
 
 export default ({ invoice }: { invoice: IInvoice }) => {
   const user = useUsers(User.findById(invoice.user), [invoice.user], invoice.user)
@@ -67,13 +68,5 @@ export default ({ invoice }: { invoice: IInvoice }) => {
         <SvgRefresh className="w-4 h-4" />
       </div>
     </Link>
-  )
-}
-
-const DataTag = ({ name }: { name: string }) => {
-  return (
-    <div className="flex">
-      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">{name}</p>
-    </div>
   )
 }

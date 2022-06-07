@@ -1,6 +1,7 @@
 import { useHistory } from "react-router";
 import { useSearchState } from "../AppHooks";
 import { SvgSearch } from "../assets/Icons";
+import DataTag from "../components/DataTag";
 import { DatabaseWait } from "../database/Database";
 import Animal, { useAnimals } from "../database/types/Animal";
 import Invoice, { IInvoice, useInvoice } from "../database/types/Invoices";
@@ -145,14 +146,6 @@ const InvoiceEntry = ({ invoice }: { invoice: IInvoice }) => {
           }
         </div>
       </div>
-    </div>
-  )
-}
-
-const DataTag = ({ name, onClick }: { name: string, onClick?: () => void }) => {
-  return (
-    <div className="flex" onClick={onClick ? e => { e.stopPropagation(); onClick() } : null}>
-      <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300">{name}</p>
     </div>
   )
 }

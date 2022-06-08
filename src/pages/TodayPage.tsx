@@ -2,9 +2,10 @@ import { PosPrintData } from "electron-pos-printer";
 import { useMemo } from "react";
 import { useHistory } from 'react-router-dom';
 import { SvgCow, SvgEdit, SvgPig, SvgPrint } from "../assets/Icons";
+import DataTag, { FeedbackTypes } from "../components/DataTag";
 import UserTag from "../components/UserTag";
 import { DatabaseWait } from "../database/Database";
-import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, useAnimals, useComputedAnimalState } from "../database/types/Animal";
+import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, paddedAnimalId, useAnimals, useComputedAnimalState } from "../database/types/Animal";
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
 import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
@@ -40,7 +41,7 @@ const TodaysCutList = () => {
   )
 
   return (
-    <div className="w-1/2 h-full flex-grow pl-4 pr-2 py-4">
+    <div className="w-2/3 h-full flex-grow pl-4 pr-2 py-4">
       <div className="h-full bg-gray-200 rounded-lg">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
@@ -62,7 +63,7 @@ const TodaysCutList = () => {
 const SelectedCutList = ({ animal }: { animal: IAnimal }) => {
   const history = useHistory()
   const allUsers = useMemo(() => [animal.bringer, ...animal.eaters.map(e => e.id)], [animal])
-  const allFoundUsers = useUsers(User.where('_id').in(allUsers).select("name"))
+  const allFoundUsers = useUsers(User.where('_id').in(allUsers).select("name phoneNumbers cutInstructions"))
 
   const mainUser = allFoundUsers === DatabaseWait ? DatabaseWait : allFoundUsers.find(u => u.id === animal.bringer.toHexString())
 
@@ -76,29 +77,83 @@ const SelectedCutList = ({ animal }: { animal: IAnimal }) => {
   const Tag = animal.animalType === AnimalType.Beef ? SvgCow : SvgPig
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
-      <div className="w-14 mr-1">
+      <div className="mr-1">
         <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" />
-        <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{animal.animalId}</p>
+        <DataTag name={`#${paddedAnimalId(animal)}`}/>
       </div>
-      <div className="flex-grow text-gray-800 group-hover:text-gray-900">
-        <p className="font-semibold">Bringer:</p>
-        <UserTag user={mainUser} />
-      </div>
-      <div className="flex-grow text-gray-800 group-hover:text-gray-900">
-        <p className="font-semibold">Eaters:</p>
-        {animal.eaters.length > 0 ? animal.eaters.flatMap(e => [e, e.halfUser]).filter(e => e != null).map((eater, i) =>
-          <div className="flex flex-row" key={i} >
-            <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{allFoundUsers.find(u => String(u.id) === eater.id.toHexString()).name}</p>
-            {eater.tag !== undefined && eater.tag !== "" &&
-              <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1 mr-1">{eater.tag}</p>
+      <div>
+        <div className="flex flex-row">
+          <div className="text-gray-800 group-hover:text-gray-900">
+            <p className="font-semibold">Bringer:</p>
+            <div className="flex flex-row">
+              <UserTag user={mainUser} />
+              <DataTag name={"" + formatPhoneNumber(mainUser?.phoneNumbers[0].number) ?? "???"} />
+            </div>
+          </div>
+
+          <div className="text-gray-800 group-hover:text-gray-900 ml-4">
+            <p className="font-semibold">Living Info</p>
+            <div className="flex flex-row">
+              <DataTag name={String(animal.liveWeight ?? "???") + "lbs"} />
+              <DataTag name={animal.color} />
+              <DataTag name={animal.sex} />
+              <DataTag name={"Tag #" + String(animal.tagNumber ?? "???")} />
+              <DataTag name={"Pen " + animal.penLetter} />
+              {animal.animalType === AnimalType.Beef &&
+                <DataTag name={animal.older30Months ? "> 30 Months" : "< 30 Months"} feedback={animal.older30Months ? FeedbackTypes.positive : FeedbackTypes.negative} />
+              }
+              <DataTag name={animal.liverGood ? "Liver Good" : "Liver Bad"} feedback={animal.liverGood ? FeedbackTypes.positive : FeedbackTypes.negative} />
+            </div>
+          </div>
+        </div>
+
+        <div className="text-gray-800 group-hover:text-gray-900">
+          <p className="font-semibold">Eaters:</p>
+          <div className="flex flex-row">
+            {
+              animal.eaters.map((e, i) => {
+                const user = allFoundUsers.find(u => String(u.id) === String(e.id))
+                const halfUser = e.halfUser !== undefined ? allFoundUsers.find(u => String(u.id) === String(e.halfUser.id)) : undefined
+                return (
+                  <EatersBlock eater={e} user={user} halfUser={halfUser} index={i} />
+                )
+              })
             }
-            {eater['cutInstruction'] !== undefined &&
-              <p className="bg-gray-200 rounded-md text-xs py-1 px-2 text-gray-700 mt-1">#{eater['cutInstruction']}</p>
-            }
-          </div>) : <p className="font-semibold text-tomato-400">Error</p>}
+          </div>
+        </div>
       </div>
     </div>
   )
+}
+
+const EatersBlock = ({ eater, user, halfUser, index }: { eater: Eater, user: IUser, halfUser: IUser | undefined, index: number }) => {
+
+  const cutInstructionName = user.cutInstructions.find(c => c.id === eater.cutInstruction)?.nickname ?? "???";
+
+  const userName = user?.name ?? "???";
+  const halfUserName = halfUser?.name ?? "???";
+
+  const userTag = eater.tag === "" ? "" : ` (${eater.tag})`;
+  const halfUserTag = eater.halfUser !== undefined ? eater.halfUser?.tag === "" ? "" : `(${eater.halfUser.tag})` : "";
+
+  const userPhone = formatPhoneNumber(user?.phoneNumbers[0].number);
+  const halfUserPhone = eater.halfUser !== undefined ? formatPhoneNumber(user?.phoneNumbers[0].number) : "???";
+
+  return (
+    <div key={index} className="flex flex-row">
+      <DataTag key={`${index}a`} name={cutInstructionName} feedback={cutInstructionName !== "???" ? FeedbackTypes.positive : FeedbackTypes.warning} />
+      <div>
+        <DataTag key={`${index}b`} name={`${userName} ${userTag}`} />
+        <DataTag key={`${index}ba`} name={userPhone} />
+      </div>
+      {halfUser !== undefined &&
+        <div>
+          <DataTag key={`${index}c`} name={`${halfUserName} ${halfUserTag}`} />
+          <DataTag key={`${index}ca`} name={halfUserPhone} />
+        </div>
+      }
+    </div>
+  );
 }
 
 const ScheduledSlaughterList = () => {
@@ -110,7 +165,7 @@ const ScheduledSlaughterList = () => {
   }
 
   return (
-    <div className="w-1/2 h-full pl-2 pr-4 py-4 flex-grow">
+    <div className="w-1/3 h-full pl-2 pr-4 py-4 flex-grow">
       <div className="h-full bg-gray-200 rounded-lg pb-14">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Scheduled Slaughters</div>

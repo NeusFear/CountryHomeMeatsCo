@@ -1,4 +1,5 @@
-import { SvgCow, SvgPig, SvgArrow } from "../assets/Icons"
+import { SvgArrow, SvgCow, SvgPig } from "../assets/Icons"
+import DataTag from "../components/DataTag"
 import { DatabaseWait } from "../database/Database"
 import Animal, { AnimalType, IAnimal, useAnimals, validateEaters, ValidateEatersFields } from "../database/types/Animal"
 import User, { useUsers } from "../database/types/User"
@@ -7,12 +8,12 @@ import { hangingAnimals, setModal } from "./ModalManager"
 
 export const EditCutListModal = () => {
 
-  const animalsHanging = useAnimals(Animal.where('processDate', null).sort('killDate').select('killDate animalType bringer animalId ' + ValidateEatersFields))
+  const animalsHanging = useAnimals(Animal.where('processDate', null).sort('killDate').select('killDate animalType bringer animalId liveWeight color sex tagNumber penLetter ' + ValidateEatersFields))
 
   const animalsToCut = useAnimals(Animal
     .where('processDate').ne(null)
     .where('pickedUp', false)
-    .select("bringer processDate animalType killDate animalId")
+    .select("bringer processDate animalType killDate animalId liveWeight color sex tagNumber penLetter")
   )
 
   return (
@@ -50,6 +51,13 @@ const HangingAnimalEntry = ({ animal }: { animal: IAnimal }) => {
         <SvgArrow className="text-white group-hover:text-green-100 h-6 w-6 transform translate-y-2" />
       </div>
       <div className="flex-grow text-xs text-gray-600 mt-0.5 font-semibold ml-2">{animal.animalType} Killed {animal.killDate.toDateString()}</div>
+      <div className="flex flex-row w-full">
+        <DataTag name={String(animal.liveWeight ?? "???") + "lbs"} />
+        <DataTag name={animal.color} />
+        <DataTag name={animal.sex} />
+        <DataTag name={"Tag #" + String(animal.tagNumber ?? "???")} />
+        <DataTag name={"Pen " + animal.penLetter} />
+      </div>
     </div>
   )
 }
@@ -69,6 +77,13 @@ const CutAnimalEntry = ({ animal }: { animal: IAnimal }) => {
         <SvgArrow className="text-white group-hover:text-tomato-300 h-6 w-6 transform translate-y-2 rotate-180" />
       </div>
       <div className="flex-grow text-xs text-gray-600 mt-0.5 font-semibold ml-2">{animal.animalType} Killed {animal.killDate.toDateString()}</div>
+      <div className="flex flex-row w-full">
+        <DataTag name={String(animal.liveWeight ?? "???") + "lbs"} />
+        <DataTag name={animal.color} />
+        <DataTag name={animal.sex} />
+        <DataTag name={"Tag #" + String(animal.tagNumber ?? "???")} />
+        <DataTag name={"Pen " + animal.penLetter} />
+      </div>
     </div>
   )
 }

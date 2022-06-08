@@ -19,12 +19,12 @@ export type Eater = {
 
 export const ValidateEatersFields = "numEaters eaters"
 export const validateEaters = (animal: IAnimal): boolean => {
-  const eaterValid = (obj?: { id?: ObjectId; tag?: string; cutInstruction?: number }) => {
+  const eaterValid = (obj?: { id?: ObjectId; tag?: string; cutInstruction?: number }, isHalfUser?: boolean) => {
     if (obj === undefined || obj === null) {
       return false
     }
     const { id, cutInstruction } = obj
-    return (id ?? false) && (cutInstruction !== undefined && cutInstruction >= 0)
+    return (id ?? false) && ((cutInstruction !== undefined && cutInstruction >= 0) || isHalfUser)
   }
   const eaters = animal.numEaters;
   if (eaters < 1 || eaters > 4) {
@@ -33,8 +33,8 @@ export const validateEaters = (animal: IAnimal): boolean => {
   switch (eaters) {
     case 1: return animal.eaters.length === 1 && eaterValid(animal.eaters[0]) && !animal.eaters[0].halfUser
     case 2: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && !animal.eaters[0].halfUser && eaterValid(animal.eaters[1]) && !animal.eaters[1].halfUser
-    case 3: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && eaterValid(animal.eaters[0].halfUser) && eaterValid(animal.eaters[1]) && !animal.eaters[1].halfUser
-    case 4: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && eaterValid(animal.eaters[0].halfUser) && eaterValid(animal.eaters[1]) && eaterValid(animal.eaters[1].halfUser)
+    case 3: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && eaterValid(animal.eaters[0].halfUser, true) && eaterValid(animal.eaters[1]) && !animal.eaters[1].halfUser
+    case 4: return animal.eaters.length === 2 && eaterValid(animal.eaters[0]) && eaterValid(animal.eaters[0].halfUser, true) && eaterValid(animal.eaters[1]) && eaterValid(animal.eaters[1].halfUser, true)
   }
   return false;
 }

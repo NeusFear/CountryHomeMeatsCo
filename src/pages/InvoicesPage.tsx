@@ -1,14 +1,14 @@
 import { useHistory } from "react-router";
 import { useSearchState } from "../AppHooks";
 import { SvgSearch } from "../assets/Icons";
-import DataTag from "../components/DataTag";
+import DataTag, { FeedbackTypes } from "../components/DataTag";
 import { DatabaseWait } from "../database/Database";
 import Animal, { useAnimals } from "../database/types/Animal";
 import Invoice, { IInvoice, useInvoice } from "../database/types/Invoices";
 import User, { useUsers } from "../database/types/User";
 import { editCutInstructions, setModal } from "../modals/ModalManager";
 import { invoiceDetails, userDetailsPage } from "../NavBar";
-import { formatQuaterText } from "../Util";
+import { formatQuaterText, paddedID } from "../Util";
 import { calculateTotal } from "./InvoiceDetailsPage";
 
 export const InvoicesPage = () => {
@@ -99,7 +99,7 @@ const InvoiceEntry = ({ invoice }: { invoice: IInvoice }) => {
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(invoiceDetails, invoice.id)}>
       <div className="text-gray-800 group-hover:text-gray-900 w-20 mr-2">
-        <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">#{invoice.invoiceId}</p>
+        <p className="bg-gray-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-gray-300 w-full">#{paddedID(invoice.invoiceId)}</p>
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 w-1/6">
         <div className="flex flex-row">
@@ -117,10 +117,10 @@ const InvoiceEntry = ({ invoice }: { invoice: IInvoice }) => {
         </div>
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 w-1/6">
-        <p className={`${invoice.markedAsPaid ? "bg-green-100 hover:bg-green-200" : "bg-tomato-100 hover:bg-tomato-200"} px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer`}>{invoice.markedAsPaid ? "Paid" : "Pending"}</p>
+        <DataTag fill={true} name={invoice.markedAsPaid ? "Paid" : "Pending"} feedback={ invoice.markedAsPaid ? FeedbackTypes.positive : FeedbackTypes.negative } />
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 mx-2 w-20 mr-2">
-        <p className="bg-orange-200 px-2 py-1 rounded-lg text-sm mt-0.5 cursor-pointer hover:bg-orange-300">${totalCost}</p>
+        <DataTag name={`$${totalCost}`} feedback={ FeedbackTypes.warning } />
       </div>
       <div className="mx-4 text-gray-800 group-hover:text-gray-900">
         <DataTag name={formatQuaterText(invoice.numQuaters)} />
@@ -153,9 +153,9 @@ const InvoiceEntry = ({ invoice }: { invoice: IInvoice }) => {
 const EaterTag = ({ name, tag, cutInstruction, onClick, onInstructionClicked }: { name: string, tag: string, cutInstruction?: string, onClick?: () => void, onInstructionClicked?: () => void }) => {
   return (
     <div className="flex flex-row" onClick={e => { e.stopPropagation(); onClick() }}>
-      <div className="px-2 ml-2 bg-gray-200 rounded-md p-0.5 cursor-pointer hover:bg-gray-300">{name} ({tag})</div>
+      <DataTag name={`${name} (${tag})`} />
       {cutInstruction !== undefined &&
-        <div onClick={e => { e.stopPropagation(); onInstructionClicked() }} className="bg-gray-200 rounded-md px-2 mr-2 text-xs p-0.5 pt-1.5 cursor-pointer hover:bg-gray-300">{cutInstruction}</div>
+        <DataTag name={cutInstruction} onClick={onInstructionClicked} />
       }
     </div>
   )

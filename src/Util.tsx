@@ -28,3 +28,5 @@ export const formatWhole = (quaters: number) => halfs[quaters - 1]
 export const capitalizeFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+export const paddedID = (id: number) => String(id).padStart(5, "0")

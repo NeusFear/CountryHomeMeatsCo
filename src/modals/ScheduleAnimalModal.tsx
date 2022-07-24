@@ -1,16 +1,15 @@
-import { ModalHandler, setModal } from "./ModalManager";
-import DayPicker from "react-day-picker"
-import { SvgCow, SvgPig } from "../assets/Icons"
-import Animal, { AnimalType, createEmptyAnimal, IAnimal, useAnimals } from "../database/types/Animal"
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import DayPicker from "react-day-picker";
 import ReactTooltip from "react-tooltip";
-import { getDayNumber, normalizeDay } from "../Util";
-import User, { useUsers } from "../database/types/User";
+import { SvgCow, SvgPig } from "../assets/Icons";
 import { DayPickerCaption, fromMonth, toMonth } from "../components/DayPickerCaption";
-import { mongo } from "mongoose";
-import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
-import { useConfig } from "../database/types/Configs";
 import { DatabaseWait } from "../database/Database";
+import Animal, { AnimalType, createEmptyAnimal, useAnimals } from "../database/types/Animal";
+import { useConfig } from "../database/types/Configs";
 import DayEvents, { useDayEvents } from "../database/types/DayEvents";
+import User, { useUsers } from "../database/types/User";
+import { getDayNumber, normalizeDay } from "../Util";
+import { ModalHandler, setModal } from "./ModalManager";
 
 const style = `
 .DayPicker-Day {
@@ -48,7 +47,7 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
   const allUsers = useUsers(User.find().select('name'))
   const allUserNames = allUsers === DatabaseWait ? undefined : allUsers.reduce((map, obj) => map.set(obj.id, obj.name), new Map<string, string>())
 
-  const databaseLength = useAnimals(Animal.count())
+  const topAnimalId = useAnimals(Animal.find({}).sort({ animalId: -1 }).limit(1).select('animalId'))
 
   const [quantity, setQuantity] = useState(1)
 
@@ -70,12 +69,13 @@ export const SchueduleAnimalModal = forwardRef<ModalHandler, { userID: string }>
 
   const valid = animalType !== undefined && scheduledDate !== null
   const trySubmitData = () => {
-    if (databaseLength === DatabaseWait) {
+    if (topAnimalId === DatabaseWait) {
       return
     }
+    const topId = topAnimalId?.[0]?.animalId ?? -1
     for (let i = 0; i < quantity; i++) {
       const newAnimal = createEmptyAnimal(userID)
-      newAnimal.animalId = databaseLength + i
+      newAnimal.animalId = topId + i + 1
       newAnimal.animalType = animalType
       newAnimal.killDate = normalizeDay(scheduledDate)
       newAnimal.save().then(() => setModal(null))

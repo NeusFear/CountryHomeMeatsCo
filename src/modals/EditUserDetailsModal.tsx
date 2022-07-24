@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { SvgEmail, SvgPhone, SvgUser, SvgPlus, SvgCross } from "../assets/Icons";
+import { SvgCross, SvgEmail, SvgPhone, SvgPlus, SvgUser } from "../assets/Icons";
 import { EditorValidateInput, ValidatedString } from "../components/EditorValidateInput";
 import { DatabaseWait } from "../database/Database";
 
@@ -105,12 +105,12 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, { user: IUser }>((
                     setPhoneNumbers([...phoneNumbers])
                   }
                 }} />
-                {phoneNumbers.length === 1 ? <></> :
-                  <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
-                    phoneNumbers.splice(phoneNumbers.indexOf(d), 1)
-                    setPhoneNumbers([...phoneNumbers])
-                  }}><SvgCross /></span>
-                }
+                <span className="text-gray-800 hover:text-tomato-900 float-right flex items-center px-4 transform translate-y-3" onClick={() => {
+                  phoneNumbers.splice(phoneNumbers.indexOf(d), 1)
+                  setPhoneNumbers([...phoneNumbers])
+                }}>
+                  <SvgCross />
+                </span>
               </div>
             ))}
           </div>
@@ -121,7 +121,7 @@ const EditUserDetailsModalWithUser = forwardRef<ModalHandler, { user: IUser }>((
               _id: Math.random()
             })
             setPhoneNumbers([...phoneNumbers])
-          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add Another Phone</div>
+          }}><SvgPlus className="float-left h-8 m-1 transform -translate-y-2" />Add {phoneNumbers.length === 0 ? "A" : "Another"} Phone</div>
         </div>
 
         <div className="pt-5">

@@ -243,7 +243,7 @@ export const generateInvoice = (animal: IAnimal, user: IUser, priceData: PriceDa
     animal.invoices.push(invoice.id)
     user.invoices.push(invoice.id)
 
-    invoice.save()
+    return invoice.save()
 }
 
 const runIfGroup = (val: string, regex: RegExp, onPresent: (val: string) => void) => {

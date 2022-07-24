@@ -13,7 +13,7 @@ import Invoice, { generateInvoice } from "../database/types/Invoices";
 import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
 import { hangingAnimals, printGenericSheet, setModal } from "../modals/ModalManager";
 import { animalDetailsPage } from "../NavBar";
-import { formatDay, formatPhoneNumber, getDayNumber, normalizeDay } from "../Util";
+import { formatDay, formatPhoneNumber, formatWhole, getDayNumber, normalizeDay } from "../Util";
 
 export const TodayPage = () => {
   const today = useMemo(() => new Date(), [])
@@ -235,19 +235,6 @@ const elementDiv = (value: any, key: string, grow = false) => {
 `
 }
 
-const formatEater = (user: IUser, tag?: string) => {
-  return `
-  <div style="margin-left: 5px">
-      <div style="font-size: x-large;">
-          ${user.name}${(tag) ? ` (${tag})` : ""}
-      </div>
-      <div>
-          ${user.emails.join("<br>")}<br>
-          ${user.phoneNumbers.map(u => u.name + ": " + formatPhoneNumber(u.number)).join("<br>")}
-      </div>
-  </div>
-  `
-}
 
 const instructionDiv = (part: string, value: string) => {
   return `
@@ -278,6 +265,7 @@ const doPrintAll = async (animals: IAnimal[], currentPrices: PriceData) => {
 
   let nextLength = (await Invoice.find().select("invoiceId").exec()).reduce((p, c) => Math.max(p, c.invoiceId + 1), 0)
 
+  const handledInvoices: string[] = []
 
   for (let i = 0; i < animals.length; i++) {
     const animal = animals[i];
@@ -285,6 +273,10 @@ const doPrintAll = async (animals: IAnimal[], currentPrices: PriceData) => {
       alert("Animals has no eaters.")
     }
     const bringer = await User.findById(animal.bringer);
+    if (bringer === null) {
+      alert("Bringer not found.")
+      continue
+    }
     for (let j = 0; j < animal.eaters.length; j++) {
       const eater = animal.eaters[j]
 
@@ -303,28 +295,47 @@ const doPrintAll = async (animals: IAnimal[], currentPrices: PriceData) => {
         }
       }
 
+      const allUsers = subUser ? [user, subUser] : [user]
+
       const cutInstruction = user.cutInstructions.find(c => c.id === eater.cutInstruction)
       if (!cutInstruction) {
         alert("Unable to find cutInstruction with id " + eater.cutInstruction + " for user " + user.name + ". Page will be skipped.")
-      } else {
-
-        if (animal.invoices.length === 0) {
-          const quaters = eater.halfUser ? 1 : (animal.numEaters === 1 ? 4 : 2);
-          generateInvoice(animal, user, currentPrices.currentPrices, user, eater.cutInstruction!, cutInstruction.instructions, nextLength++, quaters)
-          if (subUser) {
-            generateInvoice(animal, subUser, currentPrices.currentPrices, user, eater.cutInstruction!, cutInstruction.instructions, nextLength++, quaters)
-          }
-          user.save()
-          if (subUser) {
-            subUser.save()
-          }
-        }
-
-        doPrint(data, animal, animal.eaters.length !== 1, cutInstruction.instructions, eater, user, bringer, subUser)
+        continue
       }
+
+      const quaters = eater.halfUser ? 1 : (animal.numEaters === 1 ? 4 : 2);
+      if (animal.invoices.length === 0) {
+        for (const u of allUsers) {
+          await generateInvoice(animal, u, currentPrices.currentPrices, user, eater.cutInstruction!, cutInstruction.instructions, nextLength++, quaters)
+          await u.save()
+        }
+        await animal.save()
+      }
+
+      for (const u of allUsers) {
+        //It is impossible to query the invoice that this printing is doing, as there is not
+        //enough identifiable information to do so.
+        //Therefore, we can just ensure that we don't handle the same invoice twice with `handledInvoices`
+        const invoices = (await Invoice
+          .where("animal", animal.id)
+          .where("user", u.id)
+          .where("cutInstructionUser", user.id)
+          .where("cutInstructionId", eater.cutInstruction)
+          .where("numQuaters", quaters)
+          .exec())
+        console.log(invoices)
+        const invoice = invoices.find(i => !handledInvoices.includes(i.id))
+        if (!invoice) {
+          console.log("Unable to find invoice for animal ", animal.id, " user ", u.id, " cutInstructionUser ", eater.id, " cutInstructionId ", eater.cutInstruction, " numQuaters ", quaters)
+          alert("Unable to find invoice for animal " + animal.animalId)
+          continue
+        }
+        handledInvoices.push(invoice.id)
+        doPrint(data, animal, quaters, cutInstruction.instructions, eater, u, bringer, invoice.invoiceId)
+      }
+
     }
 
-    animal.save()
   }
 
   //Remove the last page break
@@ -337,9 +348,10 @@ const doPrintAll = async (animals: IAnimal[], currentPrices: PriceData) => {
 
 }
 
-const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cutInstruction: CutInstructions, eater: Eater, user: IUser, bringer: IUser, subUser?: IUser) => {
+const doPrint = async (data: PosPrintData[], animal: IAnimal, quaters: number, cutInstruction: CutInstructions, eater: Eater, user: IUser, bringer: IUser, invoiceId: number) => {
   const beef = cutInstruction as BeefCutInstructions
   const pork = cutInstruction as PorkCutInstructions
+
 
   //The top part of the invoice, containing the invoice id, and the animal id
   data.push({
@@ -350,6 +362,7 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cut
         <div style="flex-grow: 1; font-size: 4em;">
             ${animal.animalType} Cutting Sheet
         </div>
+        ${elementDiv(invoiceId, "Invoice ID")}
     </div>
     `
   })
@@ -360,7 +373,6 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cut
     value: `
     <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; ">
         ${elementDiv(bringer.name, "Bringer", true)}
-        ${elementDiv(`<span style="font-size: large; font-weight: bold;">${half ? "Half" : "Whole"}</span>`, "Portion")}
         ${elementDiv(formatDay(animal.killDate), "Date Killed")}
         ${elementDiv(animal.color, "Color")}
         ${elementDiv(animal.sex, "Sex")}
@@ -368,6 +380,7 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cut
         ${elementDiv(animal.penLetter, "Pen")}
         ${elementDiv(animal.liveWeight, "Live Weight")}
         ${elementDiv(animal.dressWeight, "Dressed Weight")}
+        ${elementDiv(animal.liverGood ? "Yes" : "No", "Liver Good")}
     </div>
     `
   })
@@ -377,14 +390,37 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cut
     type: "text",
     value: `
     <div style="display: flex; flex-direction: row; width: 100%; padding-bottom: 20px">
-        <div style="width: 100%">
-            Main Eater:
-            ${formatEater(user, eater?.tag)}
+        <div style="width: 100%; margin-left: 5px">
+          <div style="font-size: x-large;">
+            ${user.name}${eater?.tag ? ` (${eater?.tag})` : ""}
+          </div>
+          Eater Name
+          <div>
+            ${user.emails.join("<br>")}<br>
+            ${user.phoneNumbers.map(u => u.name + ": " + formatPhoneNumber(u.number)).join("<br>")}
+          </div>
         </div>
         <div style="width: 100%">
-            Sharer (If Half of Half)
-            ${subUser ? formatEater(subUser, eater?.halfUser?.tag) : `<div style="margin-left: 5px; font-size: xx-large">No Half of Half</div>`}
+            <div style="margin-left: 5px; font-size: xx-large">${formatWhole(quaters)}</div>
+            <div>Portion</div>
+            <div style="margin-top: 20px">
+                <div style="display: flex; flex-direction: row;">
+                  <span style="width: 150px">Instructions Taken By:</span>
+                  <span>${cutInstruction.instructionsTakenBy ?? "???"}</span>
+                </div>
+                <div style="display: flex; flex-direction: row;">
+                  <span style="width: 150px">Instructions Taken On:</span>
+                  <span>${cutInstruction.instructionsTakenDate ?? "???"}</span>
+                </div>
+                <div style="display: flex; flex-direction: row;">
+                  <span style="width: 150px">Instructions Given By:</span>
+                  <span>${cutInstruction.personGivingInstructions ?? "???"}</span>
+                </div>
+            </div>
         </div>
+    </div>
+    <div style="border-bottom: 1px solid black; border-top: 1px solid black; height: 200px; width: 100%">
+      <div style="font-size: x-large">Comments:</div>
     </div>
     `
   })
@@ -394,7 +430,14 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, half: boolean, cut
       type: "text",
       value: `
       <br><br><br>
-      <span style="style="font-size: large;"">Take Home Weight: _______________</span>
+      <div style="display: flex; flex-direction: row; border-top: 2px solid black;">
+        <div style="font-size: large; flex-grow: 1;">
+          Take Home Weight
+        </div>
+        <div style="font-size: large; width: 200px">
+          Freezer:
+        </div>
+      </div>
       `
     },
     {

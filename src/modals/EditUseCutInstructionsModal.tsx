@@ -1,14 +1,14 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react"
-import User, { CutInstructions, useUsers } from "../database/types/User"
-import { SvgCow, SvgCross, SvgPig, SvgPlus } from "../assets/Icons"
-import Animal, { AnimalType } from "../database/types/Animal"
-import { useState } from "react";
-import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
-import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
-import { ModalHandler, setModal } from "./ModalManager";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import ReactTooltip from "react-tooltip";
+import { SvgCow, SvgCross, SvgPig, SvgPlus } from "../assets/Icons";
 import { SelectInputType } from "../components/SelectInputType";
 import { DatabaseWait, DatabaseWaitType } from "../database/Database";
-import ReactTooltip from "react-tooltip";
+import { AnimalType } from "../database/types/Animal";
+import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
+import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
+import User, { CutInstructions, useUsers } from "../database/types/User";
+import { formatDay } from "../Util";
+import { ModalHandler, setModal } from "./ModalManager";
 
 
 export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string, instructionID: number }>(({ id, instructionID }, ref) => {
@@ -115,6 +115,13 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
 
   useImperativeHandle(ref, () => ({ onClose: submit }))
 
+  const [currentTypedDate, setCurrentTypedDate] = useState<string>("")
+  useEffect(() => {
+    if (dbInstructions?.instructionsTakenDate !== undefined) {
+      setCurrentTypedDate(dbInstructions?.instructionsTakenDate)
+    }
+  }, [dbInstructions?.instructionsTakenDate])
+
   if (instructionID !== undefined && dbInstructions == undefined) {
     return (<div>Loading Cut Instructions...</div>)
   }
@@ -126,6 +133,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
   if (user === null) {
     return (<div>Error loading User: {id}</div>)
   }
+
 
   return (
     <div className="flex flex-col overflow-clip" style={{ width: '900px', height: '620px' }}>
@@ -146,12 +154,37 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
         <div></div>
         <div></div>
       </div>
-      <div className="p-4 overflow-y-scroll">
+      <div className="px-4 py-1">
         Nickname: <input className={nickname === "" ? "bg-tomato-200" : "bg-blue-200"} value={nickname} onChange={e => {
           const val = e.target.value
           setNickname(val)
           setCanSubmit(genIfCanSubmit(val))
         }} />
+      </div>
+      <div className="px-4 py-1">
+        Instructions Taken By: <input className={"bg-blue-200"} defaultValue={cutInstruction.instructionsTakenBy} onBlur={e => {
+          cutInstruction.instructionsTakenBy = e.target.value
+        }} />
+      </div>
+      <div className="px-4 py-1">
+        Person Giving Instructions: <input className={"bg-blue-200"} defaultValue={cutInstruction.personGivingInstructions} onBlur={e => {
+          cutInstruction.personGivingInstructions = e.target.value
+        }} />
+      </div>
+      <div className="px-4 py-1">
+        Instructions Taken At: <input className={"bg-blue-200"} value={currentTypedDate} onChange={e => {
+          const val = e.target.value
+          cutInstruction.instructionsTakenDate = val
+          setCurrentTypedDate(val)
+        }} />
+        <button
+          onClick={() => {
+            const val = formatDay(new Date())
+            cutInstruction.instructionsTakenDate = val
+            setCurrentTypedDate(val)
+          }}
+          className="bg-blue-100 hover:bg-blue-200 cursor-pointer rounded-sm h-full px-4 ml-2"
+        >Set To Today</button>
       </div>
       <div className="p-4 overflow-y-scroll h-full flex flex-col">
         {animalType !== DatabaseWait && (

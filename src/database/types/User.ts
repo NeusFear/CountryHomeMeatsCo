@@ -1,12 +1,17 @@
-import mongoose, { Schema, Document, SchemaDefinition, DocumentDefinition } from 'mongoose';
 import { ObjectId } from 'bson';
+import mongoose, { Document, DocumentDefinition, Schema, SchemaDefinition } from 'mongoose';
 import { createResultWatcher } from '../Database';
 import { invoiceDatabaseName, userDatabaseName } from '../DatabaseNames';
 import { AnimalType } from './Animal';
 import { BeefCutInstructions, BeefCutInstructionsSchema } from './cut_instructions/Beef';
 import { PorkCutInstructions, PorkCutInstructionsSchema } from './cut_instructions/Pork';
 
-export type CutInstructions = (BeefCutInstructions | PorkCutInstructions) & { notes?: string }
+export type CutInstructions = (BeefCutInstructions | PorkCutInstructions) & {
+  instructionsTakenBy?: string
+  personGivingInstructions?: string
+  instructionsTakenDate?: string
+  notes?: string
+}
 
 export interface IUser extends Document {
   name: string
@@ -46,6 +51,9 @@ const userSchmea = new Schema({
     }], required: true
   },
   notes: { type: String, default: '' },
+  instructionsTakenBy: { type: String, default: '' },
+  personGivingInstructions: { type: String, default: '' },
+  instructionsTakenDate: { type: String, default: '' },
 });
 
 const User = mongoose.model<IUser>(userDatabaseName, userSchmea)

@@ -201,6 +201,12 @@ export const InvoiceDetailsPage = () => {
                     <CowDataTable invoice={invoice} cutInstructions={cutInstruction} price={invoice.priceData.beef} /> :
                     <PigDataTable invoice={invoice} cutInstructions={cutInstruction} price={invoice.priceData.pork} />
                 }
+                {cutInstruction.notes !== undefined &&
+                    <div className="flex flex-row pr-4">
+                        <p className="font-semibold">Notes:</p>
+                        <p className="ml-2">{cutInstruction.notes}</p>
+                    </div>
+                }
                 <table className="table-fixed bg-gray-300 mt-4 border rounded-md">
                     <thead className="bg-gray-800 rounded-md">
                         <tr className="rounded-md">
@@ -1087,6 +1093,12 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
             tableHeaderStyle: 'background-color: #000; color: white; text-align: left',
             tableBodyStyle: 'border: 0.5px solid #ddd; text-align: left',
             style: "width: calc(100% - 50px); margin-left: 16px; margin-top: 15px"
+        })
+    }
+    if (invoice.cutInstruction.notes !== undefined) {
+        data.push({
+            type: "text",
+            value: `Notes: ${invoice.cutInstruction.notes}`,
         })
     }
 

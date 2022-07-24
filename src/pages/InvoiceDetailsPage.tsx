@@ -1187,20 +1187,21 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                     <span style="flex-grow: 1">Post Min ($${minTotal}):</span>
                     <span>$${total.toFixed(2)}</span>
                 </div>
-                ${charges.length === 0 ? "" :
-                `
-                <div style="display: flex; flex-direction: row; border-top: solid 1px black">
-                    <div style="width: 100px">Custom Cost${charges.length === 1 ? "" : "s"}:</div>
-                    <div style="flex-grow: 1;">
-                        ${charges.map(charge => `
-                            <div style="display: flex; flex-direction: row">
-                                <span style="flex-grow: 1">${charge.name} ($${charge.amount.toFixed(2)}):</span>
-                                <span>$${(chargeCounter += charge.amount).toFixed(2)}</span>
-                            </div>  
-                        `).join("")}
-                    </div>
-                </div>
-                `
+                ${''
+            //     charges.length === 0 ? "" :
+            // `
+            // <div style="display: flex; flex-direction: row; border-top: solid 1px black">
+            //     <div style="width: 100px">Custom Cost${charges.length === 1 ? "" : "s"}:</div>
+            //     <div style="flex-grow: 1;">
+            //         ${charges.map(charge => `
+            //             <div style="display: flex; flex-direction: row">
+            //                 <span style="flex-grow: 1">${charge.name} ($${charge.amount.toFixed(2)}):</span>
+            //                 <span>$${(chargeCounter += charge.amount).toFixed(2)}</span>
+            //             </div>  
+            //         `).join("")}
+            //     </div>
+            // </div>
+            // `
             }
                 <div style="display: flex; flex-direction: row; border-top: solid 1px black">
                     <span style="flex-grow: 1">Total:</span>

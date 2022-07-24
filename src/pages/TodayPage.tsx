@@ -480,7 +480,7 @@ const doPrint = async (data: PosPrintData[], animal: IAnimal, quaters: number, c
                       ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
                     </div>
                   </div>
-                  ${instructionDiv("Notes", cutInstruction.notes)}
+                  ${instructionDiv("Notes", cutInstruction.notes ?? "")}
               `
       }
     )

@@ -210,7 +210,7 @@ export const AnimalDetailsPage = () => {
               {animal.animalType === AnimalType.Beef &&
                 <div className="font-semibold flex flex-row p-1 ml-4">
                   <span>Older than 30 Months</span>
-                  <select className="border-gray-700 border rounded-md px-1 h-6 ml-2" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
+                  <select className="border-gray-700 border rounded-md px-1 h-6 ml-2" defaultValue={String(animal.older30Months ?? false)} onChange={e => {
                     animal.older30Months = e.target.value === "true"
                     setAnimalArriveDateAndSave()
                   }}>

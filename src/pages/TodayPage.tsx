@@ -6,8 +6,10 @@ import DataTag, { FeedbackTypes } from "../components/DataTag";
 import UserTag from "../components/UserTag";
 import { DatabaseWait } from "../database/Database";
 import Animal, { AnimalStateFields, AnimalType, Eater, IAnimal, paddedAnimalId, useAnimals, useComputedAnimalState } from "../database/types/Animal";
+import { PriceData, useConfig } from "../database/types/Configs";
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef";
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork";
+import Invoice, { generateInvoice } from "../database/types/Invoices";
 import User, { CutInstructions, IUser, useUsers } from "../database/types/User";
 import { hangingAnimals, printGenericSheet, setModal } from "../modals/ModalManager";
 import { animalDetailsPage } from "../NavBar";
@@ -40,12 +42,14 @@ const TodaysCutList = () => {
     .where('pickedUp', false)
   )
 
+  const priceData = useConfig("PriceData")
+
   return (
     <div className="w-2/3 h-full flex-grow pl-4 pr-2 py-4">
       <div className="h-full bg-gray-200 rounded-lg">
         <div className="bg-gray-700 p-1 mb-3 flex flex-row rounded-t-lg">
           <div className="flex-grow text-gray-200 pl-4 font-semibold">Today's Cut List</div>
-          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2" onClick={() => animals !== DatabaseWait && doPrintAll(animals)}>
+          <div className="bg-blue-300 p-1 rounded-sm text-white text-xs flex flex-row cursor-pointer mr-2" onClick={() => animals !== DatabaseWait && priceData !== DatabaseWait && doPrintAll(animals, priceData)}>
             <SvgPrint className="mt-1 mr-1" />
             Print Cut List
           </div>
@@ -79,7 +83,7 @@ const SelectedCutList = ({ animal }: { animal: IAnimal }) => {
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>
       <div className="mr-1">
         <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" />
-        <DataTag name={`#${paddedAnimalId(animal)}`}/>
+        <DataTag name={`#${paddedAnimalId(animal)}`} />
       </div>
       <div>
         <div className="flex flex-row">
@@ -254,7 +258,7 @@ const instructionDiv = (part: string, value: string) => {
 }
 
 
-const doPrintAll = async (animals: IAnimal[]) => {
+const doPrintAll = async (animals: IAnimal[], currentPrices: PriceData) => {
   const data: PosPrintData[] = [{
     type: "text",
     value: `
@@ -272,6 +276,9 @@ const doPrintAll = async (animals: IAnimal[]) => {
     `
   }]
 
+  let nextLength = (await Invoice.find().select("invoiceId").exec()).reduce((p, c) => Math.max(p, c.invoiceId + 1), 0)
+
+
   for (let i = 0; i < animals.length; i++) {
     const animal = animals[i];
     if (animal.eaters.length === 0) {
@@ -287,7 +294,7 @@ const doPrintAll = async (animals: IAnimal[]) => {
         continue
       }
 
-      let subUser: IUser
+      let subUser: IUser | null = null
       if (eater.halfUser) {
         subUser = await User.findById(eater.halfUser.id)
         if (!subUser) {
@@ -300,9 +307,24 @@ const doPrintAll = async (animals: IAnimal[]) => {
       if (!cutInstruction) {
         alert("Unable to find cutInstruction with id " + eater.cutInstruction + " for user " + user.name + ". Page will be skipped.")
       } else {
+
+        if (animal.invoices.length === 0) {
+          const quaters = eater.halfUser ? 1 : (animal.numEaters === 1 ? 4 : 2);
+          generateInvoice(animal, user, currentPrices.currentPrices, user, eater.cutInstruction!, cutInstruction.instructions, nextLength++, quaters)
+          if (subUser) {
+            generateInvoice(animal, subUser, currentPrices.currentPrices, user, eater.cutInstruction!, cutInstruction.instructions, nextLength++, quaters)
+          }
+          user.save()
+          if (subUser) {
+            subUser.save()
+          }
+        }
+
         doPrint(data, animal, animal.eaters.length !== 1, cutInstruction.instructions, eater, user, bringer, subUser)
       }
     }
+
+    animal.save()
   }
 
   //Remove the last page break

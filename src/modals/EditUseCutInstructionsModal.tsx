@@ -19,6 +19,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
     undefined
 
   const [nickname, setNickname] = useState("New Cut Instruction")
+  const [takenBy, setTakenBy] = useState("")
 
   const dbInstrucionObject = user !== DatabaseWait ? user.cutInstructions[dbInstructionIndex] : undefined
   const dbInstructions = dbInstrucionObject?.instructions
@@ -36,20 +37,13 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
   if (dbInstructions !== undefined && animalType === DatabaseWait) {
     setAnimalType(dbInstructions.cutType)
     setNickname(dbInstrucionObject.nickname)
+    setTakenBy(dbInstructions.instructionsTakenBy ?? "")
   }
 
   const testFreshCured = (ins: { fresh: { amount: number }, cured: { amount: number } }) => ins.fresh.amount + ins.cured.amount === 2
   const testPigFreshCured = (ins: PorkCutInstructions) =>
     testFreshCured(ins.ham) && testFreshCured(ins.bacon) && testFreshCured(ins.jowl) &&
     testFreshCured(ins.loin) && testFreshCured(ins.butt) && testFreshCured(ins.picnic)
-
-  const genIfCanSubmit = (nick = nickname) => nick !== "" && animalType !== DatabaseWait && (animalType === AnimalType.Beef || testPigFreshCured(cutInstruction as PorkCutInstructions))
-
-  const [canSubmit, setCanSubmit] = useState(genIfCanSubmit)
-  const refreshCanSubmit = () => setCanSubmit(genIfCanSubmit())
-
-  //Make sure that when the animalType goes from DatabaseWait to whatever, we refresh the submit status
-  useEffect(() => refreshCanSubmit(), [animalType])
 
   //Can be undefined if is a new instruction
   const cutInstruction: CutInstructions = useMemo(() => {
@@ -86,10 +80,20 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
     return dbInstructions
   }, [instructionID, id, animalType, user !== DatabaseWait])
 
+  const genIfCanSubmit = (nick = nickname, taken = takenBy) => nick !== "" && taken !== "" && animalType !== DatabaseWait && (animalType === AnimalType.Beef || testPigFreshCured(cutInstruction as PorkCutInstructions))
+
+  const [canSubmit, setCanSubmit] = useState(genIfCanSubmit)
+  const refreshCanSubmit = () => setCanSubmit(genIfCanSubmit())
+
+  //Make sure that when the animalType goes from DatabaseWait to whatever, we refresh the submit status
+  useEffect(() => refreshCanSubmit(), [animalType])
+
+
   const submit = () => {
     if (user === DatabaseWait || !canSubmit || animalType === DatabaseWait) {
       return
     }
+    cutInstruction.instructionsTakenBy = takenBy
     if (dbInstructions === undefined) {
       const ids = user.cutInstructions.map(i => i.id)
       let id = ids.length
@@ -106,7 +110,7 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
       user.cutInstructions[dbInstructionIndex] = {
         id: dbInstrucionObject.id,
         instructions: cutInstruction,
-        nickname
+        nickname,
       }
     }
     user.save()
@@ -162,12 +166,14 @@ export const EditUseCutInstructionsModal = forwardRef<ModalHandler, { id: string
         }} />
       </div>
       <div className="px-4 py-1">
-        Instructions Taken By: <input className={"bg-blue-200"} defaultValue={cutInstruction.instructionsTakenBy} onBlur={e => {
-          cutInstruction.instructionsTakenBy = e.target.value
+        Instructions Taken By:  <input className={takenBy === "" ? "bg-tomato-200" : "bg-blue-200"} value={takenBy} onChange={e => {
+          const val = e.target.value
+          setTakenBy(val)
+          setCanSubmit(genIfCanSubmit(undefined, val))
         }} />
       </div>
       <div className="px-4 py-1">
-        Person Giving Instructions: <input className={"bg-blue-200"} defaultValue={cutInstruction.personGivingInstructions} onBlur={e => {
+        Instructions Given By: <input className={"bg-blue-200"} defaultValue={cutInstruction.personGivingInstructions} onBlur={e => {
           cutInstruction.personGivingInstructions = e.target.value
         }} />
       </div>

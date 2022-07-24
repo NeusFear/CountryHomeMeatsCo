@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { useHistoryListState } from "../AppHooks"
 import { SvgPlus, SvgPrint, SvgTrash } from "../assets/Icons"
 import { DatabaseWait } from "../database/Database"
-import Animal, { AnimalType, IAnimal, useAnimals } from "../database/types/Animal"
+import Animal, { AnimalType, IAnimal, paddedAnimalId, useAnimals } from "../database/types/Animal"
 import { PriceDataNumbers } from "../database/types/Configs"
 import { BeefCutInstructions } from "../database/types/cut_instructions/Beef"
 import { PorkCutInstructions } from "../database/types/cut_instructions/Pork"
@@ -950,6 +950,22 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                     <span style="font-weight: bold">${user.name}</span><br>
                     ${user.emails.map(e => `${e}<br>`).join("")}
                     ${user.phoneNumbers.map(p => `${p.name}: ${formatPhoneNumber(p.number)}<br>`).join("")}
+                </div>
+                <br>
+                <div>
+                    <div style="font-weight: bold">Animal details</div>
+                    ID: #${paddedAnimalId(animal)}<br>
+                    Type: ${formatWhole(invoice.numQuaters)} ${animal.animalType}<br>
+                    Date Killed: ${formatDay(animal.killDate)}<br>
+                    Date Processed: ${formatDay(animal.processDate)}<br>
+                    Date Invoice Generated: ${formatDay(animal.invoiceGeneratedDate)}<br>
+                    Live Weight: ${animal.liveWeight}lbs<br>
+                    Dress Weight: ${animal.dressWeight}lbs (${Math.round(animal.dressWeight / animal.liveWeight * 100)}% of live)<br>
+                    Portion Weight: ${Math.round(animal.dressWeight * invoice.numQuaters / 4)}lbs (${Math.round(invoice.numQuaters / 4 * 100)}% of dress)<br>
+                    Liver Good: ${animal.liverGood ? "Yes" : `No ${animal.liverBadReason ? `(${animal.liverBadReason})` : ""}`}<br>
+                    ${animal.animalType === AnimalType.Beef ? `Older than 30 Months: ${animal.older30Months ? "Yes" : "No"}` : ``}
+                    Take Home Weight: ${invoice.takeHomeWeight ?? 0}lbs (${String(Math.round((isNaN(invoice.takeHomeWeight) ? 0 : invoice.takeHomeWeight) / animal.dressWeight * 100 * 4 / invoice.numQuaters))}% of dress)<br>
+
                 </div>
             `
         }

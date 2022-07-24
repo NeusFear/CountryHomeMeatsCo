@@ -1178,7 +1178,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                 ${charges.length === 0 ? "" :
                 `
                 <div style="display: flex; flex-direction: row; border-top: solid 1px black">
-                    <div style="flex-grow: 1">Custom Cost${charges.length === 1 ? "" : "s"}:</div>
+                    <div style="width: 100px">Custom Cost${charges.length === 1 ? "" : "s"}:</div>
                     <div style="flex-grow: 1;">
                         ${charges.map(charge => `
                             <div style="display: flex; flex-direction: row">
@@ -1197,7 +1197,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                 ${payments.length === 0 ? "" :
                 `
                 <div style="display: flex; flex-direction: row; border-top: solid 1px black">
-                    <div style="flex-grow: 1">Payment${payments.length === 1 ? "" : "s"}:</div>
+                    <div style="width: 100px">Payment${payments.length === 1 ? "" : "s"}:</div>
                     <div style="flex-grow: 1;">
                         ${payments.map(payment => `
                             <div style="display: flex; flex-direction: row">

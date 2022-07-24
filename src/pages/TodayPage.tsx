@@ -239,7 +239,13 @@ const elementDiv = (value: any, key: string, grow = false) => {
 const instructionDiv = (part: string, value: string) => {
   return `
   <div style="font-size: large; margin: 10px 0px">
-      ${part}: <span style="font-size: xx-large; font-weight: bold;">${value}</span>
+      ${part}: 
+      <span style="font-size: xx-large; font-weight: bold;">
+        ${value
+      .replace(/chicken fry/ig, "CF")
+      .replace(/hamburger/ig, "HB")
+      .replace(/tenderized/ig, "T")}
+      </span>
   </div>
   `
 }

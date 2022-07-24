@@ -112,7 +112,7 @@ const animalSchmea = new Schema({
   processDate: { type: Schema.Types.Date },
   invoiceGeneratedDate: { type: Schema.Types.Date },
   tagNumber: { type: String },
-  liverGood: { type: Boolean },
+  liverGood: { type: Boolean, default: true },
   liverBadReason: { type: String },
   older30Months: { type: Boolean },
   pigTatooNumber: { type: Number },

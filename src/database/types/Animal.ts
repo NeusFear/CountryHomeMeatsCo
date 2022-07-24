@@ -72,6 +72,7 @@ export interface IAnimal extends Document {
   invoiceGeneratedDate: Date
   tagNumber: string,
   liverGood: boolean,
+  liverBadReason?: string
   older30Months?: boolean
   pigTatooNumber?: number,
 
@@ -112,6 +113,7 @@ const animalSchmea = new Schema({
   invoiceGeneratedDate: { type: Schema.Types.Date },
   tagNumber: { type: String },
   liverGood: { type: Boolean },
+  liverBadReason: { type: String },
   older30Months: { type: Boolean },
   pigTatooNumber: { type: Number },
 

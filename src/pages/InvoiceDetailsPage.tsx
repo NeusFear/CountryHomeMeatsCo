@@ -177,7 +177,9 @@ export const InvoiceDetailsPage = () => {
                         </div>
                         <div className="flex flex-row pl-2 pr-4">
                             <p className="font-semibold flex-grow">Liver Good:</p>
-                            <p className="text-right">{animal.liverGood ? "Yes" : "No"}</p>
+                            <p className="text-right">
+                                {animal.liverGood ? "Yes" : `No ${animal.liverBadReason ? `(${animal.liverBadReason})` : ""}`}
+                            </p>
                         </div>
                         {animal.animalType === AnimalType.Beef &&
                             <div className="flex flex-row pl-2 pr-4">

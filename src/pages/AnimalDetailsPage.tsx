@@ -207,16 +207,6 @@ export const AnimalDetailsPage = () => {
               </div>
             </div>
             <div className="flex flex-row">
-              <div className="font-semibold flex flex-row p-1 ml-4">
-                <span>Liver Good</span>
-                <select className="border-gray-700 border rounded-md px-1 h-6 ml-2" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
-                  animal.liverGood = e.target.value === "true"
-                  setAnimalArriveDateAndSave()
-                }}>
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </select>
-              </div>
               {animal.animalType === AnimalType.Beef &&
                 <div className="font-semibold flex flex-row p-1 ml-4">
                   <span>Older than 30 Months</span>
@@ -229,6 +219,22 @@ export const AnimalDetailsPage = () => {
                   </select>
                 </div>
               }
+              <div className="font-semibold flex flex-row p-1 ml-4">
+                <span>Liver Good</span>
+                <select className="border-gray-700 border rounded-md px-1 h-6 ml-2" defaultValue={String(animal.liverGood ?? false)} onChange={e => {
+                  animal.liverGood = e.target.value === "true"
+                  setAnimalArriveDateAndSave()
+                }}>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+                {!animal.liverGood && (
+                  <input className="border-gray-700 border rounded-md px-2" value={animal.liverBadReason} placeholder="Reason" onChange={e => {
+                    animal.liverBadReason = e.target.value
+                    setAnimalArriveDateAndSave()
+                  }} />
+                )}
+              </div>
             </div>
           </div>
           <div className="bg-gray-200 rounded-lg mt-4">

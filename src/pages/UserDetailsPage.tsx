@@ -33,6 +33,8 @@ export const UserDetailsPage = ({ pinnedList }: { pinnedList: UserPinnedList }) 
       map.set(key, arr)
       return map
     }, new Map<string, IAnimal[]>()).values()
+  ).sort(
+    (a, b) => b[0].killDate.getTime() - a[0].killDate.getTime() //Reverse sort to show most recent first
   )
 
   const PhoneNumber = ({ name, number }: { name: string, number: string }) => (<div>{name}: {formatPhoneNumber(number)}</div>)

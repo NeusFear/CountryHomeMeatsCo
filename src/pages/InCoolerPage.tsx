@@ -17,6 +17,7 @@ export const InCoolerPage = () => {
   const beef: (IAnimal)[] = []
   const pork = []
   if (animals !== DatabaseWait) {
+    animals.sort((a, b) => a.killDate.getTime() - b.killDate.getTime())
     animals.forEach(a => (a.animalType === AnimalType.Beef ? beef : pork).push(a))
   }
 

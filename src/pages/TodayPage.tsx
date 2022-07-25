@@ -394,7 +394,7 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
         ${elementDiv(animal.penLetter, "Pen")}
         ${elementDiv(animal.liveWeight, "Live Weight")}
         ${elementDiv(animal.dressWeight, "Dressed Weight")}
-        ${elementDiv(animal.liverGood ? "Yes" : "No", "Liver Good")}
+        ${elementDiv(animal.liverGood ? "Yes" : "No" + (animal.liverBadReason === undefined ? '' : ` - ${animal.liverBadReason}`), "Liver Good")}
     </div>
     `
   })

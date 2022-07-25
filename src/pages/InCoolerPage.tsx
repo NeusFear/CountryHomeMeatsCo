@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useHistory } from 'react-router-dom';
-import { SvgCow, SvgPig } from "../assets/Icons";
+import { SvgCow, SvgPig, SvgSearch } from "../assets/Icons";
 import DataTag, { FeedbackTypes } from "../components/DataTag";
 import { DatabaseWait } from "../database/Database";
 import Animal, { AnimalType, Eater, IAnimal, paddedAnimalId, useAnimals } from "../database/types/Animal";
@@ -23,12 +23,22 @@ export const InCoolerPage = () => {
 
   return (
     <div className="w-full h-screen flex flex-col">
-      <div className="flex flex-row w-full h-14 bg-gray-800 pt-1">
-        <div className="text-white text-4xl font-bold ml-4">IN THE COOLER</div>
+      <div className="bg-gray-800 py-2 px-2 flex flex-row justify-end">
+        <div className="relative rounded-md shadow-sm flex-grow">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <span className="text-gray-500 sm:text-sm">
+              <SvgSearch />
+            </span>
+          </div>
+          <input type="text" name="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
+        </div>
+        <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
+      </div>
+      <div className="flex flex-row">
         <div className="text-white h-8 px-2 py-1 mt-2 rounded-md bg-tomato-300 hover:bg-tomato-400 mx-4 cursor-pointer" onClick={() => toggleTab(true)}>View Beef</div>
         <div className="text-white h-8 px-2 py-1 mt-2 rounded-md bg-green-300 hover:bg-green-400 cursor-pointer" onClick={() => toggleTab(false)}>View Pork</div>
       </div>
-      <div className="pt-4">
+      <div className="pt-2">
         <div className="w-auto bg-gray-200 mx-4 h-full rounded-lg">
           <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1" >{tab ? "BEEF: " + beef.length : "PORK: " + pork.length}</div>
           {animals === DatabaseWait ? "Loading..." :
@@ -66,7 +76,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row">
       <div className="mr-1">
         <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" />
-        <DataTag name={`#${paddedAnimalId(animal)}`}/>
+        <DataTag name={`#${paddedAnimalId(animal)}`} />
       </div>
       <div>
         <div className="flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>

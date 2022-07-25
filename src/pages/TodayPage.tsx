@@ -394,7 +394,7 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
         ${elementDiv(animal.penLetter, "Pen")}
         ${elementDiv(animal.liveWeight, "Live Weight")}
         ${elementDiv(animal.dressWeight, "Dressed Weight")}
-        ${elementDiv(animal.liverGood ? "Yes" : "No" + (animal.liverBadReason === undefined ? '' : ` - ${animal.liverBadReason}`), "Liver Good")}
+        ${elementDiv(animal.liverGood ? "Yes" : "No", "Liver Good")}
     </div>
     `
   })
@@ -434,25 +434,30 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
         </div>
     </div>
     <div style="border-bottom: 1px solid black; border-top: 1px solid black; height: 200px; width: 100%">
-      <div style="font-size: x-large">Comments:</div>
-    </div>
-    `
+      <div style="font-size: x-large; margin-top: 5px">Comments:</div>
+      ${(!animal.liverGood && animal.liverBadReason !== undefined) ? `
+        <div style="margin-top: 10px;">
+         Liver Bad: ${animal.liverBadReason}
+        </div>
+      ` : ""}
+    </div >
+  `
   })
 
   const footer: PosPrintData[] = [
     {
       type: "text",
       value: `
-      <br><br><br>
-      <div style="display: flex; flex-direction: row; border-top: 2px solid black; padding-top: 10px">
-        <div style="font-size: large; flex-grow: 1;">
-          Take Home Weight:
-        </div>
-        <div style="font-size: large; width: 200px">
-          Freezer:
-        </div>
+  < br > <br><br>
+    <div style="display: flex; flex-direction: row; border-top: 2px solid black; padding-top: 10px">
+      <div style="font-size: large; flex-grow: 1;">
+        Take Home Weight:
       </div>
-      `
+      <div style="font-size: large; width: 200px">
+        Freezer:
+      </div>
+    </div>
+    `
     },
     {
       type: "text",
@@ -515,17 +520,17 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
       return {
         type: "text",
         value: `
-              <div>
-                  <div style="font-size: x-large; font-weight: bold;">${fresh ? "Fresh" : "Cured"}</div>
-                  <div>
-                      ${instructionDiv("Ham", `${getHalf(hamIns.amount)} ${hamIns.type} ${hamIns.cutType} ${hamIns.size} ${hamIns.amountPerPackage}`)}
-                      ${instructionDiv("Bacon", `${getHalf(baconIns.amount)} ${baconIns.cutType} ${baconIns.size}`)}
-                      ${instructionDiv("Jowl", `${getHalf(jowlIns.amount)} ${jowlIns.type}`)}
-                      ${instructionDiv("Loin", `${getHalf(loinIns.amount)} ${loinIns.size} ${loinIns.packageAmount}`)}
-                      ${instructionDiv("Butt", `${getHalf(buttIns.amount)} ${buttIns.type} ${buttIns.packageAmount}`)}
-                      ${instructionDiv("Picnic", `${getHalf(picnicIns.amount)} ${picnicIns.type} ${picnicIns.packageAmount}`)}
-                      <br>
-                      ${fresh ? `
+    <div>
+      <div style="font-size: x-large; font-weight: bold;">${fresh ? "Fresh" : "Cured"}</div>
+      <div>
+        ${instructionDiv("Ham", `${getHalf(hamIns.amount)} ${hamIns.type} ${hamIns.cutType} ${hamIns.size} ${hamIns.amountPerPackage}`)}
+        ${instructionDiv("Bacon", `${getHalf(baconIns.amount)} ${baconIns.cutType} ${baconIns.size}`)}
+        ${instructionDiv("Jowl", `${getHalf(jowlIns.amount)} ${jowlIns.type}`)}
+        ${instructionDiv("Loin", `${getHalf(loinIns.amount)} ${loinIns.size} ${loinIns.packageAmount}`)}
+        ${instructionDiv("Butt", `${getHalf(buttIns.amount)} ${buttIns.type} ${buttIns.packageAmount}`)}
+        ${instructionDiv("Picnic", `${getHalf(picnicIns.amount)} ${picnicIns.type} ${picnicIns.packageAmount}`)}
+        <br>
+          ${fresh ? `
                               ${instructionDiv("Ribs", pork.rib)}
                               ${instructionDiv("Head", pork.head)}
                               ${instructionDiv("Feet", pork.feet)}
@@ -535,10 +540,10 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
                               ${instructionDiv("Sausage", pork.sausage)}
                           `
           }
-                  </div>
-                  ${instructionDiv("Notes", cutInstruction.notes ?? "")}
-              </div>
-          `
+      </div>
+      ${instructionDiv("Notes", cutInstruction.notes ?? "")}
+    </div>
+    `
       }
     }
 

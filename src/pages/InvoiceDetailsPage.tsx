@@ -939,39 +939,37 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                     <div style="font-size: 5em; font-weight: bold;">INVOICE</div>
                     <div>Todays Date: ${formatDay(new Date())}</div>
                     <div>Invoice #${invoice.invoiceId}</div>
-                    <div>Animal #${animal.animalId}</div>
+                    <div>Animal #${paddedAnimalId(animal)}</div>
                 </div>
-                <div>
-                    <span style="font-weight: bold">Country Home Meat Co</span><br>
-                    2775 E. Waterloo Road<br>
-                    Edmond<br>
-                    Oklahoma<br>
-                    73034<br>
-                    USA<br>
-                    (405) 341-0267
-                </div>
-                <br>
-                Bill To:
-                <div>
-                    <span style="font-weight: bold">${user.name}</span><br>
-                    ${user.emails.map(e => `${e}<br>`).join("")}
-                    ${user.phoneNumbers.map(p => `${p.name}: ${formatPhoneNumber(p.number)}<br>`).join("")}
-                </div>
-                <br>
-                <div>
-                    <div style="font-weight: bold">Animal details</div>
-                    ID: #${paddedAnimalId(animal)}<br>
-                    Type: ${formatWhole(invoice.numQuaters)} ${animal.animalType}<br>
-                    Date Killed: ${formatDay(animal.killDate)}<br>
-                    Date Processed: ${formatDay(animal.processDate)}<br>
-                    Date Invoice Generated: ${formatDay(animal.invoiceGeneratedDate)}<br>
-                    Live Weight: ${animal.liveWeight}lbs<br>
-                    Dress Weight: ${animal.dressWeight}lbs (${Math.round(animal.dressWeight / animal.liveWeight * 100)}% of live)<br>
-                    Portion Weight: ${Math.round(animal.dressWeight * invoice.numQuaters / 4)}lbs (${Math.round(invoice.numQuaters / 4 * 100)}% of dress)<br>
-                    Liver Good: ${animal.liverGood ? "Yes" : `No ${animal.liverBadReason ? `(${animal.liverBadReason})` : ""}`}<br>
-                    ${animal.animalType === AnimalType.Beef ? `Older than 30 Months: ${animal.older30Months ? "Yes" : "No"}` : ``}
-                    Take Home Weight: ${invoice.takeHomeWeight ?? 0}lbs (${String(Math.round((isNaN(invoice.takeHomeWeight) ? 0 : invoice.takeHomeWeight) / animal.dressWeight * 100 * 4 / invoice.numQuaters))}% of dress)<br>
+                <div style="display: flex; flex-direction: row; gap: 40px;">
+                    <div>
+                        <div>
+                            <span style="font-weight: bold">Country Home Meats Co</span><br>
+                            2775 E. Waterloo Road<br>
+                            Edmond, Oklahoma 73034<br>
+                            (405) 341-0267
+                        </div>
+                        <br>
+                        Bill To:
+                        <div>
+                            <span style="font-weight: bold">${user.name}</span><br>
+                            ${user.emails.map(e => `${e}<br>`).join("")}
+                            ${user.phoneNumbers.map(p => `${p.name}: ${formatPhoneNumber(p.number)}<br>`).join("")}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold">Animal details</div>
+                        ID: #${paddedAnimalId(animal)}<br>
+                        Portion: ${formatWhole(invoice.numQuaters)} ${animal.animalType}<br>
+                        Date Killed: ${formatDay(animal.killDate)}<br>
+                        Live Weight: ${animal.liveWeight}lbs<br>
+                        Dress Weight: ${animal.dressWeight}lbs (${Math.round(animal.dressWeight / animal.liveWeight * 100)}% of live)<br>
+                        Dressed Weight of Your Portion: ${Math.round(animal.dressWeight * invoice.numQuaters / 4)}lbs<br>
+                        Liver Good: ${animal.liverGood ? "Yes" : `No ${animal.liverBadReason ? `(${animal.liverBadReason})` : ""}`}<br>
+                        ${animal.animalType === AnimalType.Beef ? `Older than 30 Months: ${animal.older30Months ? "Yes" : "No"}` : ``}<br>
+                        Take Home Weight: ${invoice.takeHomeWeight ?? 0}lbs (${String(Math.round((isNaN(invoice.takeHomeWeight) ? 0 : invoice.takeHomeWeight) / animal.dressWeight * 100 * 4 / invoice.numQuaters))}% of dress)<br>
 
+                    </div>
                 </div>
             `
         }
@@ -1223,7 +1221,7 @@ const doPrint = (invoice: IInvoice, user: IUser, animal: IAnimal) => {
                 `
             }
                 <div style="display: flex; flex-direction: row;">
-                    <span style="flex-grow: 1">Remaining Amount:</span>
+                    <span style="flex-grow: 1">Balance Due:</span>
                     <span>$${(subTotal - amountPayed).toFixed(2)}</span>
                 </div>
             </div>

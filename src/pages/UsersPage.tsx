@@ -1,13 +1,12 @@
-import { UserPinnedList } from "../App"
 import { useHistory } from 'react-router-dom';
-import { userDetailsPage } from "../NavBar";
-import { SvgNewUser, SvgNotes, SvgSearch, SvgTack, SvgTrash } from "../assets/Icons";
+import { UserPinnedList } from "../App";
+import { useSearchState } from "../AppHooks";
+import { SvgNewUser, SvgNotes, SvgSearch, SvgTack } from "../assets/Icons";
+import { DatabaseWait } from "../database/Database";
 import User, { IUser, useUsers } from "../database/types/User";
 import { editUserDetails, setModal } from "../modals/ModalManager";
-import { useMemo, useState } from "react";
-import { DatabaseWait } from "../database/Database";
+import { userDetailsPage } from "../NavBar";
 import { formatPhoneNumber } from "../Util";
-import { useSearchState } from "../AppHooks";
 
 const UserEntry = ({ details, addPinnedUserDetails }: { details: IUser, addPinnedUserDetails: (id: string) => void }) => {
   const history = useHistory()
@@ -15,7 +14,7 @@ const UserEntry = ({ details, addPinnedUserDetails }: { details: IUser, addPinne
     <div className="cursor-pointer bg-gray-100 hover:shadow-md rounded-lg px-2 py-2 shadow-sm flex flex-row mb-2" onClick={() => history.push(userDetailsPage, details.id)}>
       <span className="pr-2 flex-1">{details.name}</span>
       <span className="pr-2 flex-1 flex flex-row">{formatPhoneNumber(details.phoneNumbers[0]?.number) ?? 'Invalid: No Number'}{details.phoneNumbers.length > 1 ? <p className="ml-3 pt-0.5 text-xs bg-gray-200 rounded-md px-1"> +{details.phoneNumbers.length - 1}</p> : <></>}</span>
-      <span className="pr-2 flex-1 flex flex-row">{details.emails[0] ?? 'Invalid: No Email'}{details.emails.length > 1 ? <p className="ml-3 pt-0.5 text-xs bg-gray-200 rounded-md px-1"> +{details.emails.length - 1}</p> : <></>}</span>
+      <span className="pr-2 flex-1 flex flex-row">{details.emails[0] ?? 'No Email'}{details.emails.length > 1 ? <p className="ml-3 pt-0.5 text-xs bg-gray-200 rounded-md px-1"> +{details.emails.length - 1}</p> : <></>}</span>
       <span className="text-gray-600 h-6 w-6 mr-2 flex-shrink pt-1.5">
         {details.notes.length > 0 && <SvgNotes />}
       </span>

@@ -228,7 +228,7 @@ const SlaughterInfo = ({ animal }: { animal: IAnimal }) => {
 
 const elementDiv = (value: any, key: string, grow = false) => {
   return `
-  <div style="${grow ? "flex-grow: 1; " : "text-align: center;"} margin: 5px 10px;">
+  <div style="${grow ? "flex-grow: 1; " : "text-align: center; "} margin: 5px 10px; text-transform: capitalize;">
       <div style="font-size: large; font-weight: bold;">${value}</div>
       ${key}
   </div>
@@ -373,8 +373,8 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
     <div style="height: 30px"></div>
     <div style="display: flex; flex-direction: row; border-bottom: 1px solid black; text-align: center;">
         ${elementDiv(animal.animalId, "Animal ID")}
-        <div style="flex-grow: 1; font-size: 4em; font-weight: bold;">
-            ${animal.animalType} Cutting Sheet
+        <div style="flex-grow: 1; font-size: 4em; font-weight: bold; text-transform: capitalize;">
+            ${animal.animalType.toUpperCase()} CUTTING SHEET
         </div>
         ${elementDiv(invoiceId, "Invoice ID")}
     </div>
@@ -417,7 +417,7 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
         <div style="width: 100%">
             <div style="font-size: xx-large; font-weight: bold;">${formatWhole(quaters)}</div>
             <div>Portion</div>
-            <div style="margin-top: 20px">
+            <div style="margin-top: 10px">
                 <div style="display: flex; flex-direction: row;">
                   <span style="width: 150px">Instructions Taken By:</span>
                   <span>${cutInstruction.instructionsTakenBy ?? "???"}</span>
@@ -433,13 +433,9 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
             </div>
         </div>
     </div>
-    <div style="border-bottom: 1px solid black; border-top: 1px solid black; height: 200px; width: 100%">
+    <div style="border-bottom: 1px solid black; border-top: 1px solid black; height: 280px; width: 100%">
       <div style="font-size: x-large; margin-top: 5px">Comments:</div>
-      ${(!animal.liverGood && animal.liverBadReason !== undefined) ? `
-        <div style="margin-top: 10px;">
-         Liver Bad: ${animal.liverBadReason}
-        </div>
-      ` : ""}
+      ${cutInstruction.notes ?? ""}
     </div >
   `
   })
@@ -448,7 +444,7 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
     {
       type: "text",
       value: `
-  < br > <br><br>
+    <br><br>
     <div style="display: flex; flex-direction: row; border-top: 2px solid black; padding-top: 10px">
       <div style="font-size: large; flex-grow: 1;">
         Take Home Weight:
@@ -499,7 +495,6 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
                       ${instructionDiv("Patties", `${beef.patties.weight} ${beef.patties.amount}`)}
                     </div>
                   </div>
-                  ${instructionDiv("Notes", cutInstruction.notes ?? "")}
               `
       }
     )
@@ -541,7 +536,6 @@ const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInst
                           `
           }
       </div>
-      ${instructionDiv("Notes", cutInstruction.notes ?? "")}
     </div>
     `
       }

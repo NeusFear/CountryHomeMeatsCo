@@ -1,21 +1,21 @@
-import { Switch, Route, Link, useHistory } from 'react-router-dom';
-import { AnimalDetailsPage } from './pages/AnimalDetailsPage';
-import { LandingPage } from './pages/LandingPage';
-import { UsersPage } from './pages/UsersPage';
-import { UserDetailsPage } from './pages/UserDetailsPage';
-import { CalendarPage } from './pages/CalendarPage';
-import { TodayPage } from './pages/TodayPage';
-import { TimeSheet } from './pages/TimeSheet';
-import { AddressBook } from './pages/AddressBook';
-import { PriceSheet } from './pages/PriceSheet';
-import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
-import { NavPageButton } from './components/NavPageButton';
+import { Link, Route, Switch, useHistory } from 'react-router-dom';
 import { useHistoryListState } from "./AppHooks";
+import { NavPageButton } from './components/NavPageButton';
+import { AddressBook } from './pages/AddressBook';
+import { AnimalDetailsPage } from './pages/AnimalDetailsPage';
+import { CalendarPage } from './pages/CalendarPage';
+import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
+import { LandingPage } from './pages/LandingPage';
+import { PriceSheet } from './pages/PriceSheet';
+import { TimeSheet } from './pages/TimeSheet';
+import { TodayPage } from './pages/TodayPage';
+import { UserDetailsPage } from './pages/UserDetailsPage';
+import { UsersPage } from './pages/UsersPage';
 
-import { SvgCalendar, SvgHome, SvgDay, SvgUsers, SvgArrow, SvgSnowman, SvgNotes } from './assets/Icons';
+import React, { useEffect, useState } from 'react';
 import { UserPinnedList } from './App';
+import { SvgArrow, SvgCalendar, SvgDay, SvgHome, SvgNotes, SvgSnowman, SvgUsers } from './assets/Icons';
 import { NavPinnedUserEntry } from './components/NavPinnedUserEntry';
-import { useEffect, useState } from 'react';
 import { InCoolerPage } from './pages/InCoolerPage';
 import { InvoicesPage } from './pages/InvoicesPage';
 
@@ -63,12 +63,12 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
         <div className="m-2" onClick={() => fb.forward ? history.go(1) : false}><SvgArrow className={`hover:text-${fb.forward ? "tomato" : "gray"}-800 text-${fb.forward ? "tomato" : "gray"}-500 hover:shadow-md cursor-pointer text-4xl w-10 h-10 bg-white rounded-full p-0.5`} /></div>
       </div>
       <ul>
-        <li><Link to="/"><NavPageButton Page="Home" Icon={SvgHome} /></Link></li>
-        <li><Link to="/users"><NavPageButton Page="Users" Icon={SvgUsers} /></Link></li>
-        <li><Link to="/today"><NavPageButton Page="Today" Icon={SvgDay} /></Link></li>
-        <li><Link to="/calendar"><NavPageButton Page="Calendar" Icon={SvgCalendar} /></Link></li>
-        <li><Link to="/incooler"><NavPageButton Page="Cooler" Icon={SvgSnowman} /></Link></li>
-        <li><Link to="/invoices"><NavPageButton Page="Invoices" Icon={SvgNotes} /></Link></li>
+        <NavLink to="/" Page="Home" Icon={SvgHome} />
+        <NavLink to="/users" Page="Users" Icon={SvgUsers} />
+        <NavLink to="/today" Page="Today" Icon={SvgDay} />
+        <NavLink to="/calendar" Page="Calendar" Icon={SvgCalendar} />
+        <NavLink to="/incooler" Page="Cooler" Icon={SvgSnowman} />
+        <NavLink to="/invoices" Page="Invoices" Icon={SvgNotes} />
       </ul>
       <Switch>
         {routes.map((route, index) => (<Route key={index} path={route.path} exact={route.exact} />))}
@@ -85,7 +85,17 @@ export const NavBar = ({ pinnedList }: { pinnedList: UserPinnedList }) => {
           />)
         }
       </div>
-    </div>
+    </div >
+  )
+}
+
+const NavLink = ({ to, Page, Icon }: { to: string, Page: string, Icon: (props: any) => JSX.Element }) => {
+  return (
+    <li>
+      <Link to={to}>
+        <NavPageButton Page={Page} to={to} Icon={Icon} />
+      </Link>
+    </li>
   )
 }
 

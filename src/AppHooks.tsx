@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 //Returns a state of the history list state
@@ -10,6 +10,13 @@ export const useHistoryListState = () => {
   useEffect(() => history.listen(d => setState(d.state)))
 
   return state
+}
+
+export const useHistoryUrl = () => {
+  const history = useHistory()
+  const [url, setUrl] = useState(history.location.pathname)
+  useEffect(() => history.listen(d => setUrl(d.pathname)))
+  return url
 }
 
 export const useSearchState = () => {

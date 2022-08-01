@@ -48,7 +48,6 @@ export const InvoicesPage = () => {
           </div>
           <input type="text" name="search" value={search} onChange={e => setSearch(e.target.value)} className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
         </div>
-        <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
       </div>
       <div className="bg-gray-400 px-1 py-0.5 shadow-sm flex flex-row mb-2 pr-10">
         <span className="ml-6 text-gray-700 mr-8">Invoice</span>
@@ -117,10 +116,10 @@ const InvoiceEntry = ({ invoice }: { invoice: IInvoice }) => {
         </div>
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 w-1/6">
-        <DataTag fill={true} name={invoice.markedAsPaid ? "Paid" : "Pending"} feedback={ invoice.markedAsPaid ? FeedbackTypes.positive : FeedbackTypes.negative } />
+        <DataTag fill={true} name={invoice.markedAsPaid ? "Paid" : "Pending"} feedback={invoice.markedAsPaid ? FeedbackTypes.positive : FeedbackTypes.negative} />
       </div>
       <div className="text-gray-800 group-hover:text-gray-900 mx-2 w-20 mr-2">
-        <DataTag name={`$${totalCost}`} feedback={ FeedbackTypes.warning } />
+        <DataTag name={`$${totalCost}`} feedback={FeedbackTypes.warning} />
       </div>
       <div className="mx-4 text-gray-800 group-hover:text-gray-900">
         <DataTag name={formatQuaterText(invoice.numQuaters)} />

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { SvgEdit, SvgNewUser, SvgNotes, SvgSearch, SvgTrash } from "../assets/Icons";
 import { DatabaseWait } from "../database/Database";
 import Vendor, { IVendor, useVendors } from "../database/types/Vendor";
-import { editUserDetails, editVendorDetails, setModal, vendorNotes } from "../modals/ModalManager";
+import { editVendorDetails, setModal, vendorNotes } from "../modals/ModalManager";
 
 export const AddressBook = () => {
 
@@ -25,7 +25,6 @@ export const AddressBook = () => {
           </div>
           <input type="text" name="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-        <div className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgSearch /></div>
         <div onClick={() => setModal(editVendorDetails)} className="transform cursor-pointer px-4 w-12 ml-1 pt-3 hover:bg-tomato-600 border-gray-300 rounded-md h-10 flex-initial bg-tomato-700 text-white"><SvgNewUser /></div>
       </div>
       <div className="bg-gray-400 px-1 py-0.5 shadow-sm flex flex-row mb-2">

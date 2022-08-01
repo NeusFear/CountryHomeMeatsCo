@@ -338,13 +338,17 @@ const doPrintAll = async (animals: IAnimal[], currentPrices: PriceData) => {
           .where("numQuaters", quaters)
           .exec())
         const invoice = invoices.find(i => !handledInvoices.includes(i.id))
-        if (!invoice) {
+
+        let invoiceId: string
+        if (invoice) {
+          handledInvoices.push(invoice.id)
+          invoiceId = String(invoice.invoiceId)
+        } else {
           console.log("Unable to find invoice for animal ", animal.id, " user ", u.id, " cutInstructionUser ", eater.id, " cutInstructionId ", eater.cutInstruction, " numQuaters ", quaters)
-          alert("Unable to find invoice for animal " + animal.animalId)
-          continue
+          // alert("Unable to find invoice for animal " + animal.animalId)
+          invoiceId = "?"
         }
-        handledInvoices.push(invoice.id)
-        doPrint(data, animal, quaters, cutInstruction.instructions, eater, u, bringer, invoice.invoiceId, numberOfAnimalsBroughtInSameDay)
+        doPrint(data, animal, quaters, cutInstruction.instructions, eater, u, bringer, invoiceId, numberOfAnimalsBroughtInSameDay)
       }
 
     }
@@ -361,7 +365,7 @@ const doPrintAll = async (animals: IAnimal[], currentPrices: PriceData) => {
 
 }
 
-const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInstruction: CutInstructions, eater: Eater, user: IUser, bringer: IUser, invoiceId: number, numberOfAnimals: number) => {
+const doPrint = (data: PosPrintData[], animal: IAnimal, quaters: number, cutInstruction: CutInstructions, eater: Eater, user: IUser, bringer: IUser, invoiceId: string, numberOfAnimals: number) => {
   const beef = cutInstruction as BeefCutInstructions
   const pork = cutInstruction as PorkCutInstructions
 

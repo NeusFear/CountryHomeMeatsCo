@@ -1,18 +1,25 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useHistory } from 'react-router-dom';
+import { useSearchState } from "../AppHooks";
 import { SvgCow, SvgPig, SvgSearch } from "../assets/Icons";
 import DataTag, { FeedbackTypes } from "../components/DataTag";
 import { DatabaseWait } from "../database/Database";
 import Animal, { AnimalType, Eater, IAnimal, paddedAnimalId, useAnimals } from "../database/types/Animal";
-import User, { IUser, useUsers } from "../database/types/User";
+import { IUser } from "../database/types/User";
 import { animalDetailsPage } from "../NavBar";
-import { formatPhoneNumber } from "../Util";
+import { formatPhoneNumber, normalizeDay } from "../Util";
 
 export const InCoolerPage = () => {
 
   const [tab, toggleTab] = useState(true);
 
-  const animals = useAnimals(Animal.where("pickedUp", false).where("liveWeight").ne(null))
+  const animals = useAnimals(Animal
+    .where("pickedUp", false)
+    .where("liveWeight").ne(null)
+    .populate("bringer", "name cutInstructions phoneNumbers")
+    .populate("eaters.id", "name cutInstructions phoneNumbers")
+    .populate("eaters.halfUser.id", "name cutInstructions phoneNumbers")
+  )
 
   const beef: (IAnimal)[] = []
   const pork = []
@@ -20,6 +27,29 @@ export const InCoolerPage = () => {
     animals.sort((a, b) => a.killDate.getTime() - b.killDate.getTime())
     animals.forEach(a => (a.animalType === AnimalType.Beef ? beef : pork).push(a))
   }
+
+  const [search, setSearch, regExp] = useSearchState()
+  const searchedAsDate = useMemo(() => {
+    try {
+      const date = normalizeDay(new Date(search))
+      if (isNaN(date.getTime())) return null
+      return date
+    } catch {
+      return null
+    }
+  }, [search])
+
+  const list = (tab ? beef : pork)
+    .filter(a => {
+      if (searchedAsDate !== null) {
+        return a.killDate.getTime() === searchedAsDate.getTime()
+      }
+
+      //We project `animal.bringer` and `animal.eaters` to be of type `IUser` when we query the database
+      //Cba to fix typescript errors
+      const names = [a.bringer.name, ...a.eaters.map(e => e.id.name), ...a.eaters.map(e => e.halfUser?.id?.name)]
+      return names.some(n => n !== undefined && regExp.test(n))
+    })
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -30,7 +60,7 @@ export const InCoolerPage = () => {
               <SvgSearch />
             </span>
           </div>
-          <input type="text" name="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" />
+          <input type="text" name="search" className="block w-full pl-9 pr-12 border-gray-300 rounded-md h-10" placeholder="Search" onChange={e => setSearch(e.target.value)} value={search} />
         </div>
       </div>
       <div className="flex flex-row">
@@ -39,9 +69,9 @@ export const InCoolerPage = () => {
       </div>
       <div className="pt-2">
         <div className="w-auto bg-gray-200 mx-4 h-full rounded-lg">
-          <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1" >{tab ? "BEEF: " + beef.length : "PORK: " + pork.length}</div>
+          <div className="bg-gray-800 font-semibold rounded-t-lg text-white px-2 py-1" >{(tab ? "BEEF: " : "PORK: ") + list.length}</div>
           {animals === DatabaseWait ? "Loading..." :
-            (tab ? beef : pork).map(c => <AnimalInfoEntry key={c.id} animal={c} />)
+            list.map(c => <AnimalInfoEntry key={c.id} animal={c} />)
           }
         </div>
       </div>
@@ -50,24 +80,11 @@ export const InCoolerPage = () => {
 }
 
 const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
-  const usersToFind = [animal.bringer]
-  animal.eaters.forEach(e => {
-    usersToFind.push(e.id)
-    if (e.halfUser) usersToFind.push(e.halfUser.id)
-  })
-
-  const users = useUsers(User.where("_id").in(usersToFind).select("name cutInstructions phoneNumbers"), usersToFind, ...usersToFind)
   const history = useHistory()
 
-  if (users === DatabaseWait) {
-    return <p>Loading users...</p>
-  }
 
-  if (users === null) {
-    return <p>Error loading user.</p>
-  }
-
-  const mainUser = users.find(u => String(u.id) === animal.bringer.toHexString())
+  //We project `animal.bringer` and `animal.eaters` to be of type `IUser` when we query the database
+  const mainUser = animal.bringer as unknown as IUser
 
   const Tag = animal.animalType === AnimalType.Beef ? SvgCow : SvgPig
 
@@ -112,8 +129,9 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
             <p className="font-semibold">Eaters</p>
             <div className="flex flex-row">
               {animal.eaters.map((e, i) => {
-                const user = users.find(u => String(u.id) === String(e.id))
-                const halfUser = e.halfUser !== undefined ? users.find(u => String(u.id) === String(e.halfUser.id)) : undefined
+                //We project `animal.bringer` and `animal.eaters` to be of type `IUser` when we query the database
+                const user = e.id as unknown as IUser
+                const halfUser = e.halfUser !== undefined ? e.halfUser.id as unknown as IUser : undefined
                 return (
                   <EatersBlock eater={e} user={user} halfUser={halfUser} index={i} />
                 )

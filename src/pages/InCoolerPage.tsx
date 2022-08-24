@@ -24,7 +24,7 @@ export const InCoolerPage = () => {
   const beef: (IAnimal)[] = []
   const pork = []
   if (animals !== DatabaseWait) {
-    animals.sort((a, b) => a.killDate.getTime() - b.killDate.getTime())
+    animals.sort((a, b) => b.killDate.getTime() - a.killDate.getTime())
     animals.forEach(a => (a.animalType === AnimalType.Beef ? beef : pork).push(a))
   }
 
@@ -93,6 +93,8 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
       <div className="mr-1">
         <Tag className="text-gray-800 group-hover:text-tomato-900 w-5 h-5 mr-2 mt-1 ml-4" />
         <DataTag name={`#${paddedAnimalId(animal)}`} />
+        <p className="font-semibold ml-2">Killed</p>
+        <DataTag name={String(animal.killDate.toDateString())}
       </div>
       <div>
         <div className="flex flex-row" onClick={() => history.push(animalDetailsPage, animal.id)}>

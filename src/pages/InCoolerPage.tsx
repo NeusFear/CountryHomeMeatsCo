@@ -88,6 +88,9 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
 
   const Tag = animal.animalType === AnimalType.Beef ? SvgCow : SvgPig
 
+  var firstPhoneNumber = mainUser?.phoneNumbers[0];
+  var formattedPhoneNumber = (firstPhoneNumber !== null && firstPhoneNumber !== undefined) ? formatPhoneNumber(firstPhoneNumber.number) : "???"
+
   return (
     <div className="group bg-gray-100 shadow-sm hover:shadow-lg hover:border-transparent p-1 mx-4 mt-1 my-2 rounded-lg flex flex-row">
       <div className="mr-1">
@@ -102,7 +105,7 @@ const AnimalInfoEntry = ({ animal }: { animal: IAnimal }) => {
             <p className="font-semibold">Bringer</p>
             <div className="flex flex-row">
               <DataTag name={mainUser?.name ?? "???"} />
-              <DataTag name={"" + formatPhoneNumber(mainUser?.phoneNumbers[0].number) ?? "???"} />
+              <DataTag name={formattedPhoneNumber} />
             </div>
           </div>
           <div className="text-gray-800 group-hover:text-gray-900 mx-2 w-auto mr-2">
@@ -156,8 +159,8 @@ const EatersBlock = ({ eater, user, halfUser, index }: { eater: Eater, user: IUs
   const userTag = eater.tag === "" ? "" : ` (${eater.tag})`;
   const halfUserTag = eater.halfUser !== undefined ? eater.halfUser?.tag === "" ? "" : `(${eater.halfUser.tag})` : "";
 
-  const userPhone = formatPhoneNumber(user?.phoneNumbers[0].number);
-  const halfUserPhone = eater.halfUser !== undefined ? formatPhoneNumber(user?.phoneNumbers[0].number) : "???";
+  const userPhone = user?.phoneNumbers[0] ? formatPhoneNumber(user?.phoneNumbers[0].number) : "???";
+  const halfUserPhone = halfUser !== undefined ? halfUser?.phoneNumbers[0] !== null ? formatPhoneNumber(halfUser?.phoneNumbers[0].number) : "???" : "???";
 
   return (
     <div key={index} className="flex flex-row">
